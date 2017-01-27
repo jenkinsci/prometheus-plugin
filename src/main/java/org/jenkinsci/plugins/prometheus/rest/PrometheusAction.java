@@ -12,7 +12,7 @@ import org.jenkinsci.plugins.prometheus.MetricsRequest;
 public class PrometheusAction implements UnprotectedRootAction {
     private CollectorRegistry collectorRegistry;
     private JobCollector jobCollector = new JobCollector();
-    private static final String DEFAULT_ENDPOINT = "prometheus";
+    private static final String DEFAULT_ENDPOINT = "metrics";
     private String prometheusEndpoint;
 
     @Override

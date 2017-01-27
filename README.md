@@ -11,7 +11,7 @@ duration of jobs and pipeline stages
 
 `PROMETHEUS_NAMESPACE` Prefix of metric (Default: `default`).
 
-`PROMETHEUS_ENDPOINT` REST Endpoint (Default: `prometheus`)
+`PROMETHEUS_ENDPOINT` REST Endpoint (Default: `metrics`)
 
 ## Building
 `mvn hpi:hpi`
