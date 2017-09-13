@@ -4,7 +4,7 @@
     <f:entry title="${%Path}" field="path">
       <f:textbox/>
     </f:entry>
-    <f:entry title="${%DefaultNamespace}" field="defaultNamespace">
+    <f:entry title="${%Default Namespace}" field="defaultNamespace">
       <f:textbox/>
     </f:entry>
     <f:entry title="${%Enable authentication for prometheus end-point}" field="useAuthenticatedEndpoint">
