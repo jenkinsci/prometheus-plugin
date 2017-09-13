@@ -25,6 +25,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
 
     private String urlName;
     private String additionalPath;
+    private String defaultNamespace = "default";
     private boolean useAuthenticatedEndpoint;
     
     private boolean countSuccessfulBuilds = true;
@@ -51,6 +52,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
         setPath(json.getString("path"));
         useAuthenticatedEndpoint = json.getBoolean("useAuthenticatedEndpoint");
+        defaultNamespace = json.getString("defaultNamespace");
 
         countSuccessfulBuilds = json.getBoolean("countSuccessfulBuilds");
         countUnstableBuilds = json.getBoolean("countUnstableBuilds");
@@ -70,6 +72,14 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         urlName = path.split("/")[0];
         List<String> pathParts = Arrays.asList(path.split("/"));
         additionalPath = (pathParts.size() > 1 ? "/" : "") + StringUtils.join(pathParts.subList(1, pathParts.size()), "/");
+    }
+
+    public String getDefaultNamespace() {
+        return defaultNamespace;
+    }
+
+    public void setDefaultNamespace(String path) {
+    	defaultNamespace = path;
     }
 
     public boolean isUseAuthenticatedEndpoint() {

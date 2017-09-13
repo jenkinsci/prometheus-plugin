@@ -19,20 +19,22 @@ import hudson.model.Job;
 import hudson.model.Run;
 import io.prometheus.client.Collector;
 import io.prometheus.client.Summary;
+import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 
 public class JobCollector extends Collector {
     private static final Logger logger = LoggerFactory.getLogger(JobCollector.class);
-    private static final String DEFAULT_NAMESPACE = "default";
 
     private String namespace;
     private Summary summary;
     private Summary stageSummary;
 
     public JobCollector() {
+    	// get the namespace from the environment first
         namespace = System.getenv("PROMETHEUS_NAMESPACE");
         if (StringUtils.isEmpty(namespace)) {
-            logger.debug("Since the environment variable 'PROMETHEUS_NAMESPACE' is empty, using 'default'");
-            namespace = DEFAULT_NAMESPACE;
+        	// when the environment variable isn't set, try the system configuration
+        	namespace = PrometheusConfiguration.get().getDefaultNamespace();
+            logger.debug("Since the environment variable 'PROMETHEUS_NAMESPACE' is empty, using the value [{}] from the master configuration (empty strings are allowed)"+namespace);
         }
         logger.info("The prometheus namespace is [{}]", namespace);
     }
