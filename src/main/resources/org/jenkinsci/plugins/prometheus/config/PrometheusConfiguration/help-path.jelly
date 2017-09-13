@@ -5,4 +5,39 @@
       The path where the prometheus metrics should be provided.
     </p>
   </div>
+  <div>
+    <p>
+      The default namespace (default value is 'default'). Setting this to an empty value will return the build values as Jenkins metrics.
+    </p>
+  </div>
+  <div>
+    <p>
+      Enable authentication for the Prometheus endpoint.
+    </p>
+  </div>
+  <div>
+    <p>
+      Count the duration of successful builds.
+    </p>
+  </div>
+  <div>
+    <p>
+      Count the duration of unstable builds.
+    </p>
+  </div>
+  <div>
+    <p>
+      Count the duration of failed builds.
+    </p>
+  </div>
+  <div>
+    <p>
+      Count the duration of not-built builds.
+    </p>
+  </div>
+  <div>
+    <p>
+      Count the duration of aborted builds.
+    </p>
+  </div>
 </j:jelly>
