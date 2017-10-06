@@ -75,7 +75,7 @@ public class JobCollector extends Collector {
                 create();
 
         jobBuildResult = Gauge.build().
-                name(fullname + "_lastg_build_result").
+                name(fullname + "_last_build_result").
                 subsystem(subsystem).namespace(namespace).
                 labelNames(labelNameArray).
                 help("Summary of Jenkins build times in milliseconds by Job").
