@@ -17,8 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import hudson.model.Job;
 import hudson.model.Run;
+import hudson.tasks.test.AbstractTestResultAction;
 import io.prometheus.client.Collector;
 import io.prometheus.client.Summary;
+import io.prometheus.client.Gauge;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 
 public class JobCollector extends Collector {
@@ -26,6 +28,13 @@ public class JobCollector extends Collector {
 
     private String namespace;
     private Summary summary;
+    private Gauge jobBuildResultOrdinal;
+    private Gauge jobBuildResult;
+    private Gauge jobDuration;
+    private Gauge jobScore;
+    private Gauge jobTestsTotal;
+    private Gauge jobTestsSkipped;
+    private Gauge jobTestsFailing;
     private Summary stageSummary;
 
     public JobCollector() {
@@ -57,6 +66,55 @@ public class JobCollector extends Collector {
                 help("Summary of Jenkins build times in milliseconds by Job").
                 create();
 
+        jobBuildResultOrdinal = Gauge.build().
+                name(fullname + "_last_build_result_ordinal").
+                subsystem(subsystem).namespace(namespace).
+                labelNames(labelNameArray).
+                help("Build status of a job.").
+                create();
+
+        jobBuildResult = Gauge.build().
+                name(fullname + "_lastg_build_result").
+                subsystem(subsystem).namespace(namespace).
+                labelNames(labelNameArray).
+                help("Summary of Jenkins build times in milliseconds by Job").
+                create();
+
+        jobDuration = Gauge.build().
+                name(fullname + "_last_build_duration_milliseconds").
+                subsystem(subsystem).namespace(namespace).
+                labelNames(labelNameArray).
+                help("Build times in milliseconds of last build").
+                create();
+
+        jobScore = Gauge.build().
+                name(fullname + "_last_build_score").
+                subsystem(subsystem).namespace(namespace).
+                labelNames(labelNameArray).
+                help("Build score of last build").
+                create();
+
+        jobTestsTotal = Gauge.build().
+                name(fullname + "_last_build_tests_total").
+                subsystem(subsystem).namespace(namespace).
+                labelNames(labelNameArray).
+                help("Number of tests running during the last build").
+                create();
+
+        jobTestsSkipped = Gauge.build().
+                name(fullname + "_last_build_tests_skipped").
+                subsystem(subsystem).namespace(namespace).
+                labelNames(labelNameArray).
+                help("Number of skiping tests during the last build").
+                create();
+
+        jobTestsFailing = Gauge.build().
+                name(fullname + "_last_build_tests_failing").
+                subsystem(subsystem).namespace(namespace).
+                labelNames(labelNameArray).
+                help("Number of failing tests during the last build").
+                create();
+
         logger.debug("getting summary of build times by Job and Stage");
         stageSummary = Summary.build().name(fullname + "_stage_duration_milliseconds_summary").
                 subsystem(subsystem).namespace(namespace).
@@ -84,16 +142,83 @@ public class JobCollector extends Collector {
             logger.debug("Adding [{}] samples from summary", summary.collect().get(0).samples.size());
             samples.addAll(summary.collect());
         }
+        if (jobBuildResultOrdinal.collect().get(0).samples.size() > 0){
+            logger.debug("Adding [{}] samples from summary", jobBuildResultOrdinal.collect().get(0).samples.size());
+            samples.addAll(jobBuildResultOrdinal.collect());
+        }
+        if (jobBuildResult.collect().get(0).samples.size() > 0){
+            logger.debug("Adding [{}] samples from summary", jobBuildResult.collect().get(0).samples.size());
+            samples.addAll(jobBuildResult.collect());
+        }
+        if (jobDuration.collect().get(0).samples.size() > 0){
+            logger.debug("Adding [{}] samples from summary", jobDuration.collect().get(0).samples.size());
+            samples.addAll(jobDuration.collect());
+        }
+
+        if (jobTestsTotal.collect().get(0).samples.size() > 0){
+            logger.debug("Adding [{}] samples from stage summary", jobTestsTotal.collect().get(0).samples.size());
+            samples.addAll(jobTestsTotal.collect());
+        }
+
+        if (jobTestsSkipped.collect().get(0).samples.size() > 0){
+            logger.debug("Adding [{}] samples from stage summary", jobTestsSkipped.collect().get(0).samples.size());
+            samples.addAll(jobTestsSkipped.collect());
+        }
+
+        if (jobTestsFailing.collect().get(0).samples.size() > 0){
+            logger.debug("Adding [{}] samples from stage summary", jobTestsFailing.collect().get(0).samples.size());
+            samples.addAll(jobTestsFailing.collect());
+        }
+
         if (stageSummary.collect().get(0).samples.size() > 0){
             logger.debug("Adding [{}] samples from stage summary", stageSummary.collect().get(0).samples.size());
             samples.addAll(stageSummary.collect());
         }
+
         return samples;
     }
 
     protected void appendJobMetrics(Job job) {
         String[] labelValueArray = {job.getFullName()};
         Run run = job.getLastBuild();
+        // Never built
+        if (null == run) {
+            logger.debug("job [{}] never built", job.getFullName());
+            return;
+        }
+
+        /*
+         * _last_build_result _last_build_result_oridnal
+         * 
+         * SUCCESS   0 true  - The build had no errors.
+         * UNSTABLE  1 true  - The build had some errors but they were not fatal. For example, some tests failed.
+         * FAILURE   2 false - The build had a fatal error.
+         * NOT_BUILT 3 false - The module was not built.
+         * ABORTED   4 false - The build was manually aborted.
+         */
+        int ordinal = -1; // running
+        // Job is running
+        if (run.getResult() != null) {
+            ordinal = run.getResult().ordinal;
+        }
+        long duration = run.getDuration();
+        int score = job.getBuildHealth().getScore();
+
+        jobBuildResultOrdinal.labels(labelValueArray).set(ordinal);
+        jobBuildResult.labels(labelValueArray).set(ordinal < 2 ? 1 : 0);
+        jobDuration.labels(labelValueArray).set(duration);
+        jobScore.labels(labelValueArray).set(score);
+
+        if(hasTestResults(run)) {
+            int testsTotal = run.getAction(AbstractTestResultAction.class).getTotalCount();
+            int testsFail = run.getAction(AbstractTestResultAction.class).getFailCount();
+            int testsSkipped = run.getAction(AbstractTestResultAction.class).getSkipCount();
+
+            jobTestsTotal.labels(labelValueArray).set(testsTotal);
+            jobTestsSkipped.labels(labelValueArray).set(testsSkipped);
+            jobTestsFailing.labels(labelValueArray).set(testsFail);
+        }
+
         while (run != null) {
             logger.debug("getting metrics for run [{}] from job [{}]", run.getNumber(), job.getName());
             if (Runs.includeBuildInMetrics(run)) {
@@ -131,5 +256,9 @@ public class JobCollector extends Collector {
         long duration = FlowNodes.getStageDuration(stage);
         logger.debug("duration was [{}] for stage[{}] in run [{}] from job [{}]", duration, stage.getDisplayName(), run.getNumber(), job.getName());
         stageSummary.labels(labelValueArray).observe(duration);
+    }
+
+    private boolean hasTestResults(Run<?, ?> job) {
+        return job.getAction(AbstractTestResultAction.class) != null;
     }
 }
