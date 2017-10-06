@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import hudson.model.Job;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.tasks.test.AbstractTestResultAction;
 import io.prometheus.client.Collector;
@@ -198,8 +199,9 @@ public class JobCollector extends Collector {
          */
         int ordinal = -1; // running
         // Job is running
-        if (run.getResult() != null) {
-            ordinal = run.getResult().ordinal;
+        Result runResult = run.getResult();
+        if (null != runResult) {
+            ordinal = runResult.ordinal;
         }
         long duration = run.getDuration();
         int score = job.getBuildHealth().getScore();
