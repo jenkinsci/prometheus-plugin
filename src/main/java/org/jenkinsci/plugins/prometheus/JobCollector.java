@@ -197,7 +197,7 @@ public class JobCollector extends Collector {
         }
 
         /*
-         * _last_build_result _last_build_result_oridnal
+         * _last_build_result _last_build_result_ordinal
          * 
          * SUCCESS   0 true  - The build had no errors.
          * UNSTABLE  1 true  - The build had some errors but they were not fatal. For example, some tests failed.
