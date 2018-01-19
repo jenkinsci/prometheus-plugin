@@ -14,7 +14,9 @@ duration of jobs and pipeline stages
 `PROMETHEUS_ENDPOINT` REST Endpoint (Default: `prometheus`)
 
 ## Building
-`mvn hpi:hpi`
+
+    mvn clean install
+    mvn hpi:hpi
 
 ## Author / Maintainer
 [Lars Sjöström](https://github.com/lsjostro)
