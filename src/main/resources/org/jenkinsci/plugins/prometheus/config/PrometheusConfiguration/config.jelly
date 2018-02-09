@@ -25,6 +25,9 @@
     <f:entry title="${%Count duration of aborted builds}" field="countAbortedBuilds">
       <f:checkbox/>
     </f:entry>
+    <f:entry title="${%Fetch the test results of builds}" field="fetchTestResults">
+      <f:checkbox/>
+    </f:entry>
     <f:entry title="${%Ignore disabled jobs}" field="processingDisabledBuilds">
       <f:checkbox/>
     </f:entry>

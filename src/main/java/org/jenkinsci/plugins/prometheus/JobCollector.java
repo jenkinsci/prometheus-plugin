@@ -219,7 +219,7 @@ public class JobCollector extends Collector {
         jobDuration.labels(labelValueArray).set(duration);
         jobScore.labels(labelValueArray).set(score);
 
-        if(hasTestResults(run)) {
+        if(PrometheusConfiguration.get().isFetchTestResults() && hasTestResults(run)) {
             int testsTotal = run.getAction(AbstractTestResultAction.class).getTotalCount();
             int testsFail = run.getAction(AbstractTestResultAction.class).getFailCount();
             int testsSkipped = run.getAction(AbstractTestResultAction.class).getSkipCount();

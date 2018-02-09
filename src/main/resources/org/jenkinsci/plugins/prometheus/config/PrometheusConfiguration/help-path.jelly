@@ -42,6 +42,11 @@
   </div>
   <div>
     <p>
+      Fetch the test results of builds.
+    </p>
+  </div>
+  <div>
+    <p>
       Ignore disabled jobs.
     </p>
   </div>
