@@ -74,9 +74,11 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     }
 
     public void setPath(String path) {
-        urlName = path.split("/")[0];
-        List<String> pathParts = Arrays.asList(path.split("/"));
-        additionalPath = (pathParts.size() > 1 ? "/" : "") + StringUtils.join(pathParts.subList(1, pathParts.size()), "/");
+        // remove leading slash if it exists.
+        path = path.startsWith("/") ? path.substring(1) : path;
+        List<String> pathParts = Arrays.asList(path.split("/", 2));
+        urlName = pathParts.get(0);
+        additionalPath = (pathParts.size() > 1) ? pathParts.get(1) : "";
     }
 
     public String getDefaultNamespace() {
