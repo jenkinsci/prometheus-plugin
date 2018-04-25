@@ -2,6 +2,7 @@ plugins{
   id 'java'
   id 'maven'
   id 'eclipse'
+  id 'org.jenkins-ci.jpi' version '0.18.0'
 }
 
 group = 'org.jenkins-ci.plugins'
@@ -17,19 +18,41 @@ repositories {
      maven { url "http://repo.maven.apache.org/maven2" }
 }
 
+// Only compile properties with with Java compiler.
+// This is for Messages.properties
+sourceSets.main.java.srcDirs += [ "src/main/resources/*.properties" ]
+
+// Make sure that generated Java files get compiled by the Java compiler
+// This is for Messages.java
+sourceSets.main.java.srcDirs += [ "build/generated-src/localizer" ]
+
+jenkinsPlugin {
+    // version of Jenkins core this plugin depends on, must be 1.420 or later
+    coreVersion = '1.625.3'
+    shortName = 'prometheus'
+    displayName = 'Prometheus plugin'
+    url = 'https://plugins.jenkins.io/prometheus'
+    gitHubUrl = 'https://github.com/jenkinsci/prometheus-plugin.git'
+
+    // use the plugin class loader before the core class loader
+    pluginFirstClassLoader = true
+}
+
 dependencies {
     compile 'org.jenkins-ci.main:jenkins-core:1.625.3',
     'org.jenkins-ci.plugins.workflow:workflow-api:1.8@jar',
     'org.jenkins-ci.plugins.workflow:workflow-job:1.8@jar',
     'org.apache.httpcomponents:httpcore:4.4',
-    'org.jenkins-ci.plugins:metrics:3.1.2.7@jar',
     'com.google.code.gson:gson:2.3.1',
     'io.prometheus:simpleclient:0.0.14',
     'io.prometheus:simpleclient_common:0.0.14',
     'io.prometheus:simpleclient_dropwizard:0.0.14',
     'javax.servlet:servlet-api:2.4',
     'org.slf4j:slf4j-api:1.7.7'
-    
+
+    jenkinsPlugins 'org.jenkins-ci.plugins:junit:1.21@jar',
+            'org.jenkins-ci.plugins:metrics:3.1.2.7@jar'
+
     testCompile 'org.jenkins-ci.main:jenkins-war:1.625.3:war-for-test',
     'org.jenkins-ci.main:jenkins-war:1.625.3',
     'org.jenkins-ci.main:jenkins-test-harness:2.1',
@@ -41,7 +64,7 @@ dependencies {
 }
 
 task dumpDependencies(type: Copy) {
-  description "Copy all project dependencies into ${buildDir}/dependencyLi    bs"
+  description "Copy all project dependencies into ${buildDir}/dependencyLibs"
   into "$buildDir/dependencyLibs"
   //include all dependencies, even test
   from configurations.testRuntime
