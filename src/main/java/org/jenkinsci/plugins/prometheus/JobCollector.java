@@ -31,6 +31,7 @@ public class JobCollector extends Collector {
     private Summary summary;
     private Gauge jobBuildResultOrdinal;
     private Gauge jobBuildResult;
+    private Gauge jobStartMillis;
     private Gauge jobDuration;
     private Gauge jobScore;
     private Gauge jobTestsTotal;
@@ -82,6 +83,13 @@ public class JobCollector extends Collector {
                 labelNames(labelNameArray).
                 help("Build times in milliseconds of last build").
                 create();
+
+        jobStartMillis = Gauge.build()
+                .name(fullname + "_last_build_start_time_milliseconds")
+                .subsystem(subsystem).namespace(namespace)
+                .labelNames(labelNameArray)
+                .help("Last build start timestamp in milliseconds")
+                .create();
 
         jobScore = Gauge.build().
                 name(fullname + "_last_build_score").
@@ -205,11 +213,13 @@ public class JobCollector extends Collector {
         if (null != runResult) {
             ordinal = runResult.ordinal;
         }
+        long millis = run.getStartTimeInMillis();
         long duration = run.getDuration();
         int score = job.getBuildHealth().getScore();
 
         jobBuildResultOrdinal.labels(labelValueArray).set(ordinal);
         jobBuildResult.labels(labelValueArray).set(ordinal < 2 ? 1 : 0);
+        jobStartMillis.labels(labelValueArray).set(millis);
         jobDuration.labels(labelValueArray).set(duration);
         jobScore.labels(labelValueArray).set(score);
 
