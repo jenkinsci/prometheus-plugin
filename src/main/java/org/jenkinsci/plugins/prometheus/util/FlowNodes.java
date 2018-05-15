@@ -56,10 +56,9 @@ public class FlowNodes {
         if (list.isEmpty()) {
             return null;
         }
-        int idx = list.indexOf(node);
-        if (idx >= 0) {
-            FlowNode flowNode = list.get(idx + 1);
-            return flowNode;
+        int idx = list.indexOf(node) + 1;
+        if (idx < list.size()) {
+            return list.get(idx);
         }
         // lets return the last node
         return endNode;
