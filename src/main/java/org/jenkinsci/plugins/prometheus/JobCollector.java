@@ -196,7 +196,11 @@ public class JobCollector extends Collector {
 
     protected void appendJobMetrics(Job job, Boolean ignoreBuildMetrics) {
         // Add this to the repo as well so I can group by Github Repository 
-        String[] labelValueArray = {job.getFullName(),StringUtils.substringBetween(job.getFullName(), "/")};
+        String repoName = StringUtils.substringBetween(job.getFullName(), "/");
+        if (repoName == null) {
+            repoName="NA"
+        }
+        String[] labelValueArray = {job.getFullName(),};
 
         Run run = job.getLastBuild();
         // Never built
