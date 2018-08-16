@@ -24,7 +24,7 @@ import io.prometheus.client.Summary;
 import io.prometheus.client.Gauge;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 
-public class JobCollector extends Collector {
+public class JobCollector extends Collector { 
     private static final Logger logger = LoggerFactory.getLogger(JobCollector.class);
 
     private String lastNamespace;
