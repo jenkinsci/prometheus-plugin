@@ -198,7 +198,7 @@ public class JobCollector extends Collector {
         // Add this to the repo as well so I can group by Github Repository 
         String repoName = StringUtils.substringBetween(job.getFullName(), "/");
         if (repoName == null) {
-            repoName="NA"
+            repoName="NA";
         }
         String[] labelValueArray = {job.getFullName(),};
 
