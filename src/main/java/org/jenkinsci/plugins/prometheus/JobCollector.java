@@ -51,8 +51,8 @@ public class JobCollector extends Collector {
         final List<Job> jobs = new ArrayList<>();
         final String fullname = "builds";
         final String subsystem = "jenkins";
-        String[] labelNameArray = {"jenkins_job"};
-        String[] labelStageNameArray = {"jenkins_job", "stage"};
+        String[] labelNameArray = {"jenkins_job","repository"};
+        String[] labelStageNameArray = {"jenkins_job", "repository","stage"};
         final boolean ignoreDisabledJobs = PrometheusConfiguration.get().isProcessingDisabledBuilds();
 
         logger.debug("getting summary of build times in milliseconds by Job");
@@ -189,7 +189,8 @@ public class JobCollector extends Collector {
     }
 
     protected void appendJobMetrics(Job job) {
-        String[] labelValueArray = {job.getFullName()};
+        // Add this to the repo as well so I can group by Github Repository 
+        String[] labelValueArray = {job.getFullName(),StringUtils.substringBetween(job.getFullName(), "/");};
 
         Run run = job.getLastBuild();
         // Never built
