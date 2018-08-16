@@ -54,6 +54,12 @@ public class JobCollector extends Collector {
         String[] labelNameArray = {"jenkins_job","repository"};
         String[] labelStageNameArray = {"jenkins_job", "repository","stage"};
         final boolean ignoreDisabledJobs = PrometheusConfiguration.get().isProcessingDisabledBuilds();
+        final boolean ignoreBuildMetrics =
+            !PrometheusConfiguration.get().isCountAbortedBuilds() &&
+            !PrometheusConfiguration.get().isCountFailedBuilds() &&
+            !PrometheusConfiguration.get().isCountNotBuiltBuilds() &&
+            !PrometheusConfiguration.get().isCountSuccessfulBuilds() &&
+            !PrometheusConfiguration.get().isCountUnstableBuilds();
 
         logger.debug("getting summary of build times in milliseconds by Job");
         summary = Summary.build().
@@ -145,7 +151,7 @@ public class JobCollector extends Collector {
                 }
                 logger.debug("Job [{}] is not already added. Appending its metrics", job.getName());
                 jobs.add(job);
-                appendJobMetrics(job);
+                appendJobMetrics(job, ignoreBuildMetrics);
             }
         });
         if (summary.collect().get(0).samples.size() > 0){
@@ -188,7 +194,7 @@ public class JobCollector extends Collector {
         return samples;
     }
 
-    protected void appendJobMetrics(Job job) {
+    protected void appendJobMetrics(Job job, Boolean ignoreBuildMetrics) {
         // Add this to the repo as well so I can group by Github Repository 
         String[] labelValueArray = {job.getFullName(),StringUtils.substringBetween(job.getFullName(), "/");};
 
@@ -232,6 +238,10 @@ public class JobCollector extends Collector {
             jobTestsTotal.labels(labelValueArray).set(testsTotal);
             jobTestsSkipped.labels(labelValueArray).set(testsSkipped);
             jobTestsFailing.labels(labelValueArray).set(testsFail);
+        }
+
+        if(ignoreBuildMetrics) {
+            return;
         }
 
         while (run != null) {
