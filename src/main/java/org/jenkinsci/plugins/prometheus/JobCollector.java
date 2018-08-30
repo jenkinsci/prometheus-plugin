@@ -51,8 +51,9 @@ public class JobCollector extends Collector {
         final List<Job> jobs = new ArrayList<>();
         final String fullname = "builds";
         final String subsystem = "jenkins";
-        String[] labelNameArray = {"jenkins_job","repository"}; 
-        String[] labelStageNameArray = {"jenkins_job", "repository","stage"};
+        final String jobAttribute = PrometheusConfiguration.get().getJobAttributeName();
+        String[] labelNameArray = {jobAttribute};
+        String[] labelStageNameArray = {jobAttribute,"stage"};
         final boolean ignoreDisabledJobs = PrometheusConfiguration.get().isProcessingDisabledBuilds();
         final boolean ignoreBuildMetrics =
             !PrometheusConfiguration.get().isCountAbortedBuilds() &&

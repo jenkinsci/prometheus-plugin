@@ -26,6 +26,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     private String urlName;
     private String additionalPath;
     private String defaultNamespace = "default";
+    private String jobAttributeName = "jenkins_job";
     private boolean useAuthenticatedEndpoint;
     
     private boolean countSuccessfulBuilds = true;
@@ -55,7 +56,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         setPath(json.getString("path"));
         useAuthenticatedEndpoint = json.getBoolean("useAuthenticatedEndpoint");
         defaultNamespace = json.getString("defaultNamespace");
-
+        jobAttributeName = json.getString( "jobAttributeName");
         countSuccessfulBuilds = json.getBoolean("countSuccessfulBuilds");
         countUnstableBuilds = json.getBoolean("countUnstableBuilds");
         countFailedBuilds = json.getBoolean("countFailedBuilds");
@@ -77,6 +78,11 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         urlName = path.split("/")[0];
         List<String> pathParts = Arrays.asList(path.split("/"));
         additionalPath = (pathParts.size() > 1 ? "/" : "") + StringUtils.join(pathParts.subList(1, pathParts.size()), "/");
+    }
+    public String getJobAttributeName() { return jobAttributeName; }
+
+    public void setJobAttributeName(String jobAttributeName) {
+        this.jobAttributeName = jobAttributeName;
     }
 
     public String getDefaultNamespace() {
