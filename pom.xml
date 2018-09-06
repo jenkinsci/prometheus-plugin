@@ -22,8 +22,8 @@
   </properties>
 
   <organization>
-    <name>Radicore AB</name>
-    <url>http://www.radicore.se</url>
+    <name>Methodair</name>
+    <url>http://www.methodair.io</url>
   </organization>
 
   <licenses>
@@ -37,9 +37,9 @@
   <developers>
     <developer>
       <id>devguy</id>
-      <name>Lars Sjostrom</name>
-      <organization>Radicore AB</organization>
-      <organizationUrl>http://www.radicore.se/</organizationUrl>
+      <name>Marky Jackson</name>
+      <organization>Methodair</organization>
+      <organizationUrl>http://www.methodair.io/</organizationUrl>
     </developer>
   </developers>
 
@@ -87,7 +87,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit</artifactId>
-      <version>1.21</version>
+      <version>1.22</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
