@@ -17,7 +17,7 @@
   <inceptionYear>2016</inceptionYear>
 
   <properties>
-    <prometheus.version>0.0.26</prometheus.version>
+    <prometheus.version>0.6.0</prometheus.version>
     <workflow.api.version>1.8</workflow.api.version>
   </properties>
 
