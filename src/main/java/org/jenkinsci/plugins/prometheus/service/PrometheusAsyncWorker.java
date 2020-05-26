@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 @Extension
 public class PrometheusAsyncWorker extends AsyncPeriodicWork {
@@ -39,6 +40,11 @@ public class PrometheusAsyncWorker extends AsyncPeriodicWork {
         logger.debug("Collecting prometheus metrics");
         prometheusMetrics.collectMetrics();
         logger.debug("Prometheus metrics collected successfully");
+    }
+    
+    @Override
+    protected Level getNormalLoggingLevel() {
+        return Level.FINE;
     }
 
 }
