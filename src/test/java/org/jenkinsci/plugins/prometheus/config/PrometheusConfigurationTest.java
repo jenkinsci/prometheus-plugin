@@ -4,7 +4,6 @@ import hudson.model.Descriptor;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import net.sf.json.JSONObject;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kohsuke.stapler.StaplerRequest;
@@ -16,18 +15,23 @@ import java.util.List;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(JUnitParamsRunner.class)
 public class PrometheusConfigurationTest {
 
-    private PrometheusConfiguration configuration;
+    private final PrometheusConfiguration configuration = new PrometheusConfiguration() {
+        @Override
+        public synchronized void load() {
+            // This method is overridden because it calls Jenkins.get() which
+            // fails because there is no Jenkins instance.
+        }
 
-    @Before
-    public void setup() {
-        configuration = Mockito.mock(PrometheusConfiguration.class);
-        Mockito.doNothing().when((Descriptor) configuration).load();
-    }
+        @Override
+        public synchronized void save() {
+            // This method is overridden because it calls Jenkins.get() which
+            // fails because there is no Jenkins instance.
+        }
+    };
 
     private List<String> wrongMetricCollectorPeriodsProvider() {
         return Arrays.asList("0", "-1", "test", null, "100L");
@@ -37,7 +41,6 @@ public class PrometheusConfigurationTest {
     @Parameters(method = "wrongMetricCollectorPeriodsProvider")
     public void shouldGetErrorWhenNotPositiveNumber(String metricCollectorPeriod) throws Descriptor.FormException {
         //given
-        Mockito.when(configuration.configure(any(), any())).thenCallRealMethod();
         JSONObject config = getDefaultConfig();
         config.accumulate("collectingMetricsPeriodInSeconds", metricCollectorPeriod);
 
@@ -55,10 +58,8 @@ public class PrometheusConfigurationTest {
     @Parameters(method = "correctMetricCollectorPeriodsProvider")
     public void shouldReturnOk(String metricCollectorPeriod) throws Descriptor.FormException {
         //given
-        Mockito.when(configuration.configure(any(), any())).thenCallRealMethod();
         JSONObject config = getDefaultConfig();
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
-        Mockito.doNothing().when(request).bindJSON(any(Object.class), any(JSONObject.class));
         config.accumulate("collectingMetricsPeriodInSeconds", metricCollectorPeriod);
 
         // when
@@ -71,8 +72,6 @@ public class PrometheusConfigurationTest {
     @Test
     public void shouldSetDefaultValue() {
         // given
-        Mockito.doCallRealMethod().when(configuration).setCollectingMetricsPeriodInSeconds(any());
-        Mockito.when(configuration.getCollectingMetricsPeriodInSeconds()).thenCallRealMethod();
         Long metricCollectorPeriod = null;
 
         // when
@@ -86,8 +85,6 @@ public class PrometheusConfigurationTest {
     @Test
     public void shouldSetValueFromEnv() throws Exception{
         // given
-        Mockito.doCallRealMethod().when(configuration).setCollectingMetricsPeriodInSeconds(any());
-        Mockito.when(configuration.getCollectingMetricsPeriodInSeconds()).thenCallRealMethod();
         Long metricCollectorPeriod = null;
 
         // when
@@ -103,8 +100,6 @@ public class PrometheusConfigurationTest {
     @Parameters(method = "wrongMetricCollectorPeriodsProvider")
     public void shouldSetDefaultValueWhenEnvCannotBeConvertedToLongORNegativeValue(String wrongValue) throws Exception {
         // given
-        Mockito.doCallRealMethod().when(configuration).setCollectingMetricsPeriodInSeconds(any());
-        Mockito.when(configuration.getCollectingMetricsPeriodInSeconds()).thenCallRealMethod();
         Long metricCollectorPeriod = null;
 
         // when
