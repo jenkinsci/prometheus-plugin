@@ -208,9 +208,9 @@ public class PrometheusConfiguration extends GlobalConfiguration {
 
     public FormValidation doCheckPath(@QueryParameter String value) {
         if (StringUtils.isEmpty(value)) {
-            return FormValidation.error("Messages.path_required()");
+            return FormValidation.error(Messages.path_required());
         } else if (System.getenv().containsKey(PROMETHEUS_ENDPOINT)) {
-            return FormValidation.warning("Messages.path_environment_override(PROMETHEUS_ENDPOINT, System.getenv(PROMETHEUS_ENDPOINT))");
+            return FormValidation.warning(Messages.path_environment_override(PROMETHEUS_ENDPOINT, System.getenv(PROMETHEUS_ENDPOINT)));
         } else {
             return FormValidation.ok();
         }
