@@ -95,7 +95,7 @@ public class FlowNodes {
             if (isStageNode(current)) {
                 stageNodes.add(current);
             }
-            final List<FlowNode> parents = node.getParents();
+            final List<FlowNode> parents = current.getParents();
             if (parents == null) {
                 continue;
             }
