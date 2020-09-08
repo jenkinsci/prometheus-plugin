@@ -4,6 +4,8 @@ import static org.jenkinsci.plugins.prometheus.util.FlowNodes.getSortedStageNode
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import io.prometheus.client.Counter;
 import org.apache.commons.lang.StringUtils;
@@ -51,7 +53,7 @@ public class JobCollector extends Collector {
 
         String namespace = ConfigurationUtils.getNamespace();
         List<MetricFamilySamples> samples = new ArrayList<>();
-        List<Job> jobs = new ArrayList<>();
+        Set<String> jobs = new HashSet<>();
         String fullname = "builds";
         String subsystem = ConfigurationUtils.getSubSystem();
         String jobAttribute = PrometheusConfiguration.get().getJobAttributeName();
@@ -157,22 +159,21 @@ public class JobCollector extends Collector {
                 .create();
 
         Jobs.forEachJob(job -> {
-            logger.debug("Determining if we are already appending metrics for job [{}]", job.getName());
+            String jobName = job.getName();
+            String jobFullName = job.getFullName();
+            logger.debug("Determining if we are already appending metrics for job [{}]", jobName);
 
             if (!job.isBuildable() && processDisabledJobs) {
-                logger.debug("job [{}] is disabled", job.getFullName());
+                logger.debug("job [{}] is disabled", jobName);
                 return;
             }
 
-            for (Job old : jobs) {
-                if (old.getFullName().equals(job.getFullName())) {
-                    // already added
-                    logger.debug("Job [{}] is already added", job.getName());
-                    return;
-                }
+            if (!jobs.add(jobFullName)) {
+                logger.debug("Job [{}] is already added", jobName);
+                return;
             }
-            logger.debug("Job [{}] is not already added. Appending its metrics", job.getName());
-            jobs.add(job);
+
+            logger.debug("Job [{}] is not already added. Appending its metrics", jobName);
             appendJobMetrics(job, ignoreBuildMetrics);
         });
 
