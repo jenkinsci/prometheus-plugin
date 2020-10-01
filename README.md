@@ -1,28 +1,29 @@
 # Jenkins Prometheus Metrics Plugin
 
 ## About
-Jenkins Prometheus Plugin expose an endpoint (default `/prometheus`) with metrics where a Prometheus Server can scrape.
+Jenkins Prometheus Plugin exposes an endpoint (default `/prometheus`) with metrics where a Prometheus Server can scrape.
 
-Documentation can be found [here](https://plugins.jenkins.io/prometheus)
+Documentation can be found [here](https://plugins.jenkins.io/prometheus).
 
 Please note that the documentation is a WIP.
 
 ## Metrics exposed
-Currently only metrics from the [Metrics-plugin](https://github.com/jenkinsci/metrics-plugin) and summary of build
-duration of jobs and pipeline stages
+Currently the metrics are from the [Metrics-plugin](https://github.com/jenkinsci/metrics-plugin) with summary of build
+duration of jobs and pipeline stages.
 
 ## Environment variables
 
 `PROMETHEUS_NAMESPACE` Prefix of metric (Default: `default`).
 
-`PROMETHEUS_ENDPOINT` REST Endpoint (Default: `prometheus`)
+`PROMETHEUS_ENDPOINT` REST Endpoint (Default: `prometheus`).
 
-`COLLECTING_METRICS_PERIOD_IN_SECONDS` Async task period in seconds (Default: `120` seconds)
+`COLLECTING_METRICS_PERIOD_IN_SECONDS` Async task period in seconds (Default: `120` seconds).
 
 ## Building
 
-    mvn clean install
-    mvn hpi:hpi
+    `mvn clean install`
+
+    `mvn hpi:hpi`
 
 ## Author / Maintainer
 [Lars Sjöström](https://github.com/lsjostro)
@@ -36,9 +37,9 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 OPENING AN ISSUE:
 You should usually open an issue in the following situations:
 
-Report an error you can’t solve yourself
-Discuss a high-level topic or idea (for example, community, vision or policies)
-Propose a new feature or other project idea
+- Report an error you can’t solve yourself
+- Discuss a high-level topic or idea (for example, community, vision or policies)
+- Propose a new feature or other project idea
 
 FINDING AN ISSUE:
 If you found an open issue that you want to tackle, comment on the issue to let people know you’re on it. That way, people are less likely to duplicate your work.
@@ -48,43 +49,49 @@ If an issue was opened a while ago, it’s possible that it’s being addressed 
 ## Opening a pull request
 You should usually open a pull request in the following situations:
 
-Submit trivial fixes (for example, a typo, a broken link or an obvious error)
-Start work on a contribution that was already asked for, or that you’ve already discussed, in an issue
+- Submit trivial fixes (for example, a typo, a broken link or an obvious error)
+- Start work on a contribution that was already asked for, or that you’ve already discussed, in an issue
 
 ### Forking a repository
-Fork the repository and clone it locally. Connect your local to the original “upstream” repository by adding it as a remote. Pull in changes from “upstream” often so that you stay up to date so that when you submit your pull request, merge conflicts will be less likely.
+- Fork the repository and clone it locally. Connect your local to the original “upstream” repository by adding it as a remote. Pull in changes from “upstream” often so that you stay up to date so that when you submit your pull request, merge conflicts will be less likely.
 
-Create a branch for your edits.
+- Create a branch for your edits.
 
-Reference any relevant issues or supporting documentation in your PR (for example, “Closes #37.”)
+- Reference any relevant issues or supporting documentation in your PR (for example, “Closes #37.”)
 
-Include screenshots of the before and after if your changes include differences in HTML/CSS. Drag and drop the images into the body of your pull request.
+- Include screenshots of the before and after if your changes include differences in HTML/CSS. Drag and drop the images into the body of your pull request.
 
-Test your changes! Run your changes against any existing tests if they exist and create new ones when needed. Whether tests exist or not, make sure your changes don’t break the existing project.
+- Test your changes! Run your changes against any existing tests if they exist and create new ones when needed. Whether tests exist or not, make sure your changes don’t break the existing project.
 
-Getting Started
-Fork this repository on GitHub by clicking the Fork button in the top right of this page.
+#### Getting Started
+- Fork this repository on GitHub by clicking the Fork button in the top right of this page.
 
-Clone your forked repo to your local machine.
-git clone https://github.com/YOUR-USERNAME/prometheus-plugin.git
+- Clone your forked repo to your local machine.
+
+`git clone https://github.com/YOUR-USERNAME/prometheus-plugin.git`
+
 Replace YOUR-USERNAME above with your GitHub username.
 
-Create a new branch.
-git checkout -b new-branch
+- Create a new branch.
+  
+`git checkout -b new-branch`
 
-Add your contributions.
+- Add your contributions.
 Have a look at CONTRIBUTING.md. There are 3 easy ways to contribute to this project:
 
-Commit and push your changes.
+- Commit and push your changes.
 
-git add -A 
-git commit -m "Your commit message"
-git push --set-upstream origin new-branch
-Create a Pull Request by navigating to your forked repository and clicking the New pull request button on your left-hand side of the page.
+`git add -A`
 
-Add in a title, edit the PR template, and then press the Create pull request button.
+`git commit -m "Your commit message"`
 
-Wait for your Pull Request to be reviewed and merged.
+`git push --set-upstream origin new-branch`
+
+- Create a Pull Request by navigating to your forked repository and clicking the New pull request button on your left-hand side of the page.
+
+- Add in a title, edit the PR template, and then press the Create pull request button.
+
+- Wait for your Pull Request to be reviewed and merged.
 
 ### Congratulations! You just opened a Pull Request.
 
