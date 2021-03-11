@@ -24,7 +24,7 @@
     <workflow.job.version>2.36</workflow.job.version>
     <workflow.step.version>2.22</workflow.step.version>
     <jenkins.metrics.version>4.0.2.6</jenkins.metrics.version>
-    <jenkins.junit.version>1.28</jenkins.junit.version>
+    <jenkins.junit.version>1.49</jenkins.junit.version>
     <jenkins.diskUsage.version>0.10</jenkins.diskUsage.version>
     <jenkins.structs.version>1.20</jenkins.structs.version>
     <gson.version>2.8.6</gson.version>
