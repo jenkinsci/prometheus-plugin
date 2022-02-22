@@ -39,6 +39,7 @@
     <pipeline.graph.analysis.version>1.11</pipeline.graph.analysis.version>
     <script.security.version>1.78</script.security.version>
     <jackson2.version>2.12.4-1</jackson2.version>
+    <checks.api.version>1.6.2</checks.api.version>
   </properties>
 
   <organization>
@@ -84,6 +85,11 @@
   </pluginRepositories>
 
   <dependencies>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>checks-api</artifactId>
+      <version>${checks.api.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>jackson2-api</artifactId>
