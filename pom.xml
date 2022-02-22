@@ -29,6 +29,7 @@
     <jenkins.structs.version>1.24</jenkins.structs.version>
     <gson.version>2.9.0</gson.version>
     <JUnitParams.version>1.1.1</JUnitParams.version>
+    <powermock.version>2.0.9</powermock.version>
     <httpcore.version>4.4.15</httpcore.version>
     <system-lambda.version>1.2.1</system-lambda.version>
     <assertj-core.version>3.22.0</assertj-core.version>
@@ -205,11 +206,13 @@
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-api-mockito2</artifactId>
+      <version>${powermock.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
+      <version>${powermock.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
