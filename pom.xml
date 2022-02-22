@@ -21,7 +21,7 @@
     <java.level>8</java.level>
     <prometheus.simpleClientJava.version>0.15.0</prometheus.simpleClientJava.version>
     <workflow.api.version>1136.v7f5f1759dc16</workflow.api.version>
-    <workflow.job.version>1167.v8fe861b_09ef9</workflow.job.version>
+    <workflow.job.version>2.42</workflow.job.version>
     <workflow.step.version>622.vb_8e7c15b_c95a_</workflow.step.version>
     <jenkins.metrics.version>4.0.2.8.1</jenkins.metrics.version>
     <jenkins.junit.version>1.53</jenkins.junit.version>
