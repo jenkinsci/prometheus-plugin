@@ -36,7 +36,7 @@
     <slf4j.version>1.7.36</slf4j.version>
     <pipeline.rest.api.version>2.21</pipeline.rest.api.version>
     <workflow.support.version>813.vb_d7c3d2984a_0</workflow.support.version>
-    <pipeline.graph.analysis.version>1.12</pipeline.graph.analysis.version>
+    <pipeline.graph.analysis.version>1.11</pipeline.graph.analysis.version>
     <script.security.version>1131.v8b_b_5eda_c328e</script.security.version>
     <jackson2.version>2.13.1-240.vfedd8f46cfde</jackson2.version>
   </properties>
