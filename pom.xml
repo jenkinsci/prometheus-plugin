@@ -24,7 +24,7 @@
     <prometheus.simpleclient.version>0.16.0</prometheus.simpleclient.version>
     <slf4j.version>1.7.36</slf4j.version>
 
-    <cloudbees-disk-usage-simple.version>0.10</cloudbees-disk-usage-simple.version>
+    <cloudbees-disk-usage-simple.version>170.va_fd5b_4ee6858</cloudbees-disk-usage-simple.version>
     <metrics.version>4.1.6.1</metrics.version>
     <pipeline-rest-api.version>2.21</pipeline-rest-api.version>
 
