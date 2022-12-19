@@ -22,7 +22,7 @@
     <java.level>8</java.level>
 
     <prometheus.simpleclient.version>0.16.0</prometheus.simpleclient.version>
-    <slf4j.version>2.0.5</slf4j.version>
+    <slf4j.version>2.0.6</slf4j.version>
 
     <cloudbees-disk-usage-simple.version>0.10</cloudbees-disk-usage-simple.version>
     <metrics.version>4.1.6.1</metrics.version>
