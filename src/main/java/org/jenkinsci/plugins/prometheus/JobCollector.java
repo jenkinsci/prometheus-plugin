@@ -391,14 +391,12 @@ public class JobCollector extends Collector {
     }
 
     private void processPipelineRunStages(Job job, Run latestfinishedRun, WorkflowRun workflowRun, Summary stageSummary) {
-        try {
-            logger.debug("getting the sorted stage nodes for run[{}] from job [{}]", latestfinishedRun.getNumber(), job.getName());
-            List<StageNodeExt> stages = getSortedStageNodes(workflowRun);
-            for (StageNodeExt stage : stages) {
+        logger.debug("getting the sorted stage nodes for run[{}] from job [{}]", latestfinishedRun.getNumber(), job.getName());
+        List<StageNodeExt> stages = getSortedStageNodes(workflowRun);
+        for (StageNodeExt stage : stages) {
+            if (stage != null && stageSummary != null) {
                 observeStage(job, latestfinishedRun, stage, stageSummary);
             }
-        } catch (NullPointerException e) {
-            // ignored
         }
     }
 
