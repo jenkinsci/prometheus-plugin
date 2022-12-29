@@ -12,13 +12,12 @@
   <version>2.0.14-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Prometheus metrics plugin</name>
-  <description>Expose Jenkins metrics in prometheus format</description>
   <url>https://github.com/jenkinsci/prometheus-plugin</url>
   <inceptionYear>2016</inceptionYear>
 
   <properties>
     <!-- when updated the io.jenkins.tools.bom:bom-X.Y.Z must be updated too -->
-    <jenkins.version>2.319.3</jenkins.version>
+    <jenkins.version>2.361.4</jenkins.version>
     <java.level>8</java.level>
 
     <prometheus.simpleclient.version>0.16.0</prometheus.simpleclient.version>
@@ -162,6 +161,12 @@
       <artifactId>system-lambda</artifactId>
       <version>${system-lambda.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>23.0.0</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
