@@ -1,0 +1,9 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core">
+    <div>
+        <p>
+            If prometheus should collect code coverage metrics from code-coverage-api plugin.
+            This option is disabled when code-coverage-api plugin is not installed.
+        </p>
+    </div>
+</j:jelly>

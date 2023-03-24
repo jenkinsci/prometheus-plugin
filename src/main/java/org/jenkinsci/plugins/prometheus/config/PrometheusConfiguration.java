@@ -56,6 +56,8 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     private String labeledBuildParameterNames = "";
 
     private boolean collectDiskUsage = true;
+
+    private boolean collectCodeCoverage = false;
     private boolean collectNodeStatus = true;
 
     private DisabledMetricConfig disabledMetricConfig = new DisabledMetricConfig(new ArrayList<>());
@@ -294,6 +296,18 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     @DataBoundSetter
     public void setDisabledMetricConfig(DisabledMetricConfig disabledMetricConfig) {
         this.disabledMetricConfig = disabledMetricConfig;
+    }
+
+    public boolean isCollectCodeCoverage() {
+        return collectCodeCoverage;
+    }
+
+    public boolean isCodeCoverageApiPluginInstalled() {
+        return Jenkins.get().getPlugin("code-coverage-api") != null;
+    }
+
+    public void setCollectCodeCoverage(boolean collectCodeCoverage) {
+        this.collectCodeCoverage = collectCodeCoverage;
     }
 
     public FormValidation doCheckPath(@QueryParameter String value) {
