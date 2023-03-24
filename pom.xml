@@ -18,14 +18,14 @@
 
   <properties>
     <!-- when updated the io.jenkins.tools.bom:bom-X.Y.Z must be updated too -->
-    <jenkins.version>2.361.4</jenkins.version>
+    <jenkins.version>2.387.1</jenkins.version>
     <java.level>11</java.level>
 
     <prometheus.simpleclient.version>0.16.0</prometheus.simpleclient.version>
     <slf4j.version>2.0.7</slf4j.version>
 
     <cloudbees-disk-usage-simple.version>0.10</cloudbees-disk-usage-simple.version>
-    <code-coverage-api.version>4.0.2</code-coverage-api.version>
+    <code-coverage-api.version>4.0.1</code-coverage-api.version>
     <metrics.version>4.1.6.1</metrics.version>
     <pipeline-rest-api.version>2.21</pipeline-rest-api.version>
 
