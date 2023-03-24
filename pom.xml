@@ -26,7 +26,7 @@
 
     <cloudbees-disk-usage-simple.version>0.10</cloudbees-disk-usage-simple.version>
     <metrics.version>4.1.6.1</metrics.version>
-    <pipeline-rest-api.version>2.21</pipeline-rest-api.version>
+    <pipeline-rest-api.version>2.31</pipeline-rest-api.version>
 
     <assertj-core.version>3.24.2</assertj-core.version>
     <JUnitParams.version>1.1.1</JUnitParams.version>
