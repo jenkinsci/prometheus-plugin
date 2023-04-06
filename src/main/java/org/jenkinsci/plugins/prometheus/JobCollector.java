@@ -12,9 +12,12 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
+import org.jenkinsci.plugins.prometheus.metrics.jobs.BuildDiscardGauge;
+import org.jenkinsci.plugins.prometheus.metrics.jobs.HealthScoreGauge;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.jenkinsci.plugins.prometheus.util.Runs;
+import org.jenkinsci.plugins.prometheus.metrics.jobs.NbBuildsGauge;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +38,12 @@ public class JobCollector extends Collector {
     private Summary summary;
     private Counter jobSuccessCount;
     private Counter jobFailedCount;
-    private Gauge jobHealthScore;
+    private HealthScoreGauge jobHealthScoreGauge;
+
+    private NbBuildsGauge nbBuildsGauge;
+
+    private BuildDiscardGauge buildDiscardGauge;
+
 
     private static class BuildMetrics {
 
@@ -187,12 +195,11 @@ public class JobCollector extends Collector {
         // This metric uses "base" labels as it is just the health score reported
         // by the job object and the optional labels params and status don't make much
         // sense in this context.
-        jobHealthScore = Gauge.build()
-                .name(fullname + "_health_score")
-                .subsystem(subsystem).namespace(namespace)
-                .labelNames(labelBaseNameArray)
-                .help("Health score of a job")
-                .create();
+        jobHealthScoreGauge = new HealthScoreGauge(labelBaseNameArray, namespace, subsystem);
+
+        nbBuildsGauge = new NbBuildsGauge(labelBaseNameArray, namespace, subsystem);
+
+        buildDiscardGauge = new BuildDiscardGauge(labelBaseNameArray, namespace, subsystem);
 
         if (PrometheusConfiguration.get().isPerBuildMetrics()) {
             labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
@@ -225,7 +232,9 @@ public class JobCollector extends Collector {
         addSamples(samples, summary.collect(), "Adding [{}] samples from summary ({})");
         addSamples(samples, jobSuccessCount.collect(), "Adding [{}] samples from counter ({})");
         addSamples(samples, jobFailedCount.collect(), "Adding [{}] samples from counter ({})");
-        addSamples(samples, jobHealthScore.collect(), "Adding [{}] samples from gauge ({})");
+        addSamples(samples, jobHealthScoreGauge.collect(), "Adding [{}] samples from gauge ({})");
+        addSamples(samples, nbBuildsGauge.collect(), "Adding [{}] samples from gauge ({})");
+        addSamples(samples, buildDiscardGauge.collect(), "Adding [{}] samples from gauge ({})");
 
         addSamples(samples, lastBuildMetrics);
         if (PrometheusConfiguration.get().isPerBuildMetrics()) {
@@ -276,8 +285,9 @@ public class JobCollector extends Collector {
             return;
         }
 
-        int score = job.getBuildHealth().getScore();
-        jobHealthScore.labels(baseLabelValueArray).set(score);
+        nbBuildsGauge.calculateMetric(job, baseLabelValueArray);
+        jobHealthScoreGauge.calculateMetric(job, baseLabelValueArray);
+        buildDiscardGauge.calculateMetric(job, baseLabelValueArray);
 
         processRun(job, lastBuild, baseLabelValueArray, lastBuildMetrics);
 
