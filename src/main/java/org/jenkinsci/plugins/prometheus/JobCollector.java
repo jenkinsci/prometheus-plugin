@@ -13,7 +13,9 @@ import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.metrics.jobs.BuildDiscardGauge;
+import org.jenkinsci.plugins.prometheus.metrics.jobs.CurrentRunDurationGauge;
 import org.jenkinsci.plugins.prometheus.metrics.jobs.HealthScoreGauge;
+import org.jenkinsci.plugins.prometheus.util.ArrayUtils;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.jenkinsci.plugins.prometheus.util.Runs;
@@ -55,6 +57,8 @@ public class JobCollector extends Collector {
         public Gauge jobBuildTestsTotal;
         public Gauge jobBuildTestsSkipped;
         public Gauge jobBuildTestsFailing;
+
+        public CurrentRunDurationGauge currentRunDurationGauge;
 
         private String buildPrefix;
 
@@ -117,6 +121,8 @@ public class JobCollector extends Collector {
                     .labelNames(labelStageNameArray)
                     .help("Summary of Jenkins build times by Job and Stage in the last build")
                     .create();
+
+            this.currentRunDurationGauge = new CurrentRunDurationGauge(labelNameArray, namespace, subsystem);
         }
     }
 
@@ -258,6 +264,7 @@ public class JobCollector extends Collector {
         addSamples(allSamples, buildMetrics.jobBuildResultOrdinal.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildResult.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildDuration.collect(), "Adding [{}] samples from gauge ({})");
+        addSamples(allSamples, buildMetrics.currentRunDurationGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildStartMillis.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildTestsTotal.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildTestsSkipped.collect(), "Adding [{}] samples from gauge ({})");
@@ -373,8 +380,9 @@ public class JobCollector extends Collector {
         logger.debug("Processing run [{}] from job [{}]", run.getNumber(), job.getName());
 
         buildMetrics.jobBuildStartMillis.labels(buildLabelValueArray).set(millis);
-        if (!run.isBuilding()) {
 
+        buildMetrics.currentRunDurationGauge.calculateMetric(job, buildLabelValueArray);
+        if (!run.isBuilding()) {
             buildMetrics.jobBuildDuration.labels(buildLabelValueArray).set(duration);
             processRunTestsResults(run, buildLabelValueArray, buildMetrics);
 
