@@ -22,7 +22,7 @@ public class BuildDiscardGaugeTest extends JobCollectorTest {
         validateListSize(collect, 1);
 
         Collector.MetricFamilySamples samples = collect.get(0);
-        validateNames(samples, new String[]{"default_jenkins_build_discard_active"});
+        validateNames(samples, new String[]{"default_jenkins_builds_discard_active"});
         validateSize(samples, 1);
         validateValue(samples.samples.get(0), 0.0);
 
