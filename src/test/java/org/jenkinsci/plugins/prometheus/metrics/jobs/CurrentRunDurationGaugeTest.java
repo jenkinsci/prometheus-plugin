@@ -73,8 +73,6 @@ public class CurrentRunDurationGaugeTest extends JobCollectorTest {
     @Test
     public void testCurrentlyNotRunningLabelValue() {
         when(job.isBuilding()).thenReturn(false);
-        when(currentRun.getStartTimeInMillis()).thenReturn(1000L);
-        when(job.getLastBuild()).thenReturn(currentRun);
 
         CurrentRunDurationGauge sut = new CurrentRunDurationGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins");
 
