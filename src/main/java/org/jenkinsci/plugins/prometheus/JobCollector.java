@@ -45,7 +45,7 @@ public class JobCollector extends Collector {
     private NbBuildsGauge nbBuildsGauge;
 
     private BuildDiscardGauge buildDiscardGauge;
-
+    private CurrentRunDurationGauge currentRunDurationGauge;
 
     private static class BuildMetrics {
 
@@ -57,8 +57,6 @@ public class JobCollector extends Collector {
         public Gauge jobBuildTestsTotal;
         public Gauge jobBuildTestsSkipped;
         public Gauge jobBuildTestsFailing;
-
-        public CurrentRunDurationGauge currentRunDurationGauge;
 
         private String buildPrefix;
 
@@ -122,7 +120,7 @@ public class JobCollector extends Collector {
                     .help("Summary of Jenkins build times by Job and Stage in the last build")
                     .create();
 
-            this.currentRunDurationGauge = new CurrentRunDurationGauge(labelNameArray, namespace, subsystem);
+
         }
     }
 
@@ -207,6 +205,8 @@ public class JobCollector extends Collector {
 
         buildDiscardGauge = new BuildDiscardGauge(labelBaseNameArray, namespace, subsystem);
 
+        currentRunDurationGauge = new CurrentRunDurationGauge(labelBaseNameArray, namespace, subsystem);
+
         if (PrometheusConfiguration.get().isPerBuildMetrics()) {
             labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
             labelNameArray[labelNameArray.length - 1] = "number";
@@ -241,7 +241,7 @@ public class JobCollector extends Collector {
         addSamples(samples, jobHealthScoreGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, nbBuildsGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, buildDiscardGauge.collect(), "Adding [{}] samples from gauge ({})");
-
+        addSamples(samples, currentRunDurationGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, lastBuildMetrics);
         if (PrometheusConfiguration.get().isPerBuildMetrics()) {
             addSamples(samples, perBuildMetrics);
@@ -264,7 +264,6 @@ public class JobCollector extends Collector {
         addSamples(allSamples, buildMetrics.jobBuildResultOrdinal.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildResult.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildDuration.collect(), "Adding [{}] samples from gauge ({})");
-        addSamples(allSamples, buildMetrics.currentRunDurationGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildStartMillis.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildTestsTotal.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildTestsSkipped.collect(), "Adding [{}] samples from gauge ({})");
@@ -295,7 +294,7 @@ public class JobCollector extends Collector {
         nbBuildsGauge.calculateMetric(job, baseLabelValueArray);
         jobHealthScoreGauge.calculateMetric(job, baseLabelValueArray);
         buildDiscardGauge.calculateMetric(job, baseLabelValueArray);
-
+        currentRunDurationGauge.calculateMetric(job, baseLabelValueArray);
         processRun(job, lastBuild, baseLabelValueArray, lastBuildMetrics);
 
         Run run = lastBuild;
@@ -381,7 +380,7 @@ public class JobCollector extends Collector {
 
         buildMetrics.jobBuildStartMillis.labels(buildLabelValueArray).set(millis);
 
-        buildMetrics.currentRunDurationGauge.calculateMetric(job, buildLabelValueArray);
+
         if (!run.isBuilding()) {
             buildMetrics.jobBuildDuration.labels(buildLabelValueArray).set(duration);
             processRunTestsResults(run, buildLabelValueArray, buildMetrics);
