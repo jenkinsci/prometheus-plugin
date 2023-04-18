@@ -1,7 +1,13 @@
 package org.jenkinsci.plugins.prometheus.metrics.jobs;
 
 import hudson.model.Job;
+import hudson.model.Run;
+import hudson.util.RunList;
 import io.prometheus.client.Gauge;
+import org.apache.commons.lang3.Range;
+
+import java.util.Collection;
+import java.util.stream.StreamSupport;
 
 public class NbBuildsGauge extends BaseJobMetricCollector<Job, Gauge> {
 
@@ -12,7 +18,7 @@ public class NbBuildsGauge extends BaseJobMetricCollector<Job, Gauge> {
     @Override
     protected Gauge initCollector() {
         return Gauge.build()
-                .name(calculateName("available_builds_count"))
+                    .name(calculateName("available_builds_count"))
                 .subsystem(subsystem)
                 .namespace(namespace)
                 .labelNames(labelNames)
@@ -22,7 +28,12 @@ public class NbBuildsGauge extends BaseJobMetricCollector<Job, Gauge> {
 
     @Override
     public void calculateMetric(Job jenkinsObject, String[] labelValues) {
-        int nbBuilds = jenkinsObject.getBuildsAsMap().size();
+        RunList runList = jenkinsObject.getBuilds();
+        int counter = 1;
+        for (Object ignore : runList) {
+            counter++;
+        }
+        int nbBuilds = counter;
         this.collector.labels(labelValues).set(nbBuilds);
     }
 }
