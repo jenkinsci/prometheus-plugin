@@ -1,13 +1,8 @@
 package org.jenkinsci.plugins.prometheus.metrics.jobs;
 
 import hudson.model.Job;
-import hudson.model.Run;
 import hudson.util.RunList;
 import io.prometheus.client.Gauge;
-import org.apache.commons.lang3.Range;
-
-import java.util.Collection;
-import java.util.stream.StreamSupport;
 
 public class NbBuildsGauge extends BaseJobMetricCollector<Job, Gauge> {
 

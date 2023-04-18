@@ -3,7 +3,6 @@ package org.jenkinsci.plugins.prometheus.metrics.jobs;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.prometheus.client.Gauge;
-import org.jenkinsci.plugins.prometheus.util.ArrayUtils;
 
 import java.time.Clock;
 
