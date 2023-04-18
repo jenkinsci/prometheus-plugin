@@ -22,7 +22,7 @@ public class CurrentRunDurationGaugeTest extends JobCollectorTest {
     @Override
     @Test
     public void testCollectResult() {
-        when(job.isBuilding()).thenReturn(true);
+        when(currentRun.isBuilding()).thenReturn(true);
         when(currentRun.getStartTimeInMillis()).thenReturn(1000L);
         when(job.getLastBuild()).thenReturn(currentRun);
 
@@ -48,7 +48,7 @@ public class CurrentRunDurationGaugeTest extends JobCollectorTest {
 
     @Test
     public void testCurrentlyRunningLabelValue() {
-        when(job.isBuilding()).thenReturn(true);
+        when(currentRun.isBuilding()).thenReturn(true);
         when(currentRun.getStartTimeInMillis()).thenReturn(1000L);
         when(job.getLastBuild()).thenReturn(currentRun);
 
@@ -59,11 +59,8 @@ public class CurrentRunDurationGaugeTest extends JobCollectorTest {
         List<String> labelNames = sut.collect().get(0).samples.get(0).labelNames;
         List<String> labelValues = sut.collect().get(0).samples.get(0).labelValues;
 
-        Assertions.assertEquals(3, labelNames.size());
-        Assertions.assertEquals(3, labelValues.size());
-
-        Assertions.assertEquals("building", labelNames.get(2));
-        Assertions.assertEquals("true", labelValues.get(2));
+        Assertions.assertEquals(2, labelNames.size());
+        Assertions.assertEquals(2, labelValues.size());
 
         double value = sut.collect().get(0).samples.get(0).value;
 
@@ -71,25 +68,15 @@ public class CurrentRunDurationGaugeTest extends JobCollectorTest {
     }
 
     @Test
-    public void testCurrentlyNotRunningLabelValue() {
-        when(job.isBuilding()).thenReturn(false);
+    public void testCurrentlyNotRunning() {
+        when(currentRun.isBuilding()).thenReturn(false);
+        when(job.getLastBuild()).thenReturn(currentRun);
 
         CurrentRunDurationGauge sut = new CurrentRunDurationGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins");
 
         sut.calculateMetric(job, new String[]{"job1", "NA"});
 
-        List<String> labelNames = sut.collect().get(0).samples.get(0).labelNames;
-        List<String> labelValues = sut.collect().get(0).samples.get(0).labelValues;
-
-        Assertions.assertEquals(3, labelNames.size());
-        Assertions.assertEquals(3, labelValues.size());
-
-        Assertions.assertEquals("building", labelNames.get(2));
-        Assertions.assertEquals("false", labelValues.get(2));
-
-        double value = sut.collect().get(0).samples.get(0).value;
-
-        Assertions.assertEquals(0.0, value);
+        Assertions.assertEquals(1, sut.collect().size(), "Expected not to be calculated");
     }
 
 
