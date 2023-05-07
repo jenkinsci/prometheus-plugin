@@ -277,7 +277,7 @@ public class JobCollector extends Collector {
         buildMetrics.jobBuildStartMillis.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildDuration.calculateMetric(run, buildLabelValueArray);
         // Label values are calculated within stageSummary so we pass null here.
-        buildMetrics.stageSummary.calculateMetric(run, null);
+        buildMetrics.stageSummary.calculateMetric(run, new String[]{});
         buildMetrics.jobBuildTestsTotal.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsSkipped.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsFailing.calculateMetric(run, buildLabelValueArray);
