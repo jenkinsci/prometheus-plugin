@@ -4,8 +4,9 @@ import hudson.model.Job;
 import io.prometheus.client.Gauge;
 import jenkins.model.BuildDiscarder;
 import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
+import org.jenkinsci.plugins.prometheus.collectors.builds.BuildsMetricCollector;
 
-public class BuildDiscardGauge extends BaseMetricCollector<Job, Gauge> {
+public class BuildDiscardGauge extends BuildsMetricCollector<Job, Gauge> {
 
     public BuildDiscardGauge(String[] labelNames, String namespace, String subSystem) {
         super(labelNames, namespace, subSystem);

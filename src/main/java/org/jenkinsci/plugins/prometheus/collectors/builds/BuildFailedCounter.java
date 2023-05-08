@@ -5,7 +5,7 @@ import hudson.model.Run;
 import io.prometheus.client.Counter;
 import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
 
-public class BuildFailedCounter extends BaseMetricCollector<Run, Counter> {
+public class BuildFailedCounter extends BuildsMetricCollector<Run, Counter> {
 
     public BuildFailedCounter(String[] labelNames, String namespace, String subSystem) {
         super(labelNames, namespace, subSystem);

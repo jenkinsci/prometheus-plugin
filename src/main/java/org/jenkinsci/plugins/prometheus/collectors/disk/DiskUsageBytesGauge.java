@@ -2,8 +2,9 @@ package org.jenkinsci.plugins.prometheus.collectors.disk;
 
 import com.cloudbees.simplediskusage.DiskItem;
 import io.prometheus.client.Gauge;
+import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
 
-public class DiskUsageBytesGauge extends DiskMetricCollector<DiskItem, Gauge> {
+public class DiskUsageBytesGauge extends BaseMetricCollector<DiskItem, Gauge> {
 
     public DiskUsageBytesGauge(String[] labelNames, String namespace, String subsystem) {
         super(labelNames, namespace, subsystem);

@@ -59,7 +59,7 @@ public abstract class BaseMetricCollector<T, I extends Collector> implements Met
     }
 
     protected String getBaseName() {
-        return "builds";
+        return "";
     }
 
 }

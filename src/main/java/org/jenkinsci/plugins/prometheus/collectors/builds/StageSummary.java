@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.jenkinsci.plugins.prometheus.util.FlowNodes.getSortedStageNodes;
 
-public class StageSummary extends BaseMetricCollector<Run, Summary> {
+public class StageSummary extends BuildsMetricCollector<Run, Summary> {
 
     private static final String NOT_AVAILABLE = "NA";
     private static final Logger LOGGER = LoggerFactory.getLogger(StageSummary.class);

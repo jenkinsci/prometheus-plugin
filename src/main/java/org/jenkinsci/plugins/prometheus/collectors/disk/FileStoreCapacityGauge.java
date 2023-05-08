@@ -1,13 +1,14 @@
 package org.jenkinsci.plugins.prometheus.collectors.disk;
 
 import io.prometheus.client.Gauge;
+import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.FileStore;
 
-public class FileStoreCapacityGauge extends DiskMetricCollector<FileStore, Gauge> {
+public class FileStoreCapacityGauge extends BaseMetricCollector<FileStore, Gauge> {
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileStoreCapacityGauge.class);

@@ -4,7 +4,7 @@ import hudson.model.Run;
 import io.prometheus.client.Gauge;
 import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
 
-public class BuildDurationGauge extends BaseMetricCollector<Run, Gauge> {
+public class BuildDurationGauge extends BuildsMetricCollector<Run, Gauge> {
 
     public BuildDurationGauge(String[] labelNames, String namespace, String subsystem, String namePrefix) {
         super(labelNames, namespace, subsystem, namePrefix);
