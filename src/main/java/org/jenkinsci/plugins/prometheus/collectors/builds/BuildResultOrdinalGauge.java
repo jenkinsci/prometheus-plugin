@@ -1,8 +1,8 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
+import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Gauge;
-import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
 
 public class BuildResultOrdinalGauge extends BuildsMetricCollector<Run, Gauge> {
 
@@ -22,8 +22,25 @@ public class BuildResultOrdinalGauge extends BuildsMetricCollector<Run, Gauge> {
 
     @Override
     public void calculateMetric(Run jenkinsObject, String[] labelValues) {
-        if (jenkinsObject != null && jenkinsObject.getResult() != null ) {
-            this.collector.labels(labelValues).set(jenkinsObject.getResult().ordinal);
+        if (this.collector == null) {
+            return;
         }
+
+        if (jenkinsObject == null) {
+            return;
+        }
+
+        Result result = jenkinsObject.getResult();
+        if (result == null) {
+            return;
+        }
+
+        if (labelValues == null) {
+            this.collector.labels().set(result.ordinal);
+        } else {
+            this.collector.labels(labelValues).set(result.ordinal);
+        }
+
+
     }
 }
