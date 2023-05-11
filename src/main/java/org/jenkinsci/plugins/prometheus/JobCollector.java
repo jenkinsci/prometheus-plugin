@@ -65,7 +65,7 @@ public class JobCollector extends Collector {
         }
     }
 
-    private final BuildMetrics lastBuildMetrics = new BuildMetrics("_last");
+    private final BuildMetrics lastBuildMetrics = new BuildMetrics("last");
     private final BuildMetrics perBuildMetrics = new BuildMetrics("");
 
     public JobCollector() {
