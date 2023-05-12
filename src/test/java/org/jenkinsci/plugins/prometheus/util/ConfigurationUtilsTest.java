@@ -1,17 +1,15 @@
 package org.jenkinsci.plugins.prometheus.util;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
-
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
+
+import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 @RunWith(JUnitParamsRunner.class)
 public class ConfigurationUtilsTest {

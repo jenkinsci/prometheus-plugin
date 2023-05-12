@@ -5,13 +5,15 @@ import org.junit.jupiter.api.Assertions;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 public abstract class CollectorTest {
 
     public void validateNames(Collector.MetricFamilySamples samples, String[] expectedNames) {
         Assertions.assertArrayEquals(expectedNames, samples.getNames());
     }
 
-    public void validateSize(Collector.MetricFamilySamples samples, int expectedSize) {
+    public void validateMetricFamilySampleSize(Collector.MetricFamilySamples samples, int expectedSize) {
         Assertions.assertEquals(expectedSize, samples.samples.size());
     }
 
@@ -19,8 +21,16 @@ public abstract class CollectorTest {
         Assertions.assertEquals(expectedValue, sample.value);
     }
 
-    public void validateListSize(List<Collector.MetricFamilySamples> collect, int expectedSize) {
+    public void validateMetricFamilySampleListSize(List<Collector.MetricFamilySamples> collect, int expectedSize) {
         Assertions.assertEquals(expectedSize, collect.size());
+    }
+
+    public void validateHelp(Collector.MetricFamilySamples samples, String expectedHelp) {
+        assertEquals(expectedHelp, samples.help);
+    }
+
+    public void validateValue(Collector.MetricFamilySamples samples, int index, double expectedValue) {
+        assertEquals(expectedValue ,samples.samples.get(index).value, 0.0);
     }
 
     protected String[] getLabelNames() {

@@ -1,19 +1,19 @@
 package org.jenkinsci.plugins.prometheus;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-
 import hudson.model.Computer;
 import hudson.model.Node;
 import io.prometheus.client.Collector.MetricFamilySamples;
 import jenkins.model.Jenkins;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JenkinsStatusCollectorTest {

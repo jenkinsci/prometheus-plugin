@@ -1,7 +1,6 @@
 package org.jenkinsci.plugins.prometheus.collectors.jobs;
 
 import io.prometheus.client.Collector;
-
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildDurationSummary;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedRunCollectorTest;
 import org.junit.Test;

@@ -1,19 +1,6 @@
 package org.jenkinsci.plugins.prometheus.rest;
 
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import io.prometheus.client.exporter.common.TextFormat;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import javax.servlet.ServletException;
 import jenkins.metrics.api.Metrics;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
@@ -28,6 +15,15 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import static java.net.HttpURLConnection.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PrometheusActionTest {

@@ -1,18 +1,5 @@
 package org.jenkinsci.plugins.prometheus;
 
-import static java.util.Objects.requireNonNull;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
-
 import com.cloudbees.simplediskusage.DiskItem;
 import com.cloudbees.simplediskusage.JobDiskItem;
 import com.cloudbees.simplediskusage.QuickDiskUsagePlugin;
@@ -20,14 +7,6 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import io.prometheus.client.Collector;
 import io.prometheus.client.Collector.MetricFamilySamples;
-import java.io.IOException;
-import java.nio.file.FileStore;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import jenkins.model.Jenkins;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -40,6 +19,21 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.io.IOException;
+import java.nio.file.FileStore;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static java.util.Objects.requireNonNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DiskUsageCollectorTest {

@@ -37,11 +37,11 @@ public class CurrentRunDurationGaugeTest extends JobCollectorTest {
             sut.calculateMetric(job, new String[]{"job1", "NA"});
             List<Collector.MetricFamilySamples> collect = sut.collect();
 
-            validateListSize(collect, 1);
+            validateMetricFamilySampleListSize(collect, 1);
 
             Collector.MetricFamilySamples samples = collect.get(0);
             validateNames(samples, new String[]{"default_jenkins_builds_running_build_duration_milliseconds"});
-            validateSize(samples, 1);
+            validateMetricFamilySampleSize(samples, 1);
             validateValue(samples.samples.get(0), 1000.0);
         }
     }
