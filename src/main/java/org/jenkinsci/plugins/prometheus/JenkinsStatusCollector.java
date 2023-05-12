@@ -2,53 +2,35 @@ package org.jenkinsci.plugins.prometheus;
 
 import io.prometheus.client.Collector;
 import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.prometheus.collectors.jenkins.JenkinsUpGauge;
-import org.jenkinsci.plugins.prometheus.collectors.jenkins.JenkinsUptimeGauge;
-import org.jenkinsci.plugins.prometheus.collectors.jenkins.JenkinsVersionInfo;
-import org.jenkinsci.plugins.prometheus.collectors.jenkins.NodesOnlineGauge;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
-import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JenkinsStatusCollector extends Collector {
-    protected String subsystem;
-    protected String namespace;
-    protected Jenkins jenkins;
-
     @Override
     public List<MetricFamilySamples> collect() {
-        subsystem = ConfigurationUtils.getSubSystem();
-        namespace = ConfigurationUtils.getNamespace();
 
-        JenkinsUptimeGauge jenkinsUptime = new JenkinsUptimeGauge(new String[]{}, namespace, subsystem);
-        JenkinsUpGauge jenkinsUp = new JenkinsUpGauge(new String[]{}, namespace, subsystem);
-        JenkinsVersionInfo versionInfo = new JenkinsVersionInfo(new String[]{}, namespace, subsystem);
+        CollectorFactory factory = new CollectorFactory();
 
-        jenkins = Jenkins.get();
+        List<MetricCollector<Jenkins, ? extends Collector>> collectors = new ArrayList<>();
 
-        jenkinsUptime.calculateMetric(jenkins, new String[]{});
-        jenkinsUp.calculateMetric(jenkins, new String[]{});
-        versionInfo.calculateMetric(jenkins, new String[]{});
+        collectors.add(factory.createJenkinsCollector(CollectorType.JENKINS_VERSION_INFO_GAUGE, new String[]{}));
+        collectors.add(factory.createJenkinsCollector(CollectorType.JENKINS_UP_GAUGE, new String[]{}));
+        collectors.add(factory.createJenkinsCollector(CollectorType.JENKINS_UPTIME_GAUGE, new String[]{}));
+        collectors.add(factory.createJenkinsCollector(CollectorType.NODES_ONLINE_GAUGE, new String[]{}));
 
-        List<MetricFamilySamples> samples = new ArrayList<>();
-        samples.addAll(jenkinsUptime.collect());
-        samples.addAll(jenkinsUp.collect());
-        samples.addAll(versionInfo.collect());
+        collectors.forEach(c -> c.calculateMetric(Jenkins.get(), new String[]{}));
 
-        if (!PrometheusConfiguration.get().isCollectNodeStatus()) {
-            return samples;
-        }
+        return collectors.stream()
+                .map(MetricCollector::collect)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
 
-        samples.addAll(collectNodeStatus());
-
-        return samples;
-    }
-
-    protected List<MetricFamilySamples> collectNodeStatus() {
-        NodesOnlineGauge nodesOnlineGauge = new NodesOnlineGauge(new String[]{}, namespace, subsystem);
-        nodesOnlineGauge.calculateMetric(jenkins, new String[]{});
-        return nodesOnlineGauge.collect();
     }
 }

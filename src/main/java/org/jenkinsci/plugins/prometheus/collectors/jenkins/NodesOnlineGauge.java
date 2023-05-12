@@ -5,22 +5,23 @@ import hudson.model.Node;
 import io.prometheus.client.Gauge;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
 public class NodesOnlineGauge extends BaseMetricCollector<Jenkins, Gauge> {
 
-    public NodesOnlineGauge(String[] labelNames, String namespace, String subsystem) {
+    NodesOnlineGauge(String[] labelNames, String namespace, String subsystem) {
         super(labelNames, namespace, subsystem);
     }
 
     @Override
     protected Gauge initCollector() {
-        return Gauge.build().
-                name("nodes_online").
-                subsystem(subsystem).
-                namespace(namespace).
-                help("Jenkins nodes online status").
-                labelNames("node").
-                create();
+        return Gauge.build()
+                .name(CollectorType.NODES_ONLINE_GAUGE.name())
+                .subsystem(subsystem)
+                .namespace(namespace)
+                .help("Jenkins nodes online status")
+                .labelNames("node")
+                .create();
     }
 
     @Override

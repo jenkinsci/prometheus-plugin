@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.prometheus.collectors.jobs;
+package org.jenkinsci.plugins.prometheus.collectors.builds;
 
 import io.prometheus.client.Collector;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildDurationSummary;

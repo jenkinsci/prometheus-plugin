@@ -1,7 +1,13 @@
 package org.jenkinsci.plugins.prometheus;
 
+import com.cloudbees.simplediskusage.DiskItem;
+import com.cloudbees.simplediskusage.JobDiskItem;
+import hudson.model.LoadStatistics;
 import io.prometheus.client.Collector;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.collectors.disk.DiskUsageBytesGauge;
 import org.jenkinsci.plugins.prometheus.collectors.disk.FileStoreAvailableGauge;
 import org.jenkinsci.plugins.prometheus.collectors.disk.FileStoreCapacityGauge;
@@ -17,6 +23,8 @@ import java.io.IOException;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DiskUsageCollector extends Collector {
 
@@ -25,6 +33,7 @@ public class DiskUsageCollector extends Collector {
     @Override
     @Nonnull
     public List<MetricFamilySamples> collect() {
+
         if (!PrometheusConfiguration.get().getCollectDiskUsage()) {
             return Collections.emptyList();
         }
@@ -49,37 +58,54 @@ public class DiskUsageCollector extends Collector {
             return Collections.emptyList();
         }
 
-        final List<MetricFamilySamples> samples = new ArrayList<>();
+        CollectorFactory factory = new CollectorFactory();
         final Set<FileStore> usedFileStores = new HashSet<>();
+        List<MetricCollector<DiskItem, ? extends Collector>> diskItemCollectors = new ArrayList<>();
+        diskItemCollectors.add(factory.createDiskItemCollector(CollectorType.DISK_USAGE_BYTES_GAUGE, new String[]{"file_store", "directory"}));
 
-        final String namespace = ConfigurationUtils.getNamespace();
-        final String subSystem = ConfigurationUtils.getSubSystem();
-
-        final DiskUsageBytesGauge directoryUsageGauge = new DiskUsageBytesGauge(new String[]{"file_store", "directory"}, namespace, subSystem);
         diskUsagePlugin.getDirectoriesUsages().forEach(i -> {
             final Optional<FileStore> fileStore = getFileStore(i.getPath());
             fileStore.ifPresent(usedFileStores::add);
-            directoryUsageGauge.calculateMetric(i, new String[]{toLabelValue(fileStore), i.getDisplayName()});
+            diskItemCollectors.forEach(c -> c.calculateMetric(i, new String[]{toLabelValue(fileStore), i.getDisplayName()}));
         });
-        samples.addAll(directoryUsageGauge.collect());
 
-        final JobUsageBytesGauge jobUsageGauge = new JobUsageBytesGauge(new String[]{"file_store", "jobName", "url"}, namespace, subSystem);
+        List<MetricCollector<JobDiskItem, ? extends Collector>> jobDiskItemCollectors = new ArrayList<>();
+        jobDiskItemCollectors.add(factory.createJobDiskItemCollector(CollectorType.JOB_USAGE_BYTES_GAUGE, new String[]{"file_store", "jobName", "url"}));
+
         diskUsagePlugin.getJobsUsages().forEach(i -> {
             final Optional<FileStore> fileStore = getFileStore(i.getPath());
             fileStore.ifPresent(usedFileStores::add);
-            jobUsageGauge.calculateMetric(i, new String[]{toLabelValue(fileStore), i.getFullName(), i.getUrl()});
+            jobDiskItemCollectors.forEach(c -> c.calculateMetric(i, new String[]{toLabelValue(fileStore), i.getFullName(), i.getUrl()}));
         });
-        samples.addAll(jobUsageGauge.collect());
 
-        final FileStoreCapacityGauge fileStoreCapacityGauge = new FileStoreCapacityGauge(new String[]{"file_store"}, namespace, subSystem);
-        final FileStoreAvailableGauge fileStoreAvailableGauge = new FileStoreAvailableGauge(new String[]{"file_store"}, namespace, subSystem);
+        List<MetricCollector<FileStore, ? extends Collector>> fileStoreCollectors = new ArrayList<>();
+        fileStoreCollectors.add(factory.createFileStoreCollector(CollectorType.FILE_STORE_CAPACITY_GAUGE,new String[]{"file_store"} ));
+        fileStoreCollectors.add(factory.createFileStoreCollector(CollectorType.FILE_STORE_AVAILABLE_GAUGE ,new String[]{"file_store"} ));
+
         usedFileStores.forEach(store -> {
             final String labelValue = toLabelValue(Optional.of(store));
-            fileStoreCapacityGauge.calculateMetric(store, new String[]{labelValue});
-            fileStoreAvailableGauge.calculateMetric(store, new String[]{labelValue});
+            fileStoreCollectors.forEach(c -> c.calculateMetric(store, new String[]{labelValue}));
         });
-        samples.addAll(fileStoreCapacityGauge.collect());
-        samples.addAll(fileStoreAvailableGauge.collect());
+
+        List<MetricFamilySamples> samples = new ArrayList<>();
+
+        samples.addAll(Stream.of(diskItemCollectors)
+                .flatMap(Collection::stream)
+                .map(MetricCollector::collect)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList()));
+
+        samples.addAll(Stream.of(jobDiskItemCollectors)
+                .flatMap(Collection::stream)
+                .map(MetricCollector::collect)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList()));
+
+        samples.addAll(Stream.of(fileStoreCollectors)
+                .flatMap(Collection::stream)
+                .map(MetricCollector::collect)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList()));
 
         return samples;
     }

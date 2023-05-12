@@ -3,17 +3,18 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Gauge;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
 public class BuildResultOrdinalGauge extends BuildsMetricCollector<Run, Gauge> {
 
-    public BuildResultOrdinalGauge(String[] labelNames, String namespace, String subsystem, String namePrefix) {
+    protected BuildResultOrdinalGauge(String[] labelNames, String namespace, String subsystem, String namePrefix) {
         super(labelNames, namespace, subsystem, namePrefix);
     }
 
     @Override
     protected Gauge initCollector() {
         return Gauge.build()
-                .name(calculateName("build_result_ordinal"))
+                .name(calculateName(CollectorType.BUILD_RESULT_ORDINAL_GAUGE.getName()))
                 .subsystem(subsystem).namespace(namespace)
                 .labelNames(labelNames)
                 .help("Build status of a job.")

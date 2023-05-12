@@ -6,6 +6,7 @@ import hudson.model.Job;
 import hudson.model.Run;
 import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.slf4j.Logger;
@@ -20,14 +21,14 @@ public class StageSummary extends BuildsMetricCollector<Run, Summary> {
     private static final String NOT_AVAILABLE = "NA";
     private static final Logger LOGGER = LoggerFactory.getLogger(StageSummary.class);
 
-    public StageSummary(String[] labelNames, String namespace, String subsystem, String namePrefix) {
+    protected StageSummary(String[] labelNames, String namespace, String subsystem, String namePrefix) {
         super(labelNames, namespace, subsystem, namePrefix);
     }
 
     @Override
     protected Summary initCollector() {
         return Summary.build()
-                .name(calculateName("stage_duration_milliseconds_summary"))
+                .name(calculateName(CollectorType.STAGE_SUMMARY.getName()))
                 .subsystem(subsystem).namespace(namespace)
                 .labelNames(labelNames)
                 .help("Summary of Jenkins build times by Job and Stage in the last build")

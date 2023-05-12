@@ -2,17 +2,18 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 
 import hudson.model.Run;
 import io.prometheus.client.Summary;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
 public class BuildDurationSummary extends BuildsMetricCollector<Run, Summary> {
 
-    public BuildDurationSummary(String[] labelNames, String namespace, String subSystem) {
+    protected BuildDurationSummary(String[] labelNames, String namespace, String subSystem) {
         super(labelNames, namespace, subSystem);
     }
 
     @Override
     protected Summary initCollector() {
         return Summary.build()
-                .name(calculateName("duration_milliseconds_summary"))
+                .name(calculateName(CollectorType.BUILD_DURATION_SUMMARY.getName()))
                 .subsystem(subsystem)
                 .namespace(namespace)
                 .labelNames(labelNames)

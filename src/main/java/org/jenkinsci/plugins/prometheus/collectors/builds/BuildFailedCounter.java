@@ -3,17 +3,18 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Counter;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
 public class BuildFailedCounter extends BuildsMetricCollector<Run, Counter> {
 
-    public BuildFailedCounter(String[] labelNames, String namespace, String subSystem) {
+    protected BuildFailedCounter(String[] labelNames, String namespace, String subSystem) {
         super(labelNames, namespace, subSystem);
     }
 
     @Override
     protected Counter initCollector() {
         return Counter.build()
-                .name(calculateName("failed_build_count"))
+                .name(calculateName(CollectorType.BUILD_FAILED_COUNTER.getName()))
                 .subsystem(subsystem).namespace(namespace)
                 .labelNames(labelNames)
                 .help("Failed build count")

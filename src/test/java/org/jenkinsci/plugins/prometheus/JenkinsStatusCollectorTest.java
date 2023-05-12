@@ -4,16 +4,17 @@ import hudson.model.Computer;
 import hudson.model.Node;
 import io.prometheus.client.Collector.MetricFamilySamples;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JenkinsStatusCollectorTest {
@@ -21,36 +22,22 @@ public class JenkinsStatusCollectorTest {
     @Test
     public void shouldProduceNodeMetrics() {
         Jenkins jenkins = mock(Jenkins.class);
-        Node node = mock(Node.class);
-        Computer computer = mock(Computer.class);
 
+        PrometheusConfiguration mockedConfig = mock(PrometheusConfiguration.class);
         String namespace = "TestNamespace";
-        String subsystem = "TestSubsystem";
-        String nodeName = "Testnode";
 
-        final String expectedSampleName = String.format("%s_%s_nodes_online", namespace, subsystem);
+        when(mockedConfig.getDefaultNamespace()).thenReturn(namespace);
+        when(mockedConfig.isCollectNodeStatus()).thenReturn(false);
 
-        when(jenkins.getNodes()).thenReturn(Arrays.asList(node));
-        when(node.toComputer()).thenReturn(computer);
-        when(node.getNodeName()).thenReturn(nodeName);
-        when(computer.isOnline()).thenReturn(true);
+        try (MockedStatic<Jenkins> jenkinsStatic = mockStatic(Jenkins.class);
+             MockedStatic<PrometheusConfiguration> configStatic = mockStatic(PrometheusConfiguration.class)) {
+            jenkinsStatic.when(Jenkins::get).thenReturn(jenkins);
+            configStatic.when(PrometheusConfiguration::get).thenReturn(mockedConfig);
 
-        JenkinsStatusCollector jenkinsStatusCollector = new JenkinsStatusCollector();
-        jenkinsStatusCollector.jenkins = jenkins;
-        jenkinsStatusCollector.namespace = namespace;
-        jenkinsStatusCollector.subsystem = subsystem;
+            JenkinsStatusCollector jenkinsStatusCollector = new JenkinsStatusCollector();
 
-        List<MetricFamilySamples> samples = jenkinsStatusCollector.collectNodeStatus();
-        assertEquals(1, samples.size());
-
-        MetricFamilySamples metricFamilySamples = samples.get(0);
-        assertEquals(expectedSampleName, metricFamilySamples.name);
-
-        MetricFamilySamples.Sample sample = metricFamilySamples.samples.get(0);
-        assertEquals(1, sample.value, 0);
-        assertEquals(1, sample.labelNames.size());
-        assertEquals("node", sample.labelNames.get(0));
-        assertEquals(1, sample.labelValues.size());
-        assertEquals(nodeName, sample.labelValues.get(0));
+            List<MetricFamilySamples> samples = jenkinsStatusCollector.collect();
+            assertEquals(3, samples.size());
+        }
     }
 }

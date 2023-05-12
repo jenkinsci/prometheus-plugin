@@ -5,13 +5,12 @@ import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Collector;
 import org.apache.commons.lang.StringUtils;
-import org.jenkinsci.plugins.prometheus.collectors.builds.*;
-import org.jenkinsci.plugins.prometheus.collectors.jobs.BuildDiscardGauge;
-import org.jenkinsci.plugins.prometheus.collectors.jobs.CurrentRunDurationGauge;
-import org.jenkinsci.plugins.prometheus.collectors.jobs.HealthScoreGauge;
-import org.jenkinsci.plugins.prometheus.collectors.jobs.NbBuildsGauge;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
+import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCollectorFactory;
+import org.jenkinsci.plugins.prometheus.collectors.jobs.JobCollectorFactory;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
-import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.jenkinsci.plugins.prometheus.util.Runs;
 import org.slf4j.Logger;
@@ -28,24 +27,24 @@ public class JobCollector extends Collector {
     private static final String NOT_AVAILABLE = "NA";
     private static final String UNDEFINED = "UNDEFINED";
 
-    private BuildDurationSummary summary;
-    private BuildSuccessfulCounter jobSuccessCount;
-    private BuildFailedCounter jobFailedCount;
-    private HealthScoreGauge jobHealthScoreGauge;
-    private NbBuildsGauge nbBuildsGauge;
-    private BuildDiscardGauge buildDiscardGauge;
-    private CurrentRunDurationGauge currentRunDurationGauge;
+    private MetricCollector<Run, ? extends Collector> summary;
+    private MetricCollector<Run, ? extends Collector> jobSuccessCount;
+    private MetricCollector<Run, ? extends Collector> jobFailedCount;
+    private MetricCollector<Job, ? extends Collector> jobHealthScoreGauge;
+    private MetricCollector<Job, ? extends Collector> nbBuildsGauge;
+    private MetricCollector<Job, ? extends Collector> buildDiscardGauge;
+    private MetricCollector<Job, ? extends Collector> currentRunDurationGauge;
 
     private static class BuildMetrics {
 
-        public BuildResultOrdinalGauge jobBuildResultOrdinal;
-        public BuildResultGauge jobBuildResult;
-        public BuildStartGauge jobBuildStartMillis;
-        public BuildDurationGauge jobBuildDuration;
-        public StageSummary stageSummary;
-        public TotalTestsGauge jobBuildTestsTotal;
-        public SkippedTestsGauge jobBuildTestsSkipped;
-        public FailedTestsGauge jobBuildTestsFailing;
+        public MetricCollector<Run, ? extends Collector> jobBuildResultOrdinal;
+        public MetricCollector<Run, ? extends Collector> jobBuildResult;
+        public MetricCollector<Run, ? extends Collector> jobBuildStartMillis;
+        public MetricCollector<Run, ? extends Collector> jobBuildDuration;
+        public MetricCollector<Run, ? extends Collector> stageSummary;
+        public MetricCollector<Run, ? extends Collector> jobBuildTestsTotal;
+        public MetricCollector<Run, ? extends Collector> jobBuildTestsSkipped;
+        public MetricCollector<Run, ? extends Collector> jobBuildTestsFailing;
 
         private final String buildPrefix;
 
@@ -53,15 +52,16 @@ public class JobCollector extends Collector {
             this.buildPrefix = buildPrefix;
         }
 
-        public void initCollectors(String subsystem, String namespace, String[] labelNameArray, String[] labelStageNameArray) {
-            this.jobBuildResultOrdinal = new BuildResultOrdinalGauge(labelNameArray, namespace, subsystem, buildPrefix);
-            this.jobBuildResult = new BuildResultGauge(labelNameArray, namespace, subsystem, buildPrefix);
-            this.jobBuildDuration = new BuildDurationGauge(labelNameArray, namespace, subsystem, buildPrefix);
-            this.jobBuildStartMillis = new BuildStartGauge(labelNameArray, namespace, subsystem, buildPrefix);
-            this.jobBuildTestsTotal = new TotalTestsGauge(labelNameArray, namespace, subsystem, buildPrefix);
-            this.jobBuildTestsSkipped = new SkippedTestsGauge(labelNameArray, namespace, subsystem, buildPrefix);
-            this.jobBuildTestsFailing = new FailedTestsGauge(labelNameArray, namespace, subsystem, buildPrefix);
-            this.stageSummary = new StageSummary(labelStageNameArray, namespace, subsystem, buildPrefix);
+        public void initCollectors(String[] labelNameArray, String[] labelStageNameArray) {
+            CollectorFactory factory = new CollectorFactory();
+            this.jobBuildResultOrdinal = factory.createRunCollector(CollectorType.BUILD_RESULT_ORDINAL_GAUGE, labelNameArray, buildPrefix);
+            this.jobBuildResult = factory.createRunCollector(CollectorType.BUILD_RESULT_GAUGE, labelNameArray, buildPrefix);
+            this.jobBuildDuration = factory.createRunCollector(CollectorType.BUILD_DURATION_GAUGE, labelNameArray, buildPrefix);
+            this.jobBuildStartMillis = factory.createRunCollector(CollectorType.BUILD_START_GAUGE, labelNameArray, buildPrefix);
+            this.jobBuildTestsTotal = factory.createRunCollector(CollectorType.TOTAL_TESTS_GAUGE, labelNameArray, buildPrefix);
+            this.jobBuildTestsSkipped = factory.createRunCollector(CollectorType.SKIPPED_TESTS_GAUGE, labelNameArray, buildPrefix);
+            this.jobBuildTestsFailing = factory.createRunCollector(CollectorType.FAILED_TESTS_GAUGE, labelNameArray, buildPrefix);
+            this.stageSummary = factory.createRunCollector(CollectorType.STAGE_SUMMARY, labelStageNameArray, buildPrefix);
         }
     }
 
@@ -75,9 +75,8 @@ public class JobCollector extends Collector {
     public List<MetricFamilySamples> collect() {
         logger.debug("Collecting metrics for prometheus");
 
-        String namespace = ConfigurationUtils.getNamespace();
+        CollectorFactory factory = new CollectorFactory();
         List<MetricFamilySamples> samples = new ArrayList<>();
-        String subsystem = ConfigurationUtils.getSubSystem();
         String jobAttribute = PrometheusConfiguration.get().getJobAttributeName();
 
         String[] labelBaseNameArray = {jobAttribute, "repo", "buildable"};
@@ -115,31 +114,31 @@ public class JobCollector extends Collector {
 
         // Below three metrics use labelNameArray which might include the optional labels
         // of "parameters" or "status"
-        summary = new BuildDurationSummary(labelNameArray, namespace, subsystem);
+        summary = factory.createRunCollector(CollectorType.BUILD_DURATION_SUMMARY, labelNameArray, null);
 
-        jobSuccessCount = new BuildSuccessfulCounter(labelNameArray, namespace, subsystem);
+        jobSuccessCount = factory.createRunCollector(CollectorType.BUILD_SUCCESSFUL_COUNTER, labelNameArray, null);
 
-        jobFailedCount = new BuildFailedCounter(labelNameArray, namespace, subsystem);
+        jobFailedCount = factory.createRunCollector(CollectorType.BUILD_FAILED_COUNTER, labelNameArray, null);
 
         // This metric uses "base" labels as it is just the health score reported
         // by the job object and the optional labels params and status don't make much
         // sense in this context.
-        jobHealthScoreGauge = new HealthScoreGauge(labelBaseNameArray, namespace, subsystem);
+        jobHealthScoreGauge = factory.createJobCollector(CollectorType.HEALTH_SCORE_GAUGE, labelBaseNameArray);
 
-        nbBuildsGauge = new NbBuildsGauge(labelBaseNameArray, namespace, subsystem);
+        nbBuildsGauge = factory.createJobCollector(CollectorType.NB_BUILDS_GAUGE, labelBaseNameArray);
 
-        buildDiscardGauge = new BuildDiscardGauge(labelBaseNameArray, namespace, subsystem);
+        buildDiscardGauge = factory.createJobCollector(CollectorType.BUILD_DISCARD_GAUGE, labelBaseNameArray);
 
-        currentRunDurationGauge = new CurrentRunDurationGauge(labelBaseNameArray, namespace, subsystem);
+        currentRunDurationGauge = factory.createJobCollector(CollectorType.CURRENT_RUN_DURATION_GAUGE, labelBaseNameArray);
 
         if (PrometheusConfiguration.get().isPerBuildMetrics()) {
             labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
             labelNameArray[labelNameArray.length - 1] = "number";
-            perBuildMetrics.initCollectors(subsystem, namespace, labelNameArray, labelStageNameArray);
+            perBuildMetrics.initCollectors(labelNameArray, labelStageNameArray);
         }
 
         // The lastBuildMetrics are initialized with the "base" labels
-        lastBuildMetrics.initCollectors(subsystem, namespace, labelBaseNameArray, labelStageNameArray);
+        lastBuildMetrics.initCollectors(labelBaseNameArray, labelStageNameArray);
 
 
         Jobs.forEachJob(job -> {

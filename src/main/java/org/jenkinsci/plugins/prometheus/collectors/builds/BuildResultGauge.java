@@ -2,17 +2,18 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 
 import hudson.model.Run;
 import io.prometheus.client.Gauge;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
 public class BuildResultGauge extends BuildsMetricCollector<Run, Gauge> {
 
-    public BuildResultGauge(String[] labelNames, String namespace, String subsystem, String namePrefix) {
+    protected BuildResultGauge(String[] labelNames, String namespace, String subsystem, String namePrefix) {
         super(labelNames, namespace, subsystem, namePrefix);
     }
 
     @Override
     protected Gauge initCollector() {
         return Gauge.build()
-                .name(calculateName("build_result"))
+                .name(calculateName(CollectorType.BUILD_RESULT_GAUGE.getName()))
                 .subsystem(subsystem).namespace(namespace)
                 .labelNames(labelNames)
                 .help("Build status of a job as a boolean (0 or 1)")

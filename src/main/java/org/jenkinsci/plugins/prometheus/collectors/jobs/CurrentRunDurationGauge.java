@@ -3,20 +3,21 @@ package org.jenkinsci.plugins.prometheus.collectors.jobs;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.prometheus.client.Gauge;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildsMetricCollector;
 
 import java.time.Clock;
 
 public class CurrentRunDurationGauge extends BuildsMetricCollector<Job, Gauge> {
 
-    public CurrentRunDurationGauge(String[] labelNames, String namespace, String subSystem) {
+    protected CurrentRunDurationGauge(String[] labelNames, String namespace, String subSystem) {
         super(labelNames, namespace, subSystem);
     }
 
     @Override
     protected Gauge initCollector() {
         return Gauge.build()
-                .name(calculateName("running_build_duration_milliseconds"))
+                .name(calculateName(CollectorType.CURRENT_RUN_DURATION_GAUGE.getName()))
                 .subsystem(subsystem)
                 .namespace(namespace)
                 .labelNames(labelNames)

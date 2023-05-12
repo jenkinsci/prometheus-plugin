@@ -3,18 +3,19 @@ package org.jenkinsci.plugins.prometheus.collectors.executors;
 import hudson.model.LoadStatistics;
 import io.prometheus.client.Gauge;
 import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
 public class ExecutorsBusyGauge extends BaseMetricCollector<LoadStatistics.LoadStatisticsSnapshot, Gauge> {
 
 
-    public ExecutorsBusyGauge(String[] labelNames, String namespace, String subsystem, String namePrefix) {
+    protected ExecutorsBusyGauge(String[] labelNames, String namespace, String subsystem, String namePrefix) {
         super(labelNames, namespace, subsystem, namePrefix);
     }
 
     @Override
     protected Gauge initCollector() {
         return Gauge.build()
-                .name(calculateName("busy"))
+                .name(calculateName(CollectorType.EXECUTORS_BUSY_GAUGE.getName()))
                 .subsystem(subsystem).namespace(namespace)
                 .labelNames(labelNames)
                 .help("Executors Busy")

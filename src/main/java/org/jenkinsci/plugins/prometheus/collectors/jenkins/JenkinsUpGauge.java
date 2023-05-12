@@ -3,17 +3,18 @@ package org.jenkinsci.plugins.prometheus.collectors.jenkins;
 import io.prometheus.client.Gauge;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
 public class JenkinsUpGauge extends BaseMetricCollector<Jenkins, Gauge> {
 
-    public JenkinsUpGauge(String[] labelNames, String namespace, String subsystem) {
+    JenkinsUpGauge(String[] labelNames, String namespace, String subsystem) {
         super(labelNames, namespace, subsystem);
     }
 
     @Override
     protected Gauge initCollector() {
         return Gauge.build()
-                .name("up")
+                .name(CollectorType.JENKINS_UP_GAUGE.getName())
                 .labelNames()
                 .subsystem(subsystem)
                 .namespace(namespace)

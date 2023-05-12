@@ -15,7 +15,7 @@ public abstract class BaseMetricCollector<T, I extends Collector> implements Met
 
     protected I collector;
 
-    public BaseMetricCollector(String[] labelNames, String namespace, String subsystem, String namePrefix) {
+    protected BaseMetricCollector(String[] labelNames, String namespace, String subsystem, String namePrefix) {
         this.labelNames = labelNames;
         this.namespace = namespace;
         this.subsystem = subsystem;
@@ -23,7 +23,7 @@ public abstract class BaseMetricCollector<T, I extends Collector> implements Met
         collector = initCollector();
     }
 
-    public BaseMetricCollector(String[] labelNames, String namespace, String subsystem) {
+    protected BaseMetricCollector(String[] labelNames, String namespace, String subsystem) {
         this.labelNames = labelNames;
         this.namespace = namespace;
         this.subsystem = subsystem;
