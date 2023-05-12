@@ -3,7 +3,6 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Counter;
-import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
 
 public class BuildSuccessfulCounter extends BuildsMetricCollector<Run, Counter> {
 

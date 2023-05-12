@@ -1,7 +1,7 @@
 package org.jenkinsci.plugins.prometheus.util;
 
-import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 
 public final class ConfigurationUtils {
 

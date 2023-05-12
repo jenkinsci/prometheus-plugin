@@ -2,7 +2,6 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 
 import hudson.model.Run;
 import io.prometheus.client.Summary;
-import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
 
 public class BuildDurationSummary extends BuildsMetricCollector<Run, Summary> {
 

@@ -3,7 +3,6 @@ package org.jenkinsci.plugins.prometheus.collectors.jobs;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.prometheus.client.Gauge;
-import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildsMetricCollector;
 
 import java.time.Clock;

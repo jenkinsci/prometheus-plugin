@@ -2,11 +2,11 @@ package org.jenkinsci.plugins.prometheus;
 
 import io.prometheus.client.Collector;
 import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.collectors.jenkins.JenkinsUpGauge;
 import org.jenkinsci.plugins.prometheus.collectors.jenkins.JenkinsUptimeGauge;
 import org.jenkinsci.plugins.prometheus.collectors.jenkins.JenkinsVersionInfo;
 import org.jenkinsci.plugins.prometheus.collectors.jenkins.NodesOnlineGauge;
+import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 
 import java.util.ArrayList;

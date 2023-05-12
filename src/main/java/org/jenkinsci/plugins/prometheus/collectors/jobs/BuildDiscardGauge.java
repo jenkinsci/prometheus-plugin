@@ -3,7 +3,6 @@ package org.jenkinsci.plugins.prometheus.collectors.jobs;
 import hudson.model.Job;
 import io.prometheus.client.Gauge;
 import jenkins.model.BuildDiscarder;
-import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildsMetricCollector;
 
 public class BuildDiscardGauge extends BuildsMetricCollector<Job, Gauge> {

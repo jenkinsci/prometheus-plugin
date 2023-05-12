@@ -6,7 +6,6 @@ import hudson.model.Job;
 import hudson.model.Run;
 import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
-import org.jenkinsci.plugins.prometheus.collectors.BaseMetricCollector;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.slf4j.Logger;
