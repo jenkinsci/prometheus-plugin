@@ -8,6 +8,7 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     private String defaultNamespace = "default";
     private String jobAttributeName = "jenkins_job";
     private boolean useAuthenticatedEndpoint;
-    private Long collectingMetricsPeriodInSeconds = null;
+    private long collectingMetricsPeriodInSeconds = -1L;
 
     private boolean countSuccessfulBuilds = true;
     private boolean countUnstableBuilds = true;
@@ -75,34 +76,16 @@ public class PrometheusConfiguration extends GlobalConfiguration {
 
     @Override
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
-        setPath(json.getString("path"));
-        setCollectDiskUsage(json.getBoolean("collectDiskUsage"));
-        useAuthenticatedEndpoint = json.getBoolean("useAuthenticatedEndpoint");
-        defaultNamespace = json.getString("defaultNamespace");
-        jobAttributeName = json.getString("jobAttributeName");
-        countSuccessfulBuilds = json.getBoolean("countSuccessfulBuilds");
-        countUnstableBuilds = json.getBoolean("countUnstableBuilds");
-        countFailedBuilds = json.getBoolean("countFailedBuilds");
-        countNotBuiltBuilds = json.getBoolean("countNotBuiltBuilds");
-        countAbortedBuilds = json.getBoolean("countAbortedBuilds");
-        fetchTestResults = json.getBoolean("fetchTestResults");
-        collectingMetricsPeriodInSeconds = validateProcessingMetricsPeriodInSeconds(json);
-        processingDisabledBuilds = json.getBoolean("processingDisabledBuilds");
-        appendParamLabel = json.getBoolean("appendParamLabel");
-        appendStatusLabel = json.getBoolean("appendStatusLabel");
-        perBuildMetrics = json.getBoolean("perBuildMetrics");
-        collectNodeStatus = json.getBoolean("collectNodeStatus");
-
-        labeledBuildParameterNames = json.getString("labeledBuildParameterNames");
-
+        req.bindJSON(this, json);
         save();
-        return super.configure(req, json);
+        return true;
     }
 
     public String getPath() {
         return StringUtils.isEmpty(additionalPath) ? urlName : urlName + additionalPath;
     }
 
+    @DataBoundSetter
     public void setPath(String path) {
         if (path == null) {
             Map<String, String> env = System.getenv();
@@ -117,6 +100,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return jobAttributeName;
     }
 
+    @DataBoundSetter
     public void setJobAttributeName(String jobAttributeName) {
         this.jobAttributeName = jobAttributeName;
     }
@@ -125,10 +109,12 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return defaultNamespace;
     }
 
+    @DataBoundSetter
     public void setDefaultNamespace(String path) {
         this.defaultNamespace = path;
     }
 
+    @DataBoundSetter
     public void setCollectDiskUsage(Boolean collectDiskUsage) {
         this.collectDiskUsage = collectDiskUsage;
     }
@@ -164,8 +150,9 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return collectingMetricsPeriodInSeconds;
     }
 
-    public void setCollectingMetricsPeriodInSeconds(Long collectingMetricsPeriodInSeconds) {
-        if (collectingMetricsPeriodInSeconds == null) {
+    @DataBoundSetter
+    public void setCollectingMetricsPeriodInSeconds(long collectingMetricsPeriodInSeconds) {
+        if (collectingMetricsPeriodInSeconds == -1L) {
             this.collectingMetricsPeriodInSeconds = parseLongFromEnv();
         } else {
             this.collectingMetricsPeriodInSeconds = collectingMetricsPeriodInSeconds;
@@ -176,6 +163,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return useAuthenticatedEndpoint;
     }
 
+    @DataBoundSetter
     public void setUseAuthenticatedEndpoint(boolean useAuthenticatedEndpoint) {
         this.useAuthenticatedEndpoint = useAuthenticatedEndpoint;
     }
@@ -184,6 +172,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return countSuccessfulBuilds;
     }
 
+    @DataBoundSetter
     public void setCountSuccessfulBuilds(boolean countSuccessfulBuilds) {
         this.countSuccessfulBuilds = countSuccessfulBuilds;
     }
@@ -192,6 +181,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return countUnstableBuilds;
     }
 
+    @DataBoundSetter
     public void setCountUnstableBuilds(boolean countUnstableBuilds) {
         this.countUnstableBuilds = countUnstableBuilds;
     }
@@ -200,6 +190,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return countFailedBuilds;
     }
 
+    @DataBoundSetter
     public void setCountFailedBuilds(boolean countFailedBuilds) {
         this.countFailedBuilds = countFailedBuilds;
     }
@@ -208,6 +199,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return countNotBuiltBuilds;
     }
 
+    @DataBoundSetter
     public void setCountNotBuiltBuilds(boolean countNotBuiltBuilds) {
         this.countNotBuiltBuilds = countNotBuiltBuilds;
     }
@@ -216,6 +208,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return countAbortedBuilds;
     }
 
+    @DataBoundSetter
     public void setCountAbortedBuilds(boolean countAbortedBuilds) {
         this.countAbortedBuilds = countAbortedBuilds;
     }
@@ -224,6 +217,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return fetchTestResults;
     }
 
+    @DataBoundSetter
     public void setFetchTestResults(boolean fetchTestResults) {
         this.fetchTestResults = fetchTestResults;
     }
@@ -232,6 +226,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return processingDisabledBuilds;
     }
 
+    @DataBoundSetter
     public void setProcessingDisabledBuilds(boolean processingDisabledBuilds) {
         this.processingDisabledBuilds = processingDisabledBuilds;
     }
@@ -240,6 +235,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return appendParamLabel;
     }
 
+    @DataBoundSetter
     public void setAppendParamLabel(boolean appendParamLabel) {
         this.appendParamLabel = appendParamLabel;
     }
@@ -248,6 +244,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return appendStatusLabel;
     }
 
+    @DataBoundSetter
     public void setAppendStatusLabel(boolean appendStatusLabel) {
         this.appendStatusLabel = appendStatusLabel;
     }
@@ -255,13 +252,17 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     public boolean isPerBuildMetrics() {
         return perBuildMetrics;
     }
-
+    @DataBoundSetter
+    public void setPerBuildMetrics(boolean perBuildMetrics) {
+        this.perBuildMetrics = perBuildMetrics;
+    }
     public boolean isCollectNodeStatus() {
         return collectNodeStatus;
     }
 
-    public void setPerBuildMetrics(boolean perBuildMetrics) {
-        this.perBuildMetrics = perBuildMetrics;
+    @DataBoundSetter
+    public void setCollectNodeStatus(boolean collectNodeStatus) {
+        this.collectNodeStatus = collectNodeStatus;
     }
 
     public String getUrlName() {
@@ -276,6 +277,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return labeledBuildParameterNames;
     }
 
+    @DataBoundSetter
     public void setLabeledBuildParameterNames(String labeledBuildParameterNames) {
         this.labeledBuildParameterNames = labeledBuildParameterNames;
     }
@@ -295,15 +297,16 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         }
     }
 
-    private Long validateProcessingMetricsPeriodInSeconds(JSONObject json) throws FormException {
+    public FormValidation doCheckCollectingMetricsPeriodInSeconds(@QueryParameter String value) {
         try {
-            long value = json.getLong("collectingMetricsPeriodInSeconds");
-            if (value > 0) {
-                return value;
+            long longValue = Long.parseLong(value);
+            if (longValue > 0) {
+                return FormValidation.ok();
             }
-        } catch (JSONException ignored) {
+        } catch (NumberFormatException ignore) {
+            // ignore exception. If it comes it's not a positive long
         }
-        throw new FormException("CollectingMetricsPeriodInSeconds must be a positive integer", "collectingMetricsPeriodInSeconds");
+        return FormValidation.error("CollectingMetricsPeriodInSeconds must be a positive value");
     }
 
     private long parseLongFromEnv() {

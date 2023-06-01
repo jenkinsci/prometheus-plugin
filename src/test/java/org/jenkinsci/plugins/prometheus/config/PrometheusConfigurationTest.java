@@ -1,9 +1,11 @@
 package org.jenkinsci.plugins.prometheus.config;
 
 import hudson.model.Descriptor;
+import hudson.util.FormValidation;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import net.sf.json.JSONObject;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,8 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(JUnitParamsRunner.class)
@@ -38,13 +40,16 @@ public class PrometheusConfigurationTest {
     public void shouldGetErrorWhenNotPositiveNumber(String metricCollectorPeriod) throws Descriptor.FormException {
         //given
         Mockito.when(configuration.configure(any(), any())).thenCallRealMethod();
+        Mockito.when(configuration.doCheckCollectingMetricsPeriodInSeconds(any())).thenCallRealMethod();
         JSONObject config = getDefaultConfig();
         config.accumulate("collectingMetricsPeriodInSeconds", metricCollectorPeriod);
 
-        // when
-        assertThatThrownBy(() -> configuration.configure(null, config))
-                .isInstanceOf(Descriptor.FormException.class)
-                .hasMessageContaining("CollectingMetricsPeriodInSeconds must be a positive integer");
+
+        FormValidation formValidation = configuration.doCheckCollectingMetricsPeriodInSeconds(metricCollectorPeriod);
+
+
+        assertThat(formValidation.kind).isEqualTo(FormValidation.Kind.ERROR);
+        assertThat(formValidation.getMessage()).isEqualTo("CollectingMetricsPeriodInSeconds must be a positive value");
     }
 
     private List<String> correctMetricCollectorPeriodsProvider() {
@@ -84,7 +89,7 @@ public class PrometheusConfigurationTest {
     }
 
     @Test
-    public void shouldSetValueFromEnvForCollectingMetricsPeriodInSeconds() throws Exception{
+    public void shouldSetValueFromEnvForCollectingMetricsPeriodInSeconds() throws Exception {
         // given
         Mockito.doCallRealMethod().when(configuration).setCollectingMetricsPeriodInSeconds(any());
         Mockito.when(configuration.getCollectingMetricsPeriodInSeconds()).thenCallRealMethod();
