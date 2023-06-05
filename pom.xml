@@ -25,7 +25,7 @@
     <slf4j.version>2.0.7</slf4j.version>
 
     <cloudbees-disk-usage-simple.version>0.10</cloudbees-disk-usage-simple.version>
-    <metrics.version>4.1.6.1</metrics.version>
+    <metrics.version>4.2.18-438.v0ede325a_4c68</metrics.version>
     <pipeline-rest-api.version>2.21</pipeline-rest-api.version>
 
     <assertj-core.version>3.24.2</assertj-core.version>
