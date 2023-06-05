@@ -5,7 +5,6 @@ import hudson.util.FormValidation;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import net.sf.json.JSONObject;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,9 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
-import static org.assertj.core.api.Assertions.*;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
 
 @RunWith(JUnitParamsRunner.class)
 public class PrometheusConfigurationTest {
@@ -76,9 +74,9 @@ public class PrometheusConfigurationTest {
     @Test
     public void shouldSetDefaultValue() {
         // given
-        Mockito.doCallRealMethod().when(configuration).setCollectingMetricsPeriodInSeconds(any());
+        Mockito.doCallRealMethod().when(configuration).setCollectingMetricsPeriodInSeconds(anyLong());
         Mockito.when(configuration.getCollectingMetricsPeriodInSeconds()).thenCallRealMethod();
-        Long metricCollectorPeriod = null;
+        long metricCollectorPeriod = -1L;
 
         // when
         configuration.setCollectingMetricsPeriodInSeconds(metricCollectorPeriod);
@@ -91,9 +89,9 @@ public class PrometheusConfigurationTest {
     @Test
     public void shouldSetValueFromEnvForCollectingMetricsPeriodInSeconds() throws Exception {
         // given
-        Mockito.doCallRealMethod().when(configuration).setCollectingMetricsPeriodInSeconds(any());
+        Mockito.doCallRealMethod().when(configuration).setCollectingMetricsPeriodInSeconds(anyLong());
         Mockito.when(configuration.getCollectingMetricsPeriodInSeconds()).thenCallRealMethod();
-        Long metricCollectorPeriod = null;
+        long metricCollectorPeriod = -1L;
 
         // when
         withEnvironmentVariable(PrometheusConfiguration.COLLECTING_METRICS_PERIOD_IN_SECONDS, "1000")
@@ -108,9 +106,9 @@ public class PrometheusConfigurationTest {
     @Parameters(method = "wrongMetricCollectorPeriodsProvider")
     public void shouldSetDefaultValueWhenEnvCannotBeConvertedToLongORNegativeValue(String wrongValue) throws Exception {
         // given
-        Mockito.doCallRealMethod().when(configuration).setCollectingMetricsPeriodInSeconds(any());
+        Mockito.doCallRealMethod().when(configuration).setCollectingMetricsPeriodInSeconds(anyLong());
         Mockito.when(configuration.getCollectingMetricsPeriodInSeconds()).thenCallRealMethod();
-        Long metricCollectorPeriod = null;
+        long metricCollectorPeriod = -1L;
 
         // when
         withEnvironmentVariable(PrometheusConfiguration.COLLECTING_METRICS_PERIOD_IN_SECONDS, wrongValue)
@@ -165,7 +163,7 @@ public class PrometheusConfigurationTest {
     public void shouldTakeConfiguredValueIfEnvironmentVariableIsFaulty() throws Exception {
         Mockito.doCallRealMethod().when(configuration).setCollectDiskUsageBasedOnEnvironmentVariableIfDefined();
         Mockito.doCallRealMethod().when(configuration).getCollectDiskUsage();
-        Mockito.doCallRealMethod().when(configuration).setCollectDiskUsage(any());
+        Mockito.doCallRealMethod().when(configuration).setCollectDiskUsage(anyBoolean());
 
         withEnvironmentVariable(PrometheusConfiguration.COLLECT_DISK_USAGE, "not_true_not_false")
                 .execute(() -> {
