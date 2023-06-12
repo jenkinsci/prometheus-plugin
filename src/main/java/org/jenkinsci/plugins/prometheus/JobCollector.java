@@ -10,6 +10,7 @@ import io.prometheus.client.Collector;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Summary;
+import jenkins.metrics.impl.SubTaskTimeInQueueAction;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.metrics.jobs.BuildDiscardGauge;
@@ -46,6 +47,7 @@ public class JobCollector extends Collector {
 
     private BuildDiscardGauge buildDiscardGauge;
     private CurrentRunDurationGauge currentRunDurationGauge;
+    private Summary nodeTimeSummary;
 
     private static class BuildMetrics {
 
@@ -119,8 +121,6 @@ public class JobCollector extends Collector {
                     .labelNames(labelStageNameArray)
                     .help("Summary of Jenkins build times by Job and Stage in the last build")
                     .create();
-
-
         }
     }
 
@@ -196,6 +196,13 @@ public class JobCollector extends Collector {
                 .help("Failed build count")
                 .create();
 
+        nodeTimeSummary = Summary.build()
+                .name(fullname + "_node_time_milliseconds_summary")
+                .subsystem(subsystem).namespace(namespace)
+                .labelNames(labelNameArray)
+                .help("Summary of Jenkins node usage time")
+                .create();
+
         // This metric uses "base" labels as it is just the health score reported
         // by the job object and the optional labels params and status don't make much
         // sense in this context.
@@ -238,6 +245,7 @@ public class JobCollector extends Collector {
         addSamples(samples, summary.collect(), "Adding [{}] samples from summary ({})");
         addSamples(samples, jobSuccessCount.collect(), "Adding [{}] samples from counter ({})");
         addSamples(samples, jobFailedCount.collect(), "Adding [{}] samples from counter ({})");
+        addSamples(samples, nodeTimeSummary.collect(), "Adding [{}] samples from summary ({})");
         addSamples(samples, jobHealthScoreGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, nbBuildsGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, buildDiscardGauge.collect(), "Adding [{}] samples from gauge ({})");
@@ -252,12 +260,12 @@ public class JobCollector extends Collector {
 
     private void addSamples(List<MetricFamilySamples> allSamples, List<MetricFamilySamples> newSamples, String logMessage) {
         for (MetricFamilySamples metricFamilySample : newSamples) {
-                int sampleCount = metricFamilySample.samples.size();
-                if (sampleCount > 0) {
-                    logger.debug(logMessage, sampleCount, metricFamilySample.name);
-                    allSamples.addAll(newSamples);
-                }
+            int sampleCount = metricFamilySample.samples.size();
+            if (sampleCount > 0) {
+                logger.debug(logMessage, sampleCount, metricFamilySample.name);
+                allSamples.addAll(newSamples);
             }
+        }
     }
 
     private void addSamples(List<MetricFamilySamples> allSamples, BuildMetrics buildMetrics) {
@@ -333,7 +341,12 @@ public class JobCollector extends Collector {
                 if (!run.isBuilding()) {
                     summary.labels(labelValueArray).observe(duration);
                 }
-
+                nodeTimeSummary.labels(labelValueArray).observe(
+                        run.getActions(SubTaskTimeInQueueAction.class).stream()
+                                .map(SubTaskTimeInQueueAction::getExecutingDurationMillis)
+                                .reduce(0L, Long::sum)
+                );
+                nodeTimeSummary.labels(labelValueArray).observe(1.0);
                 if (runResult != null && !run.isBuilding()) {
                     if (runResult.ordinal == 0 || runResult.ordinal == 1) {
                         jobSuccessCount.labels(labelValueArray).inc();
