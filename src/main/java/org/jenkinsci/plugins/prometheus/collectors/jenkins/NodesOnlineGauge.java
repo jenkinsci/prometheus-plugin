@@ -16,7 +16,7 @@ public class NodesOnlineGauge extends BaseMetricCollector<Jenkins, Gauge> {
     @Override
     protected Gauge initCollector() {
         return Gauge.build()
-                .name(CollectorType.NODES_ONLINE_GAUGE.name())
+                .name(CollectorType.NODES_ONLINE_GAUGE.getName())
                 .subsystem(subsystem)
                 .namespace(namespace)
                 .help("Jenkins nodes online status")

@@ -12,11 +12,6 @@ public abstract class TestBasedMetricCollector<T, I extends Collector> extends B
         super(labelNames, namespace, subsystem, namePrefix);
     }
 
-    public TestBasedMetricCollector(String[] labelNames, String namespace, String subsystem) {
-        super(labelNames, namespace, subsystem);
-    }
-
-
     protected boolean canBeCalculated(Run run) {
         if (run == null) {
             return false;
