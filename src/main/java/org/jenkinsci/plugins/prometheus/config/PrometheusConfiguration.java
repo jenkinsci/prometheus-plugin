@@ -53,6 +53,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     private boolean appendParamLabel = false;
     private boolean appendStatusLabel = false;
     private boolean perBuildMetrics = false;
+    private boolean aggregateMultibranchProject = false;
 
     private boolean environmentVariableSet;
 
@@ -263,6 +264,14 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     @DataBoundSetter
     public void setCollectNodeStatus(boolean collectNodeStatus) {
         this.collectNodeStatus = collectNodeStatus;
+    }
+
+    public boolean isAggregateMultibranchProject() {
+        return aggregateMultibranchProject;
+    }
+    @DataBoundSetter
+    public void setAggregateMultibranchProject(boolean aggregateMultibranchProject) {
+        this.aggregateMultibranchProject = aggregateMultibranchProject;
     }
 
     public String getUrlName() {

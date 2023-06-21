@@ -219,6 +219,7 @@ public class PrometheusConfigurationTest {
         config.accumulate("collectDiskUsage", "true");
         config.accumulate("collectNodeStatus", "true");
         config.accumulate("perBuildMetrics", "false");
+        config.accumulate("aggregateMultibranchProject", "false");
         return config;
     }
 

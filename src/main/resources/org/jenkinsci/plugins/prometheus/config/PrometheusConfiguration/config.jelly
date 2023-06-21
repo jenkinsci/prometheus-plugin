@@ -56,5 +56,8 @@
     <f:entry title="${%Collect metrics for each run per build [Important: read help before enabling this option]}" field="perBuildMetrics">
       <f:checkbox/>
     </f:entry>
+    <f:entry title="${%Aggregate metrics for MultiBranch project}" field="aggregateMultibranchProject">
+      <f:checkbox/>
+    </f:entry>
   </f:section>
 </j:jelly>

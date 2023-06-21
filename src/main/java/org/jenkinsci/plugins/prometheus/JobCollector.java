@@ -202,11 +202,11 @@ public class JobCollector extends Collector {
         String[] buildParameterNamesAsArray = PrometheusConfiguration.get().getLabeledBuildParameterNamesAsArray();
 
         // Add this to the repo as well so I can group by Github Repository
-        String repoName = StringUtils.substringBetween(job.getFullName(), "/");
+        String repoName = StringUtils.substringBetween(getLabelJobName(job), "/");
         if (repoName == null) {
             repoName = NOT_AVAILABLE;
         }
-        String[] baseLabelValueArray = {job.getFullName(), repoName, String.valueOf(job.isBuildable())};
+        String[] baseLabelValueArray = {getLabelJobName(job), repoName, String.valueOf(job.isBuildable())};
 
         Run lastBuild = job.getLastBuild();
         // Never built
@@ -282,4 +282,11 @@ public class JobCollector extends Collector {
         buildMetrics.jobBuildTestsFailing.calculateMetric(run, buildLabelValueArray);
     }
 
+    private String getLabelJobName(Job job) {
+        boolean isAggregateMultibranchProject = PrometheusConfiguration.get().isAggregateMultibranchProject();
+        if (isAggregateMultibranchProject && job.getParent() != null && job.getParent().getClass().getName() == "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject") {
+            return job.getParent().getFullName();
+        }
+        return job.getFullName();
+    }
 }
