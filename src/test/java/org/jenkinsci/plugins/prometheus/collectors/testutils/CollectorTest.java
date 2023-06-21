@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.prometheus.collectors.testutils;
 
 import io.prometheus.client.Collector;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.List;
@@ -31,6 +32,10 @@ public abstract class CollectorTest {
 
     public void validateValue(Collector.MetricFamilySamples samples, int index, double expectedValue) {
         assertEquals(expectedValue ,samples.samples.get(index).value, 0.0);
+    }
+
+    protected MetricAggregator[] getEmptyMetricAggratators() {
+        return new MetricAggregator[]{};
     }
 
     protected String[] getLabelNames() {

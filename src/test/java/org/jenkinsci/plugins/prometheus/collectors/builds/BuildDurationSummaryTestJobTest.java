@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
 import io.prometheus.client.Collector;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildDurationSummary;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedRunCollectorTest;
 import org.junit.Test;
@@ -20,7 +21,7 @@ public class BuildDurationSummaryTestJobTest extends MockedRunCollectorTest {
 
         Mockito.when(mock.isBuilding()).thenReturn(true);
 
-        BuildDurationSummary sut = new BuildDurationSummary(getLabelNames(), getNamespace(), getSubSystem());
+        BuildDurationSummary sut = new BuildDurationSummary(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
 
@@ -36,7 +37,7 @@ public class BuildDurationSummaryTestJobTest extends MockedRunCollectorTest {
         Mockito.when(mock.isBuilding()).thenReturn(false);
         Mockito.when(mock.getDuration()).thenReturn(1000L);
 
-        BuildDurationSummary sut = new BuildDurationSummary(getLabelNames(), getNamespace(), getSubSystem());
+        BuildDurationSummary sut = new BuildDurationSummary(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
 

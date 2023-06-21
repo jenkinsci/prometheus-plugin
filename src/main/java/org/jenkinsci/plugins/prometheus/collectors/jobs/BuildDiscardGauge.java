@@ -4,12 +4,13 @@ import hudson.model.Job;
 import io.prometheus.client.Gauge;
 import jenkins.model.BuildDiscarder;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildsMetricCollector;
 
 public class BuildDiscardGauge extends BuildsMetricCollector<Job, Gauge> {
 
-    protected BuildDiscardGauge(String[] labelNames, String namespace, String subSystem) {
-        super(labelNames, namespace, subSystem);
+    protected BuildDiscardGauge(MetricAggregator[] metricAggregators, String[] labelNames, String namespace, String subSystem) {
+        super(metricAggregators, labelNames, namespace, subSystem);
     }
 
     @Override
@@ -24,7 +25,7 @@ public class BuildDiscardGauge extends BuildsMetricCollector<Job, Gauge> {
     }
 
     @Override
-    public void calculateMetric(Job jenkinsObject, String[] labelValues) {
+    public void calculateBuildMetric(Job jenkinsObject, String[] labelValues) {
         BuildDiscarder buildDiscarder = jenkinsObject.getBuildDiscarder();
         double status = buildDiscarder != null ? 1.0 : 0.0;
         this.collector.labels(labelValues).set(status);

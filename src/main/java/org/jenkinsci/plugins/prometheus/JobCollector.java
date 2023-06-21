@@ -8,8 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
-import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCollectorFactory;
-import org.jenkinsci.plugins.prometheus.collectors.jobs.JobCollectorFactory;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.jenkinsci.plugins.prometheus.util.Runs;
@@ -202,11 +200,11 @@ public class JobCollector extends Collector {
         String[] buildParameterNamesAsArray = PrometheusConfiguration.get().getLabeledBuildParameterNamesAsArray();
 
         // Add this to the repo as well so I can group by Github Repository
-        String repoName = StringUtils.substringBetween(getLabelJobName(job), "/");
+        String repoName = StringUtils.substringBetween(job.getFullName(), "/");
         if (repoName == null) {
             repoName = NOT_AVAILABLE;
         }
-        String[] baseLabelValueArray = {getLabelJobName(job), repoName, String.valueOf(job.isBuildable())};
+        String[] baseLabelValueArray = {job.getFullName(), repoName, String.valueOf(job.isBuildable())};
 
         Run lastBuild = job.getLastBuild();
         // Never built
@@ -280,13 +278,5 @@ public class JobCollector extends Collector {
         buildMetrics.jobBuildTestsTotal.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsSkipped.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsFailing.calculateMetric(run, buildLabelValueArray);
-    }
-
-    private String getLabelJobName(Job job) {
-        boolean isAggregateMultibranchProject = PrometheusConfiguration.get().isAggregateMultibranchProject();
-        if (isAggregateMultibranchProject && job.getParent() != null && job.getParent().getClass().getName() == "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject") {
-            return job.getParent().getFullName();
-        }
-        return job.getFullName();
     }
 }

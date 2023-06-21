@@ -22,7 +22,7 @@ public class NbBuildsGaugeTest extends JobCollectorTest {
         when(runMap.size()).thenReturn(12);
         when(job.getBuildsAsMap()).thenReturn(runMap);
 
-        NbBuildsGauge sut = new NbBuildsGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins");
+        NbBuildsGauge sut = new NbBuildsGauge(getEmptyMetricAggratators(), new String[]{"jenkins_job", "repo"}, "default", "jenkins");
 
         sut.calculateMetric(job, new String[]{"job1", "NA"});
         List<Collector.MetricFamilySamples> collect = sut.collect();

@@ -21,7 +21,7 @@ public class SkippedTestsGaugeTest extends MockedRunCollectorTest {
         PrometheusConfiguration config = mock(PrometheusConfiguration.class);
         try (MockedStatic<PrometheusConfiguration> configStatic = mockStatic(PrometheusConfiguration.class)) {
             configStatic.when(PrometheusConfiguration::get).thenReturn(config);
-            SkippedTestsGauge sut = new SkippedTestsGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
+            SkippedTestsGauge sut = new SkippedTestsGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "");
 
             sut.calculateMetric(mock, getLabelValues());
 
@@ -42,7 +42,7 @@ public class SkippedTestsGaugeTest extends MockedRunCollectorTest {
             AbstractTestResultAction testResultAction = mock(AbstractTestResultAction.class);
             when(testResultAction.getSkipCount()).thenReturn(100);
             when(mock.getAction(AbstractTestResultAction.class)).thenReturn(testResultAction);
-            SkippedTestsGauge sut = new SkippedTestsGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
+            SkippedTestsGauge sut = new SkippedTestsGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "");
 
             sut.calculateMetric(mock, getLabelValues());
 

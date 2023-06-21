@@ -15,7 +15,7 @@ public class BuildStartGaugeTest extends MockedRunCollectorTest {
     public void testStartTimeGaugeWithNoPrefix() {
         Mockito.when(mock.getStartTimeInMillis()).thenReturn(1000L);
 
-        BuildStartGauge sut = new BuildStartGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
+        BuildStartGauge sut = new BuildStartGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
 
@@ -30,7 +30,7 @@ public class BuildStartGaugeTest extends MockedRunCollectorTest {
     public void testStartTimeGaugeWithPrefix() {
         Mockito.when(mock.getStartTimeInMillis()).thenReturn(1000L);
 
-        BuildStartGauge sut = new BuildStartGauge(getLabelNames(), getNamespace(), getSubSystem(), "latest");
+        BuildStartGauge sut = new BuildStartGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "latest");
 
         sut.calculateMetric(mock, getLabelValues());
 

@@ -14,7 +14,7 @@ public class BuildDiscardGaugeTest extends JobCollectorTest {
     void testCollectResult() {
         when(job.getBuildDiscarder()).thenReturn(null);
 
-        BuildDiscardGauge sut = new BuildDiscardGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins");
+        BuildDiscardGauge sut = new BuildDiscardGauge(getEmptyMetricAggratators(), new String[]{"jenkins_job", "repo"}, "default", "jenkins");
 
         sut.calculateMetric(job, new String[]{"job1", "NA"});
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -32,7 +32,7 @@ public class BuildDiscardGaugeTest extends JobCollectorTest {
     public void testBuildDiscarderActive() {
         when(job.getBuildDiscarder()).thenReturn(new LogRotator(1,2,3,4));
 
-        BuildDiscardGauge sut = new BuildDiscardGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins");
+        BuildDiscardGauge sut = new BuildDiscardGauge(getEmptyMetricAggratators(), new String[]{"jenkins_job", "repo"}, "default", "jenkins");
 
         sut.calculateMetric(job, new String[]{"job1", "NA"});
         List<Collector.MetricFamilySamples> collect = sut.collect();

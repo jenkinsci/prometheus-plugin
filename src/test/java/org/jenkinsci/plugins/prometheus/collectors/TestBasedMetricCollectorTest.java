@@ -20,14 +20,14 @@ public class TestBasedMetricCollectorTest extends MockedRunCollectorTest {
         try (MockedStatic<PrometheusConfiguration> configStatic = mockStatic(PrometheusConfiguration.class)) {
             configStatic.when(() -> PrometheusConfiguration.get()).thenReturn(config);
 
-            TestBasedMetricCollector sut = new TestBasedMetricCollector(getLabelNames(), getNamespace(), getSubSystem(), "") {
+            TestBasedMetricCollector sut = new TestBasedMetricCollector(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "") {
                 @Override
                 protected Collector initCollector() {
                     return null;
                 }
 
                 @Override
-                public void calculateMetric(Object jenkinsObject, String[] labelValues) {
+                public void calculateBuildMetric(Object jenkinsObject, String[] labelValues) {
                     // do nothing
                 }
             };

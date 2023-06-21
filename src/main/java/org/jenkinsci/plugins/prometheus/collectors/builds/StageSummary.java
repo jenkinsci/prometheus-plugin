@@ -7,6 +7,7 @@ import hudson.model.Run;
 import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.slf4j.Logger;
@@ -21,8 +22,8 @@ public class StageSummary extends BuildsMetricCollector<Run, Summary> {
     private static final String NOT_AVAILABLE = "NA";
     private static final Logger LOGGER = LoggerFactory.getLogger(StageSummary.class);
 
-    protected StageSummary(String[] labelNames, String namespace, String subsystem, String namePrefix) {
-        super(labelNames, namespace, subsystem, namePrefix);
+    protected StageSummary(MetricAggregator[] metricAggregators, String[] labelNames, String namespace, String subsystem, String namePrefix) {
+        super(metricAggregators, labelNames, namespace, subsystem, namePrefix);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class StageSummary extends BuildsMetricCollector<Run, Summary> {
     }
 
     @Override
-    public void calculateMetric(Run jenkinsObject, String[] labelValues) {
+    public void calculateBuildMetric(Run jenkinsObject, String[] labelValues) {
         if (jenkinsObject.isBuilding()) {
             return;
         }

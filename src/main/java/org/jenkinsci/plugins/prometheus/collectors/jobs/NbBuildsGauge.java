@@ -3,13 +3,14 @@ package org.jenkinsci.plugins.prometheus.collectors.jobs;
 import hudson.model.Job;
 import io.prometheus.client.Gauge;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildsMetricCollector;
 
 
 public class NbBuildsGauge extends BuildsMetricCollector<Job, Gauge> {
 
-    protected NbBuildsGauge(String[] labelNames, String namespace, String subsystem) {
-        super(labelNames, namespace, subsystem);
+    protected NbBuildsGauge(MetricAggregator[] metricAggregators, String[] labelNames, String namespace, String subsystem) {
+        super(metricAggregators, labelNames, namespace, subsystem);
     }
 
     @Override
@@ -24,7 +25,7 @@ public class NbBuildsGauge extends BuildsMetricCollector<Job, Gauge> {
     }
 
     @Override
-    public void calculateMetric(Job jenkinsObject, String[] labelValues) {
+    public void calculateBuildMetric(Job jenkinsObject, String[] labelValues) {
         int nbBuilds = jenkinsObject.getBuildsAsMap().size();
         this.collector.labels(labelValues).set(nbBuilds);
     }

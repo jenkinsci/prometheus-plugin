@@ -26,7 +26,7 @@ public class CurrentRunDurationGaugeTest extends JobCollectorTest {
         when(currentRun.getStartTimeInMillis()).thenReturn(1000L);
         when(job.getLastBuild()).thenReturn(currentRun);
 
-        CurrentRunDurationGauge sut = new CurrentRunDurationGauge(getLabelNames(), getNamespace(), getSubSystem());
+        CurrentRunDurationGauge sut = new CurrentRunDurationGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem());
 
         try (MockedStatic<Clock> mock = Mockito.mockStatic(Clock.class)) {
 
@@ -52,7 +52,7 @@ public class CurrentRunDurationGaugeTest extends JobCollectorTest {
         when(currentRun.getStartTimeInMillis()).thenReturn(1000L);
         when(job.getLastBuild()).thenReturn(currentRun);
 
-        CurrentRunDurationGauge sut = new CurrentRunDurationGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins");
+        CurrentRunDurationGauge sut = new CurrentRunDurationGauge(getEmptyMetricAggratators(), new String[]{"jenkins_job", "repo"}, "default", "jenkins");
 
         sut.calculateMetric(job, new String[]{"job1", "NA"});
 
@@ -72,7 +72,7 @@ public class CurrentRunDurationGaugeTest extends JobCollectorTest {
         when(currentRun.isBuilding()).thenReturn(false);
         when(job.getLastBuild()).thenReturn(currentRun);
 
-        CurrentRunDurationGauge sut = new CurrentRunDurationGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins");
+        CurrentRunDurationGauge sut = new CurrentRunDurationGauge(getEmptyMetricAggratators(), new String[]{"jenkins_job", "repo"}, "default", "jenkins");
 
         sut.calculateMetric(job, new String[]{"job1", "NA"});
 

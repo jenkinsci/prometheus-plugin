@@ -20,7 +20,7 @@ public class StageSummaryTest extends MockedRunCollectorTest {
     public void testNothingCalculatedWhenJobIsBuilding() {
         Mockito.when(mock.isBuilding()).thenReturn(true);
 
-        StageSummary sut = new StageSummary(getLabelNames(), getNamespace(), getSubSystem(), "");
+        StageSummary sut = new StageSummary(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
 
@@ -36,7 +36,7 @@ public class StageSummaryTest extends MockedRunCollectorTest {
         Mockito.when(mock.isBuilding()).thenReturn(false);
 
 
-        StageSummary sut = new StageSummary(getLabelNames(), getNamespace(), getSubSystem(), "");
+        StageSummary sut = new StageSummary(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
 
@@ -50,7 +50,7 @@ public class StageSummaryTest extends MockedRunCollectorTest {
     @Test
     public void testNothingCalculatedWhenThereIsNoWorkflowExecution() {
 
-        StageSummary sut = new StageSummary(getLabelNames(), getNamespace(), getSubSystem(), "");
+        StageSummary sut = new StageSummary(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
 

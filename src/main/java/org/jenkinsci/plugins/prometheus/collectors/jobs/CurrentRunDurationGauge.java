@@ -4,14 +4,15 @@ import hudson.model.Job;
 import hudson.model.Run;
 import io.prometheus.client.Gauge;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildsMetricCollector;
 
 import java.time.Clock;
 
 public class CurrentRunDurationGauge extends BuildsMetricCollector<Job, Gauge> {
 
-    protected CurrentRunDurationGauge(String[] labelNames, String namespace, String subSystem) {
-        super(labelNames, namespace, subSystem);
+    protected CurrentRunDurationGauge(MetricAggregator[] metricAggregators, String[] labelNames, String namespace, String subSystem) {
+        super(metricAggregators, labelNames, namespace, subSystem);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class CurrentRunDurationGauge extends BuildsMetricCollector<Job, Gauge> {
     }
 
     @Override
-    public void calculateMetric(Job jenkinsObject, String[] labelValues) {
+    public void calculateBuildMetric(Job jenkinsObject, String[] labelValues) {
 
         Run runningBuild = jenkinsObject.getLastBuild();
         if (runningBuild != null && runningBuild.isBuilding()) {

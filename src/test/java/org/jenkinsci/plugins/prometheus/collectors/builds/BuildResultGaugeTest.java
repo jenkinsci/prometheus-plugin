@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 
 import hudson.model.Result;
 import io.prometheus.client.Collector;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedRunCollectorTest;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -15,7 +16,7 @@ public class BuildResultGaugeTest extends MockedRunCollectorTest {
     public void testSuccessResultWithNoPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.SUCCESS);
 
-        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
+        BuildResultGauge sut = new BuildResultGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace() ,getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -30,7 +31,7 @@ public class BuildResultGaugeTest extends MockedRunCollectorTest {
     public void testSuccessResultWithPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.SUCCESS);
 
-        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "last");
+        BuildResultGauge sut = new BuildResultGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace() ,getSubSystem(), "last");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -45,7 +46,7 @@ public class BuildResultGaugeTest extends MockedRunCollectorTest {
     public void testUnstableResultWithNoPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.UNSTABLE);
 
-        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
+        BuildResultGauge sut = new BuildResultGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace() ,getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -60,7 +61,7 @@ public class BuildResultGaugeTest extends MockedRunCollectorTest {
     public void testFailureResultWithNoPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.FAILURE);
 
-        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
+        BuildResultGauge sut = new BuildResultGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace() ,getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -75,7 +76,7 @@ public class BuildResultGaugeTest extends MockedRunCollectorTest {
     public void testNotBuiltResultWithNoPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.NOT_BUILT);
 
-        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
+        BuildResultGauge sut = new BuildResultGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace() ,getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -90,7 +91,7 @@ public class BuildResultGaugeTest extends MockedRunCollectorTest {
     public void testAbortedResultWithNoPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.ABORTED);
 
-        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
+        BuildResultGauge sut = new BuildResultGauge(new MetricAggregator[]{}, getLabelNames(), getNamespace() ,getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();

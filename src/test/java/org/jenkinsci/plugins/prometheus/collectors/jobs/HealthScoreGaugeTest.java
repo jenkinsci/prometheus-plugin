@@ -18,7 +18,7 @@ public class HealthScoreGaugeTest extends JobCollectorTest {
         healthReport.setScore(44);
         when(job.getBuildHealth()).thenReturn(healthReport);
 
-        HealthScoreGauge sut = new HealthScoreGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins");
+        HealthScoreGauge sut = new HealthScoreGauge(getEmptyMetricAggratators(), new String[]{"jenkins_job", "repo"}, "default", "jenkins");
 
         sut.calculateMetric(job, new String[]{"job1", "NA"});
         List<Collector.MetricFamilySamples> collect = sut.collect();

@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
 import io.prometheus.client.Collector;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedRunCollectorTest;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -15,7 +16,7 @@ public class BuildDurationGaugeTest extends MockedRunCollectorTest {
         Mockito.when(mock.isBuilding()).thenReturn(false);
         Mockito.when(mock.getDuration()).thenReturn(1000L);
 
-        BuildDurationGauge sut = new BuildDurationGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
+        BuildDurationGauge sut = new BuildDurationGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
 
@@ -29,7 +30,7 @@ public class BuildDurationGaugeTest extends MockedRunCollectorTest {
     public void testCalculateDurationIsNotCalculatedWhenRunIsBuilding() {
         Mockito.when(mock.isBuilding()).thenReturn(true);
 
-        BuildDurationGauge sut = new BuildDurationGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
+        BuildDurationGauge sut = new BuildDurationGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
 

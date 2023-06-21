@@ -5,11 +5,12 @@ import hudson.tasks.test.AbstractTestResultAction;
 import io.prometheus.client.Gauge;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.TestBasedMetricCollector;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
 
 public class SkippedTestsGauge extends TestBasedMetricCollector<Run, Gauge> {
 
-    protected SkippedTestsGauge(String[] labelNames, String namespace, String subsystem, String namePrefix) {
-        super(labelNames, namespace, subsystem, namePrefix);
+    protected SkippedTestsGauge(MetricAggregator[] metricAggregators, String[] labelNames, String namespace, String subsystem, String namePrefix) {
+        super(metricAggregators, labelNames, namespace, subsystem, namePrefix);
     }
 
     @Override
@@ -23,7 +24,7 @@ public class SkippedTestsGauge extends TestBasedMetricCollector<Run, Gauge> {
     }
 
     @Override
-    public void calculateMetric(Run jenkinsObject, String[] labelValues) {
+    public void calculateBuildMetric(Run jenkinsObject, String[] labelValues) {
         if (!canBeCalculated(jenkinsObject)) {
             return;
         }

@@ -3,11 +3,12 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 import hudson.model.Run;
 import io.prometheus.client.Gauge;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
 
 public class BuildResultGauge extends BuildsMetricCollector<Run, Gauge> {
 
-    protected BuildResultGauge(String[] labelNames, String namespace, String subsystem, String namePrefix) {
-        super(labelNames, namespace, subsystem, namePrefix);
+    protected BuildResultGauge(MetricAggregator[] metricAggregators, String[] labelNames, String namespace, String subsystem, String namePrefix) {
+        super(metricAggregators, labelNames, namespace, subsystem, namePrefix);
     }
 
     @Override
@@ -21,7 +22,7 @@ public class BuildResultGauge extends BuildsMetricCollector<Run, Gauge> {
     }
 
     @Override
-    public void calculateMetric(Run jenkinsObject, String[] labelValues) {
+    public void calculateBuildMetric(Run jenkinsObject, String[] labelValues) {
             /*
              * _last_build_result _last_build_result_ordinal
              *

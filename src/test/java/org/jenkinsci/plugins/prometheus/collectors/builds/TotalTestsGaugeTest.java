@@ -21,7 +21,7 @@ public class TotalTestsGaugeTest extends MockedRunCollectorTest {
         PrometheusConfiguration config = mock(PrometheusConfiguration.class);
         try (MockedStatic<PrometheusConfiguration> configStatic = mockStatic(PrometheusConfiguration.class)) {
             configStatic.when(PrometheusConfiguration::get).thenReturn(config);
-            TotalTestsGauge sut = new TotalTestsGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
+            TotalTestsGauge sut = new TotalTestsGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "");
 
             sut.calculateMetric(mock, getLabelValues());
 
@@ -42,7 +42,7 @@ public class TotalTestsGaugeTest extends MockedRunCollectorTest {
             AbstractTestResultAction testResultAction = mock(AbstractTestResultAction.class);
             when(testResultAction.getTotalCount()).thenReturn(100);
             when(mock.getAction(AbstractTestResultAction.class)).thenReturn(testResultAction);
-            TotalTestsGauge sut = new TotalTestsGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
+            TotalTestsGauge sut = new TotalTestsGauge(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem(), "");
 
             sut.calculateMetric(mock, getLabelValues());
 

@@ -7,11 +7,14 @@ import hudson.model.LoadStatistics;
 import hudson.model.Run;
 import io.prometheus.client.Collector;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.PipelineMultibranchAggregator;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.disk.DiskCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.executors.ExecutorCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.jenkins.JenkinsCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.jobs.JobCollectorFactory;
+import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 
 import java.nio.file.FileStore;
 
@@ -23,20 +26,24 @@ public class CollectorFactory {
     private final ExecutorCollectorFactory executorCollectorFactory;
     private final DiskCollectorFactory diskCollectorFactory;
 
+    private final MetricAggregator[] metricAggregators;
+
     public CollectorFactory() {
         buildCollectorFactory = new BuildCollectorFactory();
         jobCollectorFactory = new JobCollectorFactory();
         jenkinsCollectorFactory = new JenkinsCollectorFactory();
         executorCollectorFactory = new ExecutorCollectorFactory();
         diskCollectorFactory = new DiskCollectorFactory();
+
+        metricAggregators = getMetricAggregators();
     }
 
     public MetricCollector<Run, ? extends Collector> createRunCollector(CollectorType type, String[] labelNames, String prefix) {
-        return buildCollectorFactory.createCollector(type, labelNames, prefix);
+        return buildCollectorFactory.createCollector(type, metricAggregators, labelNames, prefix);
     }
 
     public MetricCollector<Job, ? extends Collector> createJobCollector(CollectorType type, String[] labelNames) {
-        return jobCollectorFactory.createCollector(type, labelNames);
+        return jobCollectorFactory.createCollector(type, metricAggregators, labelNames);
     }
 
     public MetricCollector<Jenkins, ? extends Collector> createJenkinsCollector(CollectorType type, String[] labelNames) {
@@ -57,5 +64,13 @@ public class CollectorFactory {
 
     public MetricCollector<FileStore, ? extends Collector> createFileStoreCollector(CollectorType type, String[] labelNames) {
         return diskCollectorFactory.createFileStoreCollector(type, labelNames);
+    }
+
+    private MetricAggregator[] getMetricAggregators() {
+        MetricAggregator[] metricAggregators = {};
+        if (PrometheusConfiguration.get().isAggregateMultibranchProject()) {
+            metricAggregators = new MetricAggregator[]{new PipelineMultibranchAggregator()};
+        }
+        return  metricAggregators;
     }
 }

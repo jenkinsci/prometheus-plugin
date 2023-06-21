@@ -44,7 +44,7 @@ public class BuildSuccessfulCounterTest extends MockedRunCollectorTest {
     }
 
     private void testSingleCalculation() {
-        BuildSuccessfulCounter sut = new BuildSuccessfulCounter(getLabelNames(), getNamespace(), getSubSystem());
+        BuildSuccessfulCounter sut = new BuildSuccessfulCounter(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
 
@@ -68,7 +68,7 @@ public class BuildSuccessfulCounterTest extends MockedRunCollectorTest {
     public void testCounterIsIncreasedOnBuildResultFailure() {
         when(mock.getResult()).thenReturn(Result.SUCCESS);
 
-        BuildSuccessfulCounter sut = new BuildSuccessfulCounter(getLabelNames(), getNamespace(), getSubSystem());
+        BuildSuccessfulCounter sut = new BuildSuccessfulCounter(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
         sut.calculateMetric(mock, getLabelValues());
@@ -91,7 +91,7 @@ public class BuildSuccessfulCounterTest extends MockedRunCollectorTest {
     }
 
     private void testNonSuccessStateBuild() {
-        BuildSuccessfulCounter sut = new BuildSuccessfulCounter(getLabelNames(), getNamespace(), getSubSystem());
+        BuildSuccessfulCounter sut = new BuildSuccessfulCounter(getEmptyMetricAggratators(), getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
 

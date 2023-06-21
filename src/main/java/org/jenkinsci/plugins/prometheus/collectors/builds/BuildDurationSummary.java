@@ -3,11 +3,12 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 import hudson.model.Run;
 import io.prometheus.client.Summary;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.collectors.aggregators.MetricAggregator;
 
 public class BuildDurationSummary extends BuildsMetricCollector<Run, Summary> {
 
-    protected BuildDurationSummary(String[] labelNames, String namespace, String subSystem) {
-        super(labelNames, namespace, subSystem);
+    protected BuildDurationSummary(MetricAggregator[] metricAggregators, String[] labelNames, String namespace, String subSystem) {
+        super(metricAggregators, labelNames, namespace, subSystem);
     }
 
     @Override
@@ -21,7 +22,7 @@ public class BuildDurationSummary extends BuildsMetricCollector<Run, Summary> {
                 .create();
     }
     @Override
-    public void calculateMetric(Run jenkinsObject, String[] labelValues) {
+    public void calculateBuildMetric(Run jenkinsObject, String[] labelValues) {
         if (!jenkinsObject.isBuilding()) {
             long duration = jenkinsObject.getDuration();
             this.collector.labels(labelValues).observe(duration);
