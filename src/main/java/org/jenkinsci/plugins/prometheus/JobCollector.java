@@ -42,12 +42,11 @@ public class JobCollector extends Collector {
     private Counter jobSuccessCount;
     private Counter jobFailedCount;
     private HealthScoreGauge jobHealthScoreGauge;
-
     private NbBuildsGauge nbBuildsGauge;
-
     private BuildDiscardGauge buildDiscardGauge;
     private CurrentRunDurationGauge currentRunDurationGauge;
     private Summary nodeTimeSummary;
+    private Summary queuingTimeSummary;
 
     private static class BuildMetrics {
 
@@ -203,6 +202,13 @@ public class JobCollector extends Collector {
                 .help("Summary of Jenkins node usage time")
                 .create();
 
+        queuingTimeSummary = Summary.build()
+                .name(fullname + "_queuing_time_milliseconds_summary")
+                .subsystem(subsystem).namespace(namespace)
+                .labelNames(labelNameArray)
+                .help("Summary of Jenkins time spent in queue in milliseconds by Job")
+                .create();
+
         // This metric uses "base" labels as it is just the health score reported
         // by the job object and the optional labels params and status don't make much
         // sense in this context.
@@ -246,6 +252,7 @@ public class JobCollector extends Collector {
         addSamples(samples, jobSuccessCount.collect(), "Adding [{}] samples from counter ({})");
         addSamples(samples, jobFailedCount.collect(), "Adding [{}] samples from counter ({})");
         addSamples(samples, nodeTimeSummary.collect(), "Adding [{}] samples from summary ({})");
+        addSamples(samples, queuingTimeSummary.collect(), "Adding [{}] samples from summary ({})");
         addSamples(samples, jobHealthScoreGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, nbBuildsGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, buildDiscardGauge.collect(), "Adding [{}] samples from gauge ({})");
@@ -346,7 +353,11 @@ public class JobCollector extends Collector {
                                 .map(SubTaskTimeInQueueAction::getExecutingDurationMillis)
                                 .reduce(0L, Long::sum)
                 );
-                nodeTimeSummary.labels(labelValueArray).observe(1.0);
+                queuingTimeSummary.labels(labelValueArray).observe(
+                        run.getActions(SubTaskTimeInQueueAction.class).stream()
+                                .map(SubTaskTimeInQueueAction::getQueuingDurationMillis)
+                                .reduce(0L, Long::sum)
+                );
                 if (runResult != null && !run.isBuilding()) {
                     if (runResult.ordinal == 0 || runResult.ordinal == 1) {
                         jobSuccessCount.labels(labelValueArray).inc();
