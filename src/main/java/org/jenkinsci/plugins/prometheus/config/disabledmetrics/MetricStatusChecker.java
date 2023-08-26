@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.prometheus.config.disabledmetrics;
 
-import org.jenkinsci.plugins.prometheus.collectors.builds.StageSummary;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +16,19 @@ public class MetricStatusChecker {
 
         PrometheusConfiguration configuration = PrometheusConfiguration.get();
         if (configuration == null) {
+            LOGGER.warn("Cannot check if metric is enabled. Unable to get PrometheusConfiguration");
             return true;
         }
 
         DisabledMetricConfig disabledMetricConfig = configuration.getDisabledMetricConfig();
         if (disabledMetricConfig == null) {
+            LOGGER.debug("Cannot check if metric is enabled. No DisabledMetricConfig.");
             return true;
         }
 
         List<Entry> entries = disabledMetricConfig.getEntries();
         if (entries == null || entries.isEmpty()) {
+            LOGGER.debug("Cannot check if metric is enabled. No entries specified in DisabledMetricConfig.");
             return true;
         }
 
