@@ -34,7 +34,7 @@ public class RegexDisabledMetric extends Entry {
 
     @Override
     public Descriptor<Entry> getDescriptor() {
-        return new NamedDisabledMetric.DescriptorImpl();
+        return new DescriptorImpl();
     }
 
     @Extension

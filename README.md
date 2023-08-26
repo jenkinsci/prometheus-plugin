@@ -13,6 +13,8 @@ Please note that the documentation is a WIP.
 - Metrics from [Metrics-plugin](https://github.com/jenkinsci/metrics-plugin)
 - Metrics from this plugin. Refer [Prometheus-plugin](docs/metrics/index.md)
 
+## Configuring the plugin
+You can find some examples in this documentation [Configuring Plugin](docs/configuration/configuration.md)
 
 ## Environment variables
 
