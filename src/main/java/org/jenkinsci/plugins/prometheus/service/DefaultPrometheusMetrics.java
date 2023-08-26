@@ -35,7 +35,7 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
         collectorRegistry.register(new ExecutorCollector());
 
         // other collectors from other plugins
-        ExtensionList.lookup(Collector.class).forEach(c -> collectorRegistry.register(c));
+        ExtensionList.lookup(Collector.class).forEach(collectorRegistry::register);
 
         DefaultExports.initialize();
 
