@@ -14,8 +14,8 @@ public class ExecutorsBusyGauge extends BaseMetricCollector<LoadStatistics.LoadS
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.EXECUTORS_BUSY_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.EXECUTORS_BUSY_GAUGE;
     }
 
     @Override

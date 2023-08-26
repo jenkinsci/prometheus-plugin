@@ -13,8 +13,8 @@ public class HealthScoreGauge extends BuildsMetricCollector<Job<?, ?>, Gauge> {
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.HEALTH_SCORE_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.HEALTH_SCORE_GAUGE;
     }
 
     @Override

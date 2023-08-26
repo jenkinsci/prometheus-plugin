@@ -12,8 +12,8 @@ public class BuildDurationSummary extends BuildsMetricCollector<Run<?, ?>, Summa
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.BUILD_DURATION_SUMMARY.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.BUILD_DURATION_SUMMARY;
     }
 
     @Override

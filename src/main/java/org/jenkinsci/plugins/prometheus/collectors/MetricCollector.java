@@ -24,4 +24,10 @@ public interface MetricCollector<T, I extends Collector> {
      * Calling this method basically calls I.collect()
      */
     List<I.MetricFamilySamples> collect();
+
+    /**
+     * Calling this method will return the resulting name of the metric with base name and prefix
+     * @return the full name of the collector
+     */
+    String calculateName();
 }

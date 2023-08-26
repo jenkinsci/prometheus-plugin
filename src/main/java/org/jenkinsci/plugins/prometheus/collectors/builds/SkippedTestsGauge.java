@@ -14,8 +14,8 @@ public class SkippedTestsGauge extends TestBasedMetricCollector<Run<?, ?>, Gauge
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.SKIPPED_TESTS_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.SKIPPED_TESTS_GAUGE;
     }
 
     @Override

@@ -13,8 +13,8 @@ public class JenkinsVersionInfo extends BaseMetricCollector<Jenkins, Info> {
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.JENKINS_VERSION_INFO_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.JENKINS_VERSION_INFO_GAUGE;
     }
 
     @Override

@@ -14,8 +14,8 @@ public class ExecutorsQueueLengthGauge extends BaseMetricCollector<LoadStatistic
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.EXECUTORS_QUEUE_LENGTH_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.EXECUTORS_QUEUE_LENGTH_GAUGE;
     }
 
     @Override

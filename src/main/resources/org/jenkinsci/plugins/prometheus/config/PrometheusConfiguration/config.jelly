@@ -57,7 +57,7 @@
       <f:checkbox/>
     </f:entry>
     <f:entry>
-      <f:optionalProperty field="disabledMetricConfig" title="Disable metrics"/>
+      <f:optionalProperty title="Disable metrics" field="disabledMetricConfig" />
     </f:entry>
   </f:section>
 </j:jelly>

@@ -8,8 +8,6 @@ import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.collectors.NoOpMetricCollector;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 
-import static org.jenkinsci.plugins.prometheus.collectors.CollectorType.*;
-
 /**
  * All Collectors need to be created via the CollectorFactory
  */
@@ -22,13 +20,16 @@ public class JenkinsCollectorFactory extends BaseCollectorFactory {
     public MetricCollector<Jenkins, ? extends Collector> createCollector(CollectorType type, String[] labelNames) {
         switch (type) {
             case JENKINS_UP_GAUGE:
-                return isEnabledViaConfig(JENKINS_UP_GAUGE) ? new JenkinsUpGauge(labelNames, namespace, subsystem) : new NoOpMetricCollector<>();
+                return saveBuildCollector(new JenkinsUpGauge(labelNames, namespace, subsystem));
             case NODES_ONLINE_GAUGE:
-                return isEnabledViaConfig(NODES_ONLINE_GAUGE) && isNodeOnlineGaugeEnabled() ? new NodesOnlineGauge(labelNames, namespace, subsystem) : new NoOpMetricCollector<>();
+                if (!isNodeOnlineGaugeEnabled()) {
+                    return new NoOpMetricCollector<>();
+                }
+                return saveBuildCollector(new NodesOnlineGauge(labelNames, namespace, subsystem));
             case JENKINS_UPTIME_GAUGE:
-                return isEnabledViaConfig(JENKINS_UPTIME_GAUGE) ? new JenkinsUptimeGauge(labelNames, namespace, subsystem) : new NoOpMetricCollector<>();
+                return saveBuildCollector(new JenkinsUptimeGauge(labelNames, namespace, subsystem));
             case JENKINS_VERSION_INFO_GAUGE:
-                return isEnabledViaConfig(JENKINS_VERSION_INFO_GAUGE) ? new JenkinsVersionInfo(labelNames, namespace, subsystem) : new NoOpMetricCollector<>();
+                return saveBuildCollector(new JenkinsVersionInfo(labelNames, namespace, subsystem));
             default:
                 return new NoOpMetricCollector<>();
         }

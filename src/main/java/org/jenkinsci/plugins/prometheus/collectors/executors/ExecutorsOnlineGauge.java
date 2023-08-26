@@ -14,8 +14,8 @@ public class ExecutorsOnlineGauge extends BaseMetricCollector<LoadStatistics.Loa
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.EXECUTORS_ONLINE_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.EXECUTORS_ONLINE_GAUGE;
     }
 
     @Override

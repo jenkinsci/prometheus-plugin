@@ -13,8 +13,8 @@ public class BuildSuccessfulCounter extends BuildsMetricCollector<Run<?, ?>, Cou
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.BUILD_SUCCESSFUL_COUNTER.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.BUILD_SUCCESSFUL_COUNTER;
     }
 
     @Override

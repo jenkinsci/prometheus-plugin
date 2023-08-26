@@ -34,7 +34,7 @@ public abstract class BaseMetricCollector<T, I extends SimpleCollector<?>> imple
     /**
      * @return - the name of the collector without subsystem, namespace, prefix
      */
-    protected abstract String getCollectorName();
+    protected abstract CollectorType getCollectorType();
 
     /**
      * @return - the help text which should be displayed
@@ -48,7 +48,7 @@ public abstract class BaseMetricCollector<T, I extends SimpleCollector<?>> imple
 
     protected I initCollector() {
         return getCollectorBuilder()
-                .name(calculateName(getCollectorName()))
+                .name(calculateName())
                 .subsystem(subsystem)
                 .namespace(namespace)
                 .labelNames(labelNames)
@@ -61,7 +61,8 @@ public abstract class BaseMetricCollector<T, I extends SimpleCollector<?>> imple
         return collector.collect();
     }
 
-    protected String calculateName(String name) {
+    public String calculateName() {
+        String name = getCollectorType().getName();
         StringBuilder sb = new StringBuilder();
         if (isBaseNameSet()) {
             sb.append(getBaseName()).append(SEPARATOR);

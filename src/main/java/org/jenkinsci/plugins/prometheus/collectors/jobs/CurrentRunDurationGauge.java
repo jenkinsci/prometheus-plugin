@@ -16,8 +16,8 @@ public class CurrentRunDurationGauge extends BuildsMetricCollector<Job<?, ?>, Ga
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.CURRENT_RUN_DURATION_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.CURRENT_RUN_DURATION_GAUGE;
     }
 
     @Override

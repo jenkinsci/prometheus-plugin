@@ -16,4 +16,9 @@ public class NoOpMetricCollector<T, I extends Collector> implements MetricCollec
         // do nothing
         return new ArrayList<>();
     }
+
+    @Override
+    public String calculateName() {
+        return "";
+    }
 }

@@ -14,8 +14,8 @@ public class BuildDiscardGauge extends BuildsMetricCollector<Job<?, ?>, Gauge> {
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.BUILD_DISCARD_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.BUILD_DISCARD_GAUGE;
     }
 
     @Override

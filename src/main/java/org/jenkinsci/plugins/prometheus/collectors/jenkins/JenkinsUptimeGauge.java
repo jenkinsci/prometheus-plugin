@@ -16,8 +16,8 @@ public class JenkinsUptimeGauge extends BaseMetricCollector<Jenkins, Gauge> {
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.JENKINS_UPTIME_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.JENKINS_UPTIME_GAUGE;
     }
 
     @Override

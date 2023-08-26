@@ -13,8 +13,8 @@ public class BuildFailedCounter extends BuildsMetricCollector<Run<?, ?>, Counter
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.BUILD_FAILED_COUNTER.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.BUILD_FAILED_COUNTER;
     }
 
     @Override

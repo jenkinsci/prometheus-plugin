@@ -1,0 +1,10 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core">
+    <div>
+        <p>
+            It's possible to disable metrics which are calculated by this plugin.
+            Disabling metrics results in a smaller prometheus endpoint output which makes the scraping faster.
+            In case you are not interested in a certain metric you can disable it here
+        </p>
+    </div>
+</j:jelly>

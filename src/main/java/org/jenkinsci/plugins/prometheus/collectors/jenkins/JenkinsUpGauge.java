@@ -13,8 +13,8 @@ public class JenkinsUpGauge extends BaseMetricCollector<Jenkins, Gauge> {
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.JENKINS_UP_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.JENKINS_UP_GAUGE;
     }
 
     @Override

@@ -27,8 +27,8 @@ public class StageSummary extends BuildsMetricCollector<Run<?, ?>, Summary> {
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.STAGE_SUMMARY.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.STAGE_SUMMARY;
     }
 
     @Override

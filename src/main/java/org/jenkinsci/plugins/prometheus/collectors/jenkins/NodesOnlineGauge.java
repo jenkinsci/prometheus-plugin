@@ -15,8 +15,8 @@ public class NodesOnlineGauge extends BaseMetricCollector<Jenkins, Gauge> {
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.NODES_ONLINE_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.NODES_ONLINE_GAUGE;
     }
 
     @Override

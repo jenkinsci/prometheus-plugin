@@ -30,8 +30,8 @@ public class TestBasedMetricCollectorTest extends MockedRunCollectorTest {
                 }
 
                 @Override
-                protected String getCollectorName() {
-                    return null;
+                protected CollectorType getCollectorType() {
+                    return CollectorType.BUILD_DURATION_GAUGE;
                 }
 
                 @Override

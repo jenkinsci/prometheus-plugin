@@ -14,8 +14,8 @@ public class ExecutorsDefinedGauge extends BaseMetricCollector<LoadStatistics.Lo
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.EXECUTORS_DEFINED_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.EXECUTORS_DEFINED_GAUGE;
     }
 
     @Override

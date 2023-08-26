@@ -13,8 +13,8 @@ public class TotalTestsGauge extends TestBasedMetricCollector<Run<?, ?>, Gauge> 
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.TOTAL_TESTS_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.TOTAL_TESTS_GAUGE;
     }
 
     @Override

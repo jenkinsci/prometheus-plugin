@@ -14,8 +14,8 @@ public class ExecutorsConnectingGauge extends BaseMetricCollector<LoadStatistics
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.EXECUTORS_CONNECTING_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.EXECUTORS_CONNECTING_GAUGE;
     }
 
     @Override

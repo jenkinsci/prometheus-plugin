@@ -13,8 +13,8 @@ public class DiskUsageBytesGauge extends BaseMetricCollector<DiskItem, Gauge> {
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.DISK_USAGE_BYTES_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.DISK_USAGE_BYTES_GAUGE;
     }
 
     @Override

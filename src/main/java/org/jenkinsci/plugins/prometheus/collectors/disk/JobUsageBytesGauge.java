@@ -13,8 +13,8 @@ public class JobUsageBytesGauge extends BaseMetricCollector<JobDiskItem, Gauge> 
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.JOB_USAGE_BYTES_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.JOB_USAGE_BYTES_GAUGE;
     }
 
     @Override

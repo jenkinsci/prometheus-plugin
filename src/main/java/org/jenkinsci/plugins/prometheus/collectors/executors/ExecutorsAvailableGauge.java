@@ -14,8 +14,8 @@ public class ExecutorsAvailableGauge extends BaseMetricCollector<LoadStatistics.
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.EXECUTORS_AVAILABLE_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.EXECUTORS_AVAILABLE_GAUGE;
     }
 
     @Override

@@ -12,8 +12,8 @@ public class BuildResultGauge extends BuildsMetricCollector<Run<?, ?>, Gauge> {
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.BUILD_RESULT_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.BUILD_RESULT_GAUGE;
     }
 
     @Override

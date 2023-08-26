@@ -14,8 +14,8 @@ public class FailedTestsGauge extends TestBasedMetricCollector<Run<?, ?>, Gauge>
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.BUILD_FAILED_TESTS.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.BUILD_FAILED_TESTS;
     }
 
     @Override

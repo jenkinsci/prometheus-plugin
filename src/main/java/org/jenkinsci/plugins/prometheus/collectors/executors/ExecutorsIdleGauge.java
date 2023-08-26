@@ -14,8 +14,8 @@ public class ExecutorsIdleGauge extends BaseMetricCollector<LoadStatistics.LoadS
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.EXECUTORS_IDLE_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.EXECUTORS_IDLE_GAUGE;
     }
 
     @Override

@@ -13,8 +13,12 @@ public abstract class BaseCollectorFactory {
         subsystem = ConfigurationUtils.getSubSystem();
     }
 
-    protected boolean isEnabledViaConfig(CollectorType type) {
-        String fullName = namespace + "_" + subsystem + "_" + type.getName();
-        return MetricStatusChecker.isEnabled(fullName);
+
+    protected MetricCollector saveBuildCollector(MetricCollector collector) {
+        String fullName = namespace + "_" + subsystem + "_" + collector.calculateName();
+        if (MetricStatusChecker.isEnabled(fullName)) {
+            return collector;
+        }
+        return new NoOpMetricCollector<>();
     }
 }

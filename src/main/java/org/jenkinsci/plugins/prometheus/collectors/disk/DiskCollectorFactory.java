@@ -21,14 +21,14 @@ public class DiskCollectorFactory extends BaseCollectorFactory {
 
     public MetricCollector<DiskItem, ? extends Collector> createDiskItemCollector(CollectorType type, String[] labelNames) {
         if (Objects.requireNonNull(type) == DISK_USAGE_BYTES_GAUGE) {
-            return isEnabledViaConfig(DISK_USAGE_BYTES_GAUGE) ? new DiskUsageBytesGauge(labelNames, namespace, subsystem) : new NoOpMetricCollector<>();
+            return saveBuildCollector(new DiskUsageBytesGauge(labelNames, namespace, subsystem));
         }
         return new NoOpMetricCollector<>();
     }
 
     public MetricCollector<JobDiskItem, ? extends Collector> createJobDiskItemCollector(CollectorType type, String[] labelNames) {
         if (Objects.requireNonNull(type) == JOB_USAGE_BYTES_GAUGE) {
-            return isEnabledViaConfig(JOB_USAGE_BYTES_GAUGE) ? new JobUsageBytesGauge(labelNames, namespace, subsystem) : new NoOpMetricCollector<>();
+            return saveBuildCollector(new JobUsageBytesGauge(labelNames, namespace, subsystem));
         }
         return new NoOpMetricCollector<>();
     }
@@ -36,9 +36,9 @@ public class DiskCollectorFactory extends BaseCollectorFactory {
     public MetricCollector<FileStore, ? extends Collector> createFileStoreCollector(CollectorType type, String[] labelNames) {
         switch (type) {
             case FILE_STORE_AVAILABLE_GAUGE:
-                return isEnabledViaConfig(FILE_STORE_AVAILABLE_GAUGE) ? new FileStoreAvailableGauge(labelNames, namespace, subsystem) : new NoOpMetricCollector<>();
+                return saveBuildCollector(new FileStoreAvailableGauge(labelNames, namespace, subsystem));
             case FILE_STORE_CAPACITY_GAUGE:
-                return isEnabledViaConfig(FILE_STORE_CAPACITY_GAUGE) ? new FileStoreCapacityGauge(labelNames, namespace, subsystem) : new NoOpMetricCollector<>();
+                return saveBuildCollector(new FileStoreCapacityGauge(labelNames, namespace, subsystem));
             default:
                 return new NoOpMetricCollector<>();
         }

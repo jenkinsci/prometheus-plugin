@@ -13,8 +13,8 @@ public class BuildResultOrdinalGauge extends BuildsMetricCollector<Run<?, ?>, Ga
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.BUILD_RESULT_ORDINAL_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.BUILD_RESULT_ORDINAL_GAUGE;
     }
 
     @Override

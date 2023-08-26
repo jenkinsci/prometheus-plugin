@@ -14,8 +14,8 @@ public class NbBuildsGauge extends BuildsMetricCollector<Job<?, ?>, Gauge> {
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.NB_BUILDS_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.NB_BUILDS_GAUGE;
     }
 
     @Override

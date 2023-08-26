@@ -20,8 +20,8 @@ public class FileStoreCapacityGauge extends BaseMetricCollector<FileStore, Gauge
     }
 
     @Override
-    protected String getCollectorName() {
-        return CollectorType.FILE_STORE_CAPACITY_GAUGE.getName();
+    protected CollectorType getCollectorType() {
+        return CollectorType.FILE_STORE_CAPACITY_GAUGE;
     }
 
     @Override

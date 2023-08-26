@@ -16,13 +16,13 @@ public class JobCollectorFactory extends BaseCollectorFactory {
     public MetricCollector<Job<?, ?>, ? extends Collector> createCollector(CollectorType type, String[] labelNames) {
         switch (type) {
             case HEALTH_SCORE_GAUGE:
-                return new HealthScoreGauge(labelNames, namespace, subsystem);
+                return saveBuildCollector(new HealthScoreGauge(labelNames, namespace, subsystem));
             case NB_BUILDS_GAUGE:
-                return new NbBuildsGauge(labelNames, namespace, subsystem);
+                return saveBuildCollector(new NbBuildsGauge(labelNames, namespace, subsystem));
             case BUILD_DISCARD_GAUGE:
-                return new BuildDiscardGauge(labelNames, namespace, subsystem);
+                return saveBuildCollector(new BuildDiscardGauge(labelNames, namespace, subsystem));
             case CURRENT_RUN_DURATION_GAUGE:
-                return new CurrentRunDurationGauge(labelNames, namespace, subsystem);
+                return saveBuildCollector(new CurrentRunDurationGauge(labelNames, namespace, subsystem));
             default:
                 return new NoOpMetricCollector<>();
         }
