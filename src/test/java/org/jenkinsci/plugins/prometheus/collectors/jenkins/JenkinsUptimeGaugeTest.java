@@ -29,7 +29,7 @@ public class JenkinsUptimeGaugeTest extends MockedJenkinsTest {
 
             when(mock.toComputer()).thenReturn(computerMock);
 
-            JenkinsUptimeGauge sut = new JenkinsUptimeGauge(getLabelNames(), getNamespace(), getSubSystem());
+            JenkinsUptimeGauge sut = new JenkinsUptimeGauge(new String[]{}, getNamespace(), getSubSystem());
             sut.calculateMetric(mock, getLabelValues());
 
             List<Collector.MetricFamilySamples> collect = sut.collect();

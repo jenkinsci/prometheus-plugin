@@ -17,7 +17,7 @@ public class JenkinsUpGaugeTest extends MockedJenkinsTest {
 
         when(mock.getInitLevel()).thenReturn(InitMilestone.STARTED);
 
-        JenkinsUpGauge sut = new JenkinsUpGauge(getLabelNames(), getNamespace(), getSubSystem());
+        JenkinsUpGauge sut = new JenkinsUpGauge(new String[]{}, getNamespace(), getSubSystem());
         sut.calculateMetric(mock, getLabelValues());
 
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -38,7 +38,7 @@ public class JenkinsUpGaugeTest extends MockedJenkinsTest {
 
         when(mock.getInitLevel()).thenReturn(InitMilestone.COMPLETED);
 
-        JenkinsUpGauge sut = new JenkinsUpGauge(getLabelNames(), getNamespace(), getSubSystem());
+        JenkinsUpGauge sut = new JenkinsUpGauge(new String[]{}, getNamespace(), getSubSystem());
         sut.calculateMetric(mock, getLabelValues());
 
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -55,7 +55,7 @@ public class JenkinsUpGaugeTest extends MockedJenkinsTest {
 
     @Test
     public void testJenkinsIsNull() {
-        JenkinsUpGauge sut = new JenkinsUpGauge(getLabelNames(), getNamespace(), getSubSystem());
+        JenkinsUpGauge sut = new JenkinsUpGauge(new String[]{}, getNamespace(), getSubSystem());
         sut.calculateMetric(null, getLabelValues());
 
         List<Collector.MetricFamilySamples> collect = sut.collect();

@@ -19,7 +19,7 @@ public class JenkinsVersionInfoTest extends MockedJenkinsTest {
         setFinalStatic(Jenkins.class.getDeclaredField("VERSION"), "123");
 
 
-        JenkinsVersionInfo sut = new JenkinsVersionInfo(getLabelNames(), getNamespace(), getSubSystem());
+        JenkinsVersionInfo sut = new JenkinsVersionInfo(new String[]{}, getNamespace(), getSubSystem());
         sut.calculateMetric(mock, getLabelValues());
 
         List<Collector.MetricFamilySamples> collect = sut.collect();

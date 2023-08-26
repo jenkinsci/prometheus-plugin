@@ -31,7 +31,7 @@ public class NodesOnlineGaugeTest extends MockedJenkinsTest {
         nodes.add(mockNode("nullNode", false));
         when(mock.getNodes()).thenReturn(nodes);
 
-        NodesOnlineGauge sut = new NodesOnlineGauge(getLabelNames(), getNamespace(), getSubSystem());
+        NodesOnlineGauge sut = new NodesOnlineGauge(new String[]{"node"}, getNamespace(), getSubSystem());
         sut.calculateMetric(mock, getLabelValues());
 
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -53,6 +53,7 @@ public class NodesOnlineGaugeTest extends MockedJenkinsTest {
                 validateValue(sample, 1.0);
             }
         }
+        System.out.println(samples);
         validateNames(samples, new String[]{"default_jenkins_nodes_online"});
     }
 
