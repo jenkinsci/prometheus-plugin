@@ -8,10 +8,12 @@ import hudson.model.Run;
 import io.prometheus.client.Collector;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCollectorFactory;
+import org.jenkinsci.plugins.prometheus.collectors.coverage.CoverageCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.disk.DiskCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.executors.ExecutorCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.jenkins.JenkinsCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.jobs.JobCollectorFactory;
+import org.json.Cookie;
 
 import java.nio.file.FileStore;
 
@@ -23,12 +25,19 @@ public class CollectorFactory {
     private final ExecutorCollectorFactory executorCollectorFactory;
     private final DiskCollectorFactory diskCollectorFactory;
 
+    private final CoverageCollectorFactory coverageCollectorFactory;
+
     public CollectorFactory() {
         buildCollectorFactory = new BuildCollectorFactory();
         jobCollectorFactory = new JobCollectorFactory();
         jenkinsCollectorFactory = new JenkinsCollectorFactory();
         executorCollectorFactory = new ExecutorCollectorFactory();
         diskCollectorFactory = new DiskCollectorFactory();
+        coverageCollectorFactory = new CoverageCollectorFactory();
+    }
+
+    public MetricCollector<Run<?,?>, ? extends Collector> createCoverageRunCollector(CollectorType type, String[] labelNames) {
+        return coverageCollectorFactory.createCollector(type, labelNames);
     }
 
     public MetricCollector<Run<?, ?>, ? extends Collector> createRunCollector(CollectorType type, String[] labelNames, String prefix) {

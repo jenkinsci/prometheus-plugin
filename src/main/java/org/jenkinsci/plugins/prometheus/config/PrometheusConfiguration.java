@@ -56,7 +56,6 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     private String labeledBuildParameterNames = "";
 
     private boolean collectDiskUsage = true;
-
     private boolean collectCodeCoverage = false;
     private boolean collectNodeStatus = true;
 

@@ -34,7 +34,27 @@ public enum CollectorType {
     FILE_STORE_CAPACITY_GAUGE("file_store_capacity_bytes"),
     JOB_USAGE_BYTES_GAUGE("job_usage_bytes"),
 
-    BUILD_FAILED_TESTS("build_tests_failing");
+    BUILD_FAILED_TESTS("build_tests_failing"),
+
+    COVERAGE_CLASS_COVERED("coverage_class_covered"),
+    COVERAGE_CLASS_MISSED("coverage_class_missed"),
+    COVERAGE_CLASS_TOTAL("coverage_class_total"),
+
+    COVERAGE_BRANCH_COVERED("coverage_branch_covered"),
+    COVERAGE_BRANCH_MISSED("coverage_branch_missed"),
+    COVERAGE_BRANCH_TOTAL("coverage_branch_total"),
+
+    COVERAGE_INSTRUCTION_COVERED("coverage_instruction_covered"),
+    COVERAGE_INSTRUCTION_MISSED("coverage_instruction_missed"),
+    COVERAGE_INSTRUCTION_TOTAL("coverage_instruction_total"),
+
+    COVERAGE_FILE_COVERED("coverage_file_covered"),
+    COVERAGE_FILE_MISSED("coverage_file_missed"),
+    COVERAGE_FILE_TOTAL("coverage_file_total"),
+
+
+
+    ;
 
     private final String name;
 
