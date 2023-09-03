@@ -2,7 +2,7 @@ package org.jenkinsci.plugins.prometheus;
 
 import hudson.model.Job;
 import hudson.model.Run;
-import io.jenkins.plugins.coverage.model.CoverageBuildAction;
+import io.jenkins.plugins.coverage.metrics.steps.CoverageBuildAction;
 import io.prometheus.client.Collector;
 import jenkins.model.Jenkins;
 import org.apache.commons.collections.CollectionUtils;
@@ -36,9 +36,11 @@ public class CodeCoverageCollector extends BaseCollector {
             return Collections.emptyList();
         }
 
-        List<MetricFamilySamples> samples = new ArrayList<>();
+        List<List<MetricFamilySamples>> samples = new ArrayList<>();
         Jobs.forEachJob(job -> CollectionUtils.addIgnoreNull(samples, collectCoverageMetricForJob(job)));
-        return samples;
+
+
+        return samples.stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     private List<MetricFamilySamples> collectCoverageMetricForJob(Job<?,?> job) {

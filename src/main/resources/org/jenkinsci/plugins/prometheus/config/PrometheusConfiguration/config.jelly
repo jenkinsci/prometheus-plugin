@@ -60,7 +60,7 @@
       <f:optionalProperty title="Disable metrics" field="disabledMetricConfig" />
     </f:entry>
     <f:entry title="${%Collect code coverage}" field="collectCodeCoverage">
-      <j:set var="readOnlyMode" value="${instance.isCodeCoverageApiPluginInstalled()}"/>
+      <j:set var="readOnlyMode" value="!${instance.isCodeCoverageApiPluginInstalled()}"/>
       <f:checkbox/>
     </f:entry>
   </f:section>

@@ -18,7 +18,7 @@
 
   <properties>
     <!-- when updated the io.jenkins.tools.bom:bom-X.Y.Z must be updated too -->
-    <jenkins.version>2.387.1</jenkins.version>
+    <jenkins.version>2.387.3</jenkins.version>
     <java.level>11</java.level>
 
     <prometheus.simpleclient.version>0.16.0</prometheus.simpleclient.version>
@@ -48,6 +48,9 @@
   </licenses>
 
   <developers>
+    <developer>
+      <id>Waschndolos</id>
+    </developer>
     <developer>
       <id>devguy</id>
       <name>Marky Jackson</name>
@@ -80,8 +83,8 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.319.x</artifactId>
-        <version>1654.vcb_69d035fa_20</version>
+        <artifactId>bom-2.387.x</artifactId>
+        <version>2329.v078520e55c19</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>

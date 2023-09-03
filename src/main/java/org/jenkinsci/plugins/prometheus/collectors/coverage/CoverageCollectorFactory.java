@@ -7,7 +7,7 @@ import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.collectors.NoOpMetricCollector;
 
-public class CoverageCollectorFactory  extends BaseCollectorFactory {
+public class CoverageCollectorFactory extends BaseCollectorFactory {
 
     public CoverageCollectorFactory() {
         super();

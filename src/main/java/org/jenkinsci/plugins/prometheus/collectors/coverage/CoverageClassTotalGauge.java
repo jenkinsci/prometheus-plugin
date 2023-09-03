@@ -1,15 +1,16 @@
 package org.jenkinsci.plugins.prometheus.collectors.coverage;
 
+import edu.hm.hafner.coverage.Coverage;
+import edu.hm.hafner.coverage.Metric;
 import hudson.model.Run;
-import io.jenkins.plugins.coverage.model.Coverage;
-import io.jenkins.plugins.coverage.model.CoverageBuildAction;
-import io.jenkins.plugins.coverage.model.CoverageMetric;
+import io.jenkins.plugins.coverage.metrics.model.Baseline;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.SimpleCollector;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
-import org.jenkinsci.plugins.prometheus.collectors.builds.BuildsMetricCollector;
 
-public class CoverageClassTotalGauge extends BuildsMetricCollector<Run<?, ?>, Gauge> {
+import java.util.Optional;
+
+public class CoverageClassTotalGauge extends CoverageMetricsCollector<Run<?, ?>, Gauge> {
 
     protected CoverageClassTotalGauge(String[] labelNames, String namespace, String subsystem) {
         super(labelNames, namespace, subsystem);
@@ -33,14 +34,12 @@ public class CoverageClassTotalGauge extends BuildsMetricCollector<Run<?, ?>, Ga
     @Override
     public void calculateMetric(Run<?, ?> jenkinsObject, String[] labelValues) {
 
-        CoverageBuildAction coverageBuildAction = jenkinsObject.getAction(CoverageBuildAction.class);
-        if (coverageBuildAction == null) {
+        Optional<Coverage> optional = getCoverage(jenkinsObject, Metric.CLASS, Baseline.PROJECT);
+        if (optional.isEmpty()) {
             return;
         }
-        Coverage classCoverage = coverageBuildAction.getCoverage(CoverageMetric.CLASS);
-        if (classCoverage == null) {
-            return;
-        }
-        collector.labels(labelValues).set(classCoverage.getTotal());
+
+        Coverage coverage = optional.get();
+        collector.labels(labelValues).set(coverage.getTotal());
     }
 }
