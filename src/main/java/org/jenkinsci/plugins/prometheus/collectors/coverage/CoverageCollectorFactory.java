@@ -9,10 +9,6 @@ import org.jenkinsci.plugins.prometheus.collectors.NoOpMetricCollector;
 
 public class CoverageCollectorFactory extends BaseCollectorFactory {
 
-    public CoverageCollectorFactory() {
-        super();
-    }
-
     public MetricCollector<Run<?, ?>, ? extends Collector> createCollector(CollectorType type, String[] labelNames) {
         switch (type) {
             case COVERAGE_CLASS_COVERED:
