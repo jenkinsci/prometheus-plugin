@@ -16,7 +16,6 @@ import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.metrics.jobs.BuildDiscardGauge;
 import org.jenkinsci.plugins.prometheus.metrics.jobs.CurrentRunDurationGauge;
 import org.jenkinsci.plugins.prometheus.metrics.jobs.HealthScoreGauge;
-import org.jenkinsci.plugins.prometheus.util.ArrayUtils;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.jenkinsci.plugins.prometheus.util.Runs;
@@ -25,28 +24,37 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jenkinsci.plugins.prometheus.util.FlowNodes.getSortedStageNodes;
 
 public class JobCollector extends Collector {
 
+    public static final String FULLNAME = "builds";
+    public static final String NAMESPACE = ConfigurationUtils.getNamespace();
+    public static final String SUBSYSTEM = ConfigurationUtils.getSubSystem();
     private static final Logger logger = LoggerFactory.getLogger(JobCollector.class);
     private static final String NOT_AVAILABLE = "NA";
     private static final String UNDEFINED = "UNDEFINED";
-
-    private Summary summary;
-    private Counter jobSuccessCount;
-    private Counter jobFailedCount;
+    private final String[] labelBaseNameArray;
+    private final String[] labelStageNameArray;
+    private final Summary summary;
+    private final Counter jobSuccessCount;
+    private final Counter jobFailedCount;
     private HealthScoreGauge jobHealthScoreGauge;
     private NbBuildsGauge nbBuildsGauge;
     private BuildDiscardGauge buildDiscardGauge;
     private CurrentRunDurationGauge currentRunDurationGauge;
-    private Summary nodeTimeSummary;
-    private Summary queuingTimeSummary;
+    private final Summary nodeTimeSummary;
+    private final Summary queuingTimeSummary;
+    private String[] labelNameArray;
+    /**
+     * Cache storage containing already observed last run of jobs for counters
+     * Avoid observing twice same value
+     * Values are run build number indexed by job full name
+     */
+    private Map<String, Integer> lastRunProcessedByJobForCounters = new HashMap<>();
 
     private static class BuildMetrics {
 
@@ -59,7 +67,7 @@ public class JobCollector extends Collector {
         public Gauge jobBuildTestsSkipped;
         public Gauge jobBuildTestsFailing;
 
-        private String buildPrefix;
+        private final String buildPrefix;
 
         public BuildMetrics(String buildPrefix) {
             this.buildPrefix = buildPrefix;
@@ -127,21 +135,12 @@ public class JobCollector extends Collector {
     private final BuildMetrics perBuildMetrics = new BuildMetrics("");
 
     public JobCollector() {
-    }
 
-    @Override
-    public List<MetricFamilySamples> collect() {
-        logger.debug("Collecting metrics for prometheus");
-
-        String namespace = ConfigurationUtils.getNamespace();
-        List<MetricFamilySamples> samples = new ArrayList<>();
-        String fullname = "builds";
-        String subsystem = ConfigurationUtils.getSubSystem();
         String jobAttribute = PrometheusConfiguration.get().getJobAttributeName();
 
-        String[] labelBaseNameArray = {jobAttribute, "repo", "buildable"};
+        labelBaseNameArray = new String[]{jobAttribute, "repo", "buildable"};
 
-        String[] labelNameArray = labelBaseNameArray;
+        labelNameArray = labelBaseNameArray;
         if (PrometheusConfiguration.get().isAppendParamLabel()) {
             labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
             labelNameArray[labelNameArray.length - 1] = "parameters";
@@ -157,9 +156,54 @@ public class JobCollector extends Collector {
             labelNameArray[labelNameArray.length - 1] = buildParam.trim();
         }
 
-        String[] labelStageNameArray = Arrays.copyOf(labelBaseNameArray, labelBaseNameArray.length + 1);
+        labelStageNameArray = Arrays.copyOf(labelBaseNameArray, labelBaseNameArray.length + 1);
         labelStageNameArray[labelBaseNameArray.length] = "stage";
 
+        // Below metrics use labelNameArray which might include the optional labels
+        // of "parameters" or "status"
+
+        // counters cannot be reset on each collect event
+        jobSuccessCount = Counter.build()
+                .name(FULLNAME + "_success_build_count")
+                .subsystem(SUBSYSTEM).namespace(NAMESPACE)
+                .labelNames(labelNameArray)
+                .help("Successful build count")
+                .create();
+
+        jobFailedCount = Counter.build()
+                .name(FULLNAME + "_failed_build_count")
+                .subsystem(SUBSYSTEM).namespace(NAMESPACE)
+                .labelNames(labelNameArray)
+                .help("Failed build count")
+                .create();
+
+        summary = Summary.build()
+                .name(FULLNAME + "_duration_milliseconds_summary")
+                .subsystem(SUBSYSTEM).namespace(NAMESPACE)
+                .labelNames(labelNameArray)
+                .help("Summary of Jenkins build times in milliseconds by Job")
+                .create();
+
+        nodeTimeSummary = Summary.build()
+                .name(FULLNAME + "_node_time_milliseconds_summary")
+                .subsystem(SUBSYSTEM).namespace(NAMESPACE)
+                .labelNames(labelNameArray)
+                .help("Summary of Jenkins node usage time")
+                .create();
+
+        queuingTimeSummary = Summary.build()
+                .name(FULLNAME + "_queuing_time_milliseconds_summary")
+                .subsystem(SUBSYSTEM).namespace(NAMESPACE)
+                .labelNames(labelNameArray)
+                .help("Summary of Jenkins time spent in queue in milliseconds by Job")
+                .create();
+    }
+
+    @Override
+    public List<MetricFamilySamples> collect() {
+        logger.debug("Collecting metrics for prometheus");
+
+        List<MetricFamilySamples> samples = new ArrayList<>();
         boolean processDisabledJobs = PrometheusConfiguration.get().isProcessingDisabledBuilds();
         boolean ignoreBuildMetrics =
                 !PrometheusConfiguration.get().isCountAbortedBuilds() &&
@@ -172,63 +216,31 @@ public class JobCollector extends Collector {
             return samples;
         }
 
-        // Below three metrics use labelNameArray which might include the optional labels
-        // of "parameters" or "status"
-        summary = Summary.build()
-                .name(fullname + "_duration_milliseconds_summary")
-                .subsystem(subsystem).namespace(namespace)
-                .labelNames(labelNameArray)
-                .help("Summary of Jenkins build times in milliseconds by Job")
-                .create();
 
-        jobSuccessCount = Counter.build()
-                .name(fullname + "_success_build_count")
-                .subsystem(subsystem).namespace(namespace)
-                .labelNames(labelNameArray)
-                .help("Successful build count")
-                .create();
-
-        jobFailedCount = Counter.build()
-                .name(fullname + "_failed_build_count")
-                .subsystem(subsystem).namespace(namespace)
-                .labelNames(labelNameArray)
-                .help("Failed build count")
-                .create();
-
-        nodeTimeSummary = Summary.build()
-                .name(fullname + "_node_time_milliseconds_summary")
-                .subsystem(subsystem).namespace(namespace)
-                .labelNames(labelNameArray)
-                .help("Summary of Jenkins node usage time")
-                .create();
-
-        queuingTimeSummary = Summary.build()
-                .name(fullname + "_queuing_time_milliseconds_summary")
-                .subsystem(subsystem).namespace(namespace)
-                .labelNames(labelNameArray)
-                .help("Summary of Jenkins time spent in queue in milliseconds by Job")
-                .create();
 
         // This metric uses "base" labels as it is just the health score reported
         // by the job object and the optional labels params and status don't make much
         // sense in this context.
-        jobHealthScoreGauge = new HealthScoreGauge(labelBaseNameArray, namespace, subsystem);
+        jobHealthScoreGauge = new HealthScoreGauge(labelBaseNameArray, NAMESPACE, SUBSYSTEM);
 
-        nbBuildsGauge = new NbBuildsGauge(labelBaseNameArray, namespace, subsystem);
+        nbBuildsGauge = new NbBuildsGauge(labelBaseNameArray, NAMESPACE, SUBSYSTEM);
 
-        buildDiscardGauge = new BuildDiscardGauge(labelBaseNameArray, namespace, subsystem);
+        buildDiscardGauge = new BuildDiscardGauge(labelBaseNameArray, NAMESPACE, SUBSYSTEM);
 
-        currentRunDurationGauge = new CurrentRunDurationGauge(labelBaseNameArray, namespace, subsystem);
+        currentRunDurationGauge = new CurrentRunDurationGauge(labelBaseNameArray, NAMESPACE, SUBSYSTEM);
 
         if (PrometheusConfiguration.get().isPerBuildMetrics()) {
             labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
             labelNameArray[labelNameArray.length - 1] = "number";
-            perBuildMetrics.initCollectors(fullname, subsystem, namespace, labelNameArray, labelStageNameArray);
+            perBuildMetrics.initCollectors(FULLNAME, SUBSYSTEM, NAMESPACE, labelNameArray, labelStageNameArray);
         }
 
         // The lastBuildMetrics are initialized with the "base" labels
-        lastBuildMetrics.initCollectors(fullname, subsystem, namespace, labelBaseNameArray, labelStageNameArray);
+        lastBuildMetrics.initCollectors(FULLNAME, SUBSYSTEM, NAMESPACE, labelBaseNameArray, labelStageNameArray);
 
+        // Clean cache map of processed jobs
+        logger.warn("purge counters cache of processed runs");
+        lastRunProcessedByJobForCounters = purgeJobCountersCacheMap(lastRunProcessedByJobForCounters);
 
         Jobs.forEachJob(job -> {
             try {
@@ -275,6 +287,16 @@ public class JobCollector extends Collector {
         }
     }
 
+    private static Map<String, Integer> purgeJobCountersCacheMap(Map<String, Integer> mapToPurge) {
+        Map<String, Integer> purgedMap = new HashMap<>();
+        Jobs.forEachJob(job -> {
+            if (mapToPurge.containsKey(job.getFullName())) {
+                purgedMap.put(job.getFullName(), mapToPurge.get(job.getFullName()));
+            }
+        });
+        return purgedMap;
+    }
+
     private void addSamples(List<MetricFamilySamples> allSamples, BuildMetrics buildMetrics) {
         addSamples(allSamples, buildMetrics.jobBuildResultOrdinal.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildResult.collect(), "Adding [{}] samples from gauge ({})");
@@ -312,7 +334,7 @@ public class JobCollector extends Collector {
         currentRunDurationGauge.calculateMetric(job, baseLabelValueArray);
         processRun(job, lastBuild, baseLabelValueArray, lastBuildMetrics);
 
-        Run run = lastBuild;
+        Run run = job.getFirstBuild();
         while (run != null) {
             logger.debug("getting metrics for run [{}] from job [{}], include per run metrics [{}]", run.getNumber(), job.getName(), isPerBuildMetrics);
             if (Runs.includeBuildInMetrics(run)) {
@@ -322,7 +344,7 @@ public class JobCollector extends Collector {
                 String[] labelValueArray = baseLabelValueArray;
 
                 if (isAppendParamLabel) {
-                    String params = Runs.getBuildParameters(run).entrySet().stream().map(e -> "" + e.getKey() + "=" + e.getValue()).collect(Collectors.joining(";"));
+                    String params = Runs.getBuildParameters(run).entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(";"));
                     labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
                     labelValueArray[labelValueArray.length - 1] = params;
                 }
@@ -344,26 +366,29 @@ public class JobCollector extends Collector {
                     }
                     labelValueArray[labelValueArray.length - 1] = paramValue;
                 }
-                long duration = run.getDuration();
-                if (!run.isBuilding()) {
-                    summary.labels(labelValueArray).observe(duration);
-                }
-                nodeTimeSummary.labels(labelValueArray).observe(
-                        run.getActions(SubTaskTimeInQueueAction.class).stream()
-                                .map(SubTaskTimeInQueueAction::getExecutingDurationMillis)
-                                .reduce(0L, Long::sum)
-                );
-                queuingTimeSummary.labels(labelValueArray).observe(
-                        run.getActions(SubTaskTimeInQueueAction.class).stream()
-                                .map(SubTaskTimeInQueueAction::getQueuingDurationMillis)
-                                .reduce(0L, Long::sum)
-                );
-                if (runResult != null && !run.isBuilding()) {
-                    if (runResult.ordinal == 0 || runResult.ordinal == 1) {
-                        jobSuccessCount.labels(labelValueArray).inc();
-                    } else {
-                        jobFailedCount.labels(labelValueArray).inc();
+                if (!run.isBuilding() && run.getNumber() > lastRunProcessedByJobForCounters.getOrDefault(job.getFullName(), 0)) {
+                    if (runResult != null) {
+                        if (runResult.ordinal == 0 || runResult.ordinal == 1) {
+                            jobSuccessCount.labels(labelValueArray).inc();
+                        } else {
+                            jobFailedCount.labels(labelValueArray).inc();
+                        }
                     }
+                    summary.labels(labelValueArray).observe(run.getDuration());
+                    nodeTimeSummary.labels(labelValueArray).observe(
+                            run.getActions(SubTaskTimeInQueueAction.class).stream()
+                                    .map(SubTaskTimeInQueueAction::getExecutingDurationMillis)
+                                    .reduce(0L, Long::sum)
+                    );
+                    queuingTimeSummary.labels(labelValueArray).observe(
+                            run.getActions(SubTaskTimeInQueueAction.class).stream()
+                                    .map(SubTaskTimeInQueueAction::getQueuingDurationMillis)
+                                    .reduce(0L, Long::sum)
+                    );
+                    lastRunProcessedByJobForCounters.put(job.getFullName(), run.getNumber());
+                }
+                else {
+                    logger.debug("skipping run [{}] from job [{}] observation in counters as already observed or currently running", run.getNumber(), job.getName());
                 }
                 if (isPerBuildMetrics) {
                     labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
@@ -372,7 +397,7 @@ public class JobCollector extends Collector {
                     processRun(job, run, labelValueArray, perBuildMetrics);
                 }
             }
-            run = run.getPreviousBuild();
+            run = run.getNextBuild();
         }
     }
 

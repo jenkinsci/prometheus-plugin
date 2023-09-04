@@ -2,7 +2,7 @@
 <j:jelly xmlns:j="jelly:core">
   <div>
     <p>
-      The default namespace (default value is 'default'). Setting this to an empty value will return the build values as Jenkins metrics.
+      The default namespace (default value is 'default'). Setting this to an empty value will return the build values as Jenkins metrics. (effectively loaded after restart).
     </p>
   </div>
 </j:jelly>

@@ -2,7 +2,7 @@
 <j:jelly xmlns:j="jelly:core">
   <div>
     <p>
-      A list of build parameter names, separated by comma.
+      A list of build parameter names, separated by comma.  (effectively loaded after restart).
       Labels of metrics duration_milliseconds_summary, success_build_count and failed_build_count will be extended with build variables specified here.
       This would allow to filter metrics by build variable name and value.
     </p>

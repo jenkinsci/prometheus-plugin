@@ -41,6 +41,9 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
 
         this.collectorRegistry = collectorRegistry;
         this.cachedMetrics = new AtomicReference<>("");
+
+        // initiate summary collectors ?
+
     }
 
     @Override
