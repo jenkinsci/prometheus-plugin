@@ -28,7 +28,7 @@ public class CodeCoverageCollector extends BaseCollector {
     public List<MetricFamilySamples> collect() {
 
         if (!isCodeCoverageAPIPluginLoaded()) {
-            LOGGER.warn("Cannot collect code coverage data because plugin Code Coverage API (shortname: 'code-coverage-api') is not loaded.");
+            LOGGER.debug("Cannot collect code coverage data because plugin Code Coverage API (shortname: 'code-coverage-api') is not loaded.");
             return Collections.emptyList();
         }
 
