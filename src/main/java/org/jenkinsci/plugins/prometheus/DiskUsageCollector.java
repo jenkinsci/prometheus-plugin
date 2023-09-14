@@ -48,7 +48,6 @@ public class DiskUsageCollector extends Collector {
         final com.cloudbees.simplediskusage.QuickDiskUsagePlugin diskUsagePlugin = Jenkins.get()
                 .getPlugin(com.cloudbees.simplediskusage.QuickDiskUsagePlugin.class);
         if (diskUsagePlugin == null) {
-            LOGGER.warn("Cannot collect disk usage data because plugin CloudBees Disk Usage Simple is not loaded.");
             return Collections.emptyList();
         }
 
