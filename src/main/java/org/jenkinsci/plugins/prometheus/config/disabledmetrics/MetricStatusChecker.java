@@ -1,12 +1,15 @@
 package org.jenkinsci.plugins.prometheus.config.disabledmetrics;
 
+import io.prometheus.client.Collector;
+import io.prometheus.client.CollectorRegistry;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class MetricStatusChecker {
 
@@ -50,5 +53,12 @@ public class MetricStatusChecker {
             }
         }
         return true;
+    }
+
+    public static Set<String> filter(List<String> allMetricNames) {
+        if (allMetricNames == null) {
+            return new HashSet<>();
+        }
+        return allMetricNames.stream().filter(MetricStatusChecker::isEnabled).collect(Collectors.toSet());
     }
 }

@@ -8,12 +8,14 @@ import io.prometheus.client.exporter.common.TextFormat;
 import io.prometheus.client.hotspot.DefaultExports;
 import jenkins.metrics.api.Metrics;
 import org.jenkinsci.plugins.prometheus.*;
+import org.jenkinsci.plugins.prometheus.config.disabledmetrics.MetricStatusChecker;
 import org.jenkinsci.plugins.prometheus.util.JenkinsNodeBuildsSampleBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class DefaultPrometheusMetrics implements PrometheusMetrics {
@@ -49,10 +51,23 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
     @Override
     public void collectMetrics() {
         try (StringWriter buffer = new StringWriter()) {
-            TextFormat.write004(buffer, collectorRegistry.metricFamilySamples());
+            Set<String> filteredMetrics = MetricStatusChecker.filter(getMetricNames());
+            TextFormat.write004(buffer, collectorRegistry.filteredMetricFamilySamples(filteredMetrics));
             cachedMetrics.set(buffer.toString());
         } catch (IOException e) {
             logger.debug("Unable to collect metrics");
         }
+    }
+
+    private List<String> getMetricNames() {
+        Enumeration<Collector.MetricFamilySamples> metricFamilySamplesEnumeration = collectorRegistry.metricFamilySamples();
+        List<String> allMetricNames = new ArrayList<>();
+        while (metricFamilySamplesEnumeration.hasMoreElements()) {
+            Collector.MetricFamilySamples familySamples = metricFamilySamplesEnumeration.nextElement();
+            if (familySamples != null && familySamples.name != null) {
+                allMetricNames.add(familySamples.name);
+            }
+        }
+        return allMetricNames;
     }
 }

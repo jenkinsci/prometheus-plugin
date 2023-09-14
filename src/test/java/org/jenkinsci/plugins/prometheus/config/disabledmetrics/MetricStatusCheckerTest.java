@@ -9,6 +9,7 @@ import org.mockito.MockedStatic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
@@ -178,6 +179,32 @@ public class MetricStatusCheckerTest {
 
             boolean enabled = MetricStatusChecker.isEnabled("some_metric");
             Assertions.assertFalse(enabled);
+        }
+    }
+
+
+    @Test
+    void testFilterExternalMetricNames() {
+        Jenkins jenkins = mock(Jenkins.class);
+
+        PrometheusConfiguration mockedConfig = mock(PrometheusConfiguration.class);
+        List<Entry> entries = new ArrayList<>();
+        entries.add(new NamedDisabledMetric("other_metric"));
+        entries.add(new RegexDisabledMetric("j?vm.*"));
+        DisabledMetricConfig disabledMetricConfig = new DisabledMetricConfig(entries);
+
+        when(mockedConfig.getDisabledMetricConfig()).thenReturn(disabledMetricConfig);
+
+
+        try (MockedStatic<Jenkins> jenkinsStatic = mockStatic(Jenkins.class);
+             MockedStatic<PrometheusConfiguration> configStatic = mockStatic(PrometheusConfiguration.class)) {
+            jenkinsStatic.when(Jenkins::get).thenReturn(jenkins);
+            configStatic.when(PrometheusConfiguration::get).thenReturn(mockedConfig);
+
+            List<String> allMetrics = List.of("some_metric", "jvm_xxx", "vm_xxx");
+            Set<String> filteredMetrics = MetricStatusChecker.filter(allMetrics);
+            Assertions.assertEquals(1, filteredMetrics.size());
+            Assertions.assertEquals("some_metric", filteredMetrics.stream().findFirst().get());
         }
     }
 
