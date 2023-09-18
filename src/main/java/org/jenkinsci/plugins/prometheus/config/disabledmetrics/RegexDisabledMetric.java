@@ -22,16 +22,6 @@ public class RegexDisabledMetric extends Entry {
         return regex;
     }
 
-    public FormValidation doCheckRegex(@QueryParameter String value) {
-
-        try {
-            Pattern.compile(value);
-            return FormValidation.ok();
-        } catch (PatternSyntaxException exception) {
-            return FormValidation.error("Not a valid regex");
-        }
-    }
-
     @Override
     public Descriptor<Entry> getDescriptor() {
         return new DescriptorImpl();
