@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.52</version>
+    <version>4.73</version>
     <relativePath />
   </parent>
 
@@ -26,7 +26,7 @@
 
     <cloudbees-disk-usage-simple.version>0.10</cloudbees-disk-usage-simple.version>
     <code-coverage-api.version>4.7.0</code-coverage-api.version>
-    <metrics.version>4.1.6.1</metrics.version>
+    <metrics.version>4.2.18-442.v02e107157925</metrics.version>
     <pipeline-rest-api.version>2.21</pipeline-rest-api.version>
 
     <assertj-core.version>3.24.2</assertj-core.version>
@@ -60,7 +60,7 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/jenkinsci/prometheus-plugin.git</connection>
+    <connection>scm:git:https://github.com/jenkinsci/prometheus-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/prometheus-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/prometheus-plugin/</url>
     <tag>prometheus-2.3.2</tag>
@@ -160,13 +160,15 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-inline</artifactId>
-      <scope>test</scope>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.mockito</groupId>-->
+<!--      <artifactId>mockito-inline</artifactId>-->
+<!--      <version>${mockito.version}</version>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>com.github.stefanbirkner</groupId>
       <artifactId>system-lambda</artifactId>
