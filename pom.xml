@@ -173,5 +173,11 @@
       <version>${system-lambda.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-testlib</artifactId>
+      <version>7.0.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
