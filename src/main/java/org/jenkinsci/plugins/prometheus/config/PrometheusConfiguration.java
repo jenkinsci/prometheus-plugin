@@ -52,8 +52,6 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     private boolean appendStatusLabel = false;
     private boolean perBuildMetrics = false;
 
-    private boolean environmentVariableSet;
-
     private String labeledBuildParameterNames = "";
 
     private boolean collectDiskUsage = true;
@@ -69,7 +67,6 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         setPath(getPath());
         setCollectingMetricsPeriodInSeconds(collectingMetricsPeriodInSeconds);
         setCollectDiskUsageBasedOnEnvironmentVariableIfDefined();
-        environmentVariableSet = isValidBooleanEnv(COLLECT_DISK_USAGE);
     }
 
     public static PrometheusConfiguration get() {
@@ -124,25 +121,20 @@ public class PrometheusConfiguration extends GlobalConfiguration {
 
     public void setCollectDiskUsageBasedOnEnvironmentVariableIfDefined() {
         try {
-            this.collectDiskUsage = getBooleanEnvironmentVariableOrThrowException(COLLECT_DISK_USAGE);
+            final String envValue = System.getenv(COLLECT_DISK_USAGE);
+            if (envValue != null) {
+                this.collectDiskUsage = getValidBooleanValueOrThrowException(envValue);
+            }
         } catch (IllegalArgumentException e) {
             logger.warn("Unable to parse environment variable '{}'. Must either be 'true' or 'false'. Ignoring...", COLLECT_DISK_USAGE);
         }
     }
 
-    private boolean getBooleanEnvironmentVariableOrThrowException(String key) throws IllegalArgumentException {
-        if (isValidBooleanEnv(key)) {
-            return Boolean.parseBoolean(System.getenv(key));
+    private boolean getValidBooleanValueOrThrowException(String value) throws IllegalArgumentException {
+        if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+            return Boolean.parseBoolean(value);
         }
         throw new IllegalArgumentException();
-    }
-
-    private boolean isValidBooleanEnv(String key) {
-        String value = System.getenv(key);
-        if (value != null) {
-            return ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value));
-        }
-        return false;
     }
 
     public boolean getCollectDiskUsage() {
@@ -356,9 +348,5 @@ public class PrometheusConfiguration extends GlobalConfiguration {
             return new String[]{};
         }
         return stringValue.split("\\s*,\\s*");
-    }
-
-    public boolean isEnvironmentVariableSet() {
-        return environmentVariableSet;
     }
 }
