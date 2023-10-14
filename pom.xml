@@ -25,8 +25,6 @@
 
     <cloudbees-disk-usage-simple.version>0.10</cloudbees-disk-usage-simple.version>
     <code-coverage-api.version>4.8.0</code-coverage-api.version>
-    <metrics.version>4.2.18-442.v02e107157925</metrics.version>
-    <pipeline-rest-api.version>2.21</pipeline-rest-api.version>
 
     <assertj-core.version>3.24.2</assertj-core.version>
     <JUnitParams.version>1.1.1</JUnitParams.version>
@@ -136,12 +134,10 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>metrics</artifactId>
-      <version>${metrics.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins.pipeline-stage-view</groupId>
       <artifactId>pipeline-rest-api</artifactId>
-      <version>${pipeline-rest-api.version}</version>
     </dependency>
 
     <dependency>
