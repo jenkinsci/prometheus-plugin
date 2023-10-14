@@ -140,6 +140,16 @@
       <artifactId>pipeline-rest-api</artifactId>
     </dependency>
 
+    <!-- mockito must precede assertj until assertj supports Java 21 -->
+    <!-- mockito provides a Java 21 capable version of bytebuddy -->
+    <!-- TODO: restore ordering once assertj supports Java 21 -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- assertj must follow mockito until assertj supports Java 21 -->
+    <!-- assertj does not provide a Java 21 capable version of bytebuddy -->
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
@@ -152,18 +162,6 @@
       <version>${JUnitParams.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>${mockito.version}</version>
-      <scope>test</scope>
-    </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.mockito</groupId>-->
-<!--      <artifactId>mockito-inline</artifactId>-->
-<!--      <version>${mockito.version}</version>-->
-<!--      <scope>test</scope>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>com.github.stefanbirkner</groupId>
       <artifactId>system-lambda</artifactId>
