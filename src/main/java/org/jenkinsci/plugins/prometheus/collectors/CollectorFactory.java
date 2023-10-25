@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.prometheus.collectors;
 
 import com.cloudbees.simplediskusage.DiskItem;
 import com.cloudbees.simplediskusage.JobDiskItem;
+import hudson.model.Executor;
 import hudson.model.Job;
 import hudson.model.LoadStatistics;
 import hudson.model.Run;
@@ -13,7 +14,7 @@ import org.jenkinsci.plugins.prometheus.collectors.disk.DiskCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.executors.ExecutorCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.jenkins.JenkinsCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.jobs.JobCollectorFactory;
-import org.json.Cookie;
+import org.jenkinsci.plugins.prometheus.collectors.nodes.NodeCollectorFactory;
 
 import java.nio.file.FileStore;
 
@@ -27,6 +28,8 @@ public class CollectorFactory {
 
     private final CoverageCollectorFactory coverageCollectorFactory;
 
+    private final NodeCollectorFactory nodeCollectorFactory;
+
     public CollectorFactory() {
         buildCollectorFactory = new BuildCollectorFactory();
         jobCollectorFactory = new JobCollectorFactory();
@@ -34,6 +37,7 @@ public class CollectorFactory {
         executorCollectorFactory = new ExecutorCollectorFactory();
         diskCollectorFactory = new DiskCollectorFactory();
         coverageCollectorFactory = new CoverageCollectorFactory();
+        nodeCollectorFactory = new NodeCollectorFactory();
     }
 
     public MetricCollector<Run<?,?>, ? extends Collector> createCoverageRunCollector(CollectorType type, String[] labelNames) {
@@ -48,11 +52,15 @@ public class CollectorFactory {
         return jobCollectorFactory.createCollector(type, labelNames);
     }
 
+    public MetricCollector<Executor, ? extends Collector> createExecutorStatisticsCollector(CollectorType type, String[] labelNames) {
+        return nodeCollectorFactory.createExecutorCollector(type, labelNames);
+    }
+
     public MetricCollector<Jenkins, ? extends Collector> createJenkinsCollector(CollectorType type, String[] labelNames) {
         return jenkinsCollectorFactory.createCollector(type, labelNames);
     }
 
-    public MetricCollector<LoadStatistics.LoadStatisticsSnapshot, ? extends Collector> createExecutorCollector(CollectorType type, String[] labelNames, String prefix) {
+    public MetricCollector<LoadStatistics.LoadStatisticsSnapshot, ? extends Collector> createLoadStatisticsCollector(CollectorType type, String[] labelNames, String prefix) {
         return executorCollectorFactory.createCollector(type, labelNames, prefix);
     }
 

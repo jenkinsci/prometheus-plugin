@@ -52,7 +52,8 @@ public enum CollectorType {
     COVERAGE_FILE_MISSED("coverage_file_missed"),
     COVERAGE_FILE_TOTAL("coverage_file_total"),
 
-    JOB_LOG_UPDATED_GAUGE("job_log_updated");
+    JOB_LOG_UPDATED_GAUGE("job_log_updated"),
+    EXECUTOR_LIKELY_STUCK_GAUGE("likely_stuck");
 
     private final String name;
 
