@@ -32,6 +32,7 @@ public class JobCollector extends Collector {
     private MetricCollector<Job<?, ?>, ? extends Collector> nbBuildsGauge;
     private MetricCollector<Job<?, ?>, ? extends Collector> buildDiscardGauge;
     private MetricCollector<Job<?, ?>, ? extends Collector> currentRunDurationGauge;
+    private MetricCollector<Job<?,?>, ? extends Collector> logUpdatedGauge;
 
     private static class BuildMetrics {
 
@@ -129,6 +130,8 @@ public class JobCollector extends Collector {
 
         currentRunDurationGauge = factory.createJobCollector(CollectorType.CURRENT_RUN_DURATION_GAUGE, labelBaseNameArray);
 
+        logUpdatedGauge = factory.createJobCollector(CollectorType.JOB_LOG_UPDATED_GAUGE, labelBaseNameArray);
+
         if (PrometheusConfiguration.get().isPerBuildMetrics()) {
             labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
             labelNameArray[labelNameArray.length - 1] = "number";
@@ -164,6 +167,7 @@ public class JobCollector extends Collector {
         addSamples(samples, nbBuildsGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, buildDiscardGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, currentRunDurationGauge.collect(), "Adding [{}] samples from gauge ({})");
+        addSamples(samples, logUpdatedGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, lastBuildMetrics);
         if (PrometheusConfiguration.get().isPerBuildMetrics()) {
             addSamples(samples, perBuildMetrics);
@@ -217,6 +221,8 @@ public class JobCollector extends Collector {
         jobHealthScoreGauge.calculateMetric(job, baseLabelValueArray);
         buildDiscardGauge.calculateMetric(job, baseLabelValueArray);
         currentRunDurationGauge.calculateMetric(job, baseLabelValueArray);
+        logUpdatedGauge.calculateMetric(job, baseLabelValueArray);
+
         processRun(job, lastBuild, baseLabelValueArray, lastBuildMetrics);
 
         Run<?, ?> run = lastBuild;

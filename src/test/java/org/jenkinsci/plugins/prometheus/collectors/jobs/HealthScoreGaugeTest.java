@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 
 public class HealthScoreGaugeTest extends JobCollectorTest {
 
-    @Override
     @Test
     public void testCollectResult() {
 

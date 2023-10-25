@@ -14,7 +14,4 @@ public abstract class JobCollectorTest extends CollectorTest {
     protected Job job;
 
 
-    abstract void testCollectResult();
-
-
 }

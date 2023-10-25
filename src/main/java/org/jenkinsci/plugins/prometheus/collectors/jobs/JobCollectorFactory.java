@@ -23,6 +23,8 @@ public class JobCollectorFactory extends BaseCollectorFactory {
                 return saveBuildCollector(new BuildDiscardGauge(labelNames, namespace, subsystem));
             case CURRENT_RUN_DURATION_GAUGE:
                 return saveBuildCollector(new CurrentRunDurationGauge(labelNames, namespace, subsystem));
+            case JOB_LOG_UPDATED_GAUGE:
+                return saveBuildCollector(new LogUpdatedGauge(labelNames, namespace, subsystem));
             default:
                 return new NoOpMetricCollector<>();
         }

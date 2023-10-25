@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 public class BuildDiscardGaugeTest extends JobCollectorTest {
 
-    @Override
+    @Test
     void testCollectResult() {
         when(job.getBuildDiscarder()).thenReturn(null);
 

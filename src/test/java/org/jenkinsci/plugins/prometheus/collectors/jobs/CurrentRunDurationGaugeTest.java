@@ -19,7 +19,6 @@ public class CurrentRunDurationGaugeTest extends JobCollectorTest {
     @Mock
     Run currentRun;
 
-    @Override
     @Test
     public void testCollectResult() {
         when(currentRun.isBuilding()).thenReturn(true);
