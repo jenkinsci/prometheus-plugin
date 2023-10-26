@@ -22,10 +22,15 @@ public class JenkinsCollectorFactory extends BaseCollectorFactory {
             case JENKINS_UP_GAUGE:
                 return saveBuildCollector(new JenkinsUpGauge(labelNames, namespace, subsystem));
             case NODES_ONLINE_GAUGE:
-                if (!isNodeOnlineGaugeEnabled()) {
+                if (!isNodeStatusGaugeEnabled()) {
                     return new NoOpMetricCollector<>();
                 }
                 return saveBuildCollector(new NodesOnlineGauge(labelNames, namespace, subsystem));
+            case NODES_OFFLINE_GAUGE:
+                if (!isNodeStatusGaugeEnabled()) {
+                    return new NoOpMetricCollector<>();
+                }
+                return saveBuildCollector(new NodesOfflineGauge(labelNames, namespace, subsystem));
             case JENKINS_UPTIME_GAUGE:
                 return saveBuildCollector(new JenkinsUptimeGauge(labelNames, namespace, subsystem));
             case JENKINS_VERSION_INFO_GAUGE:
@@ -35,7 +40,7 @@ public class JenkinsCollectorFactory extends BaseCollectorFactory {
         }
     }
 
-    private boolean isNodeOnlineGaugeEnabled() {
+    private boolean isNodeStatusGaugeEnabled() {
         return PrometheusConfiguration.get().isCollectNodeStatus();
     }
 
