@@ -23,7 +23,7 @@
     <prometheus.simpleclient.version>0.16.0</prometheus.simpleclient.version>
     <slf4j.version>2.0.9</slf4j.version>
 
-    <cloudbees-disk-usage-simple.version>0.10</cloudbees-disk-usage-simple.version>
+    <cloudbees-disk-usage-simple.version>187.v6378d330d1d4</cloudbees-disk-usage-simple.version>
     <code-coverage-api.version>4.99.0</code-coverage-api.version>
 
     <assertj-core.version>3.24.2</assertj-core.version>
