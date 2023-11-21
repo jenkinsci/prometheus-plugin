@@ -1,11 +1,12 @@
 package org.jenkinsci.plugins.prometheus.service;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class PrometheusAsyncWorkerTest {
 
@@ -21,7 +22,8 @@ public class PrometheusAsyncWorkerTest {
 
         // then
         String actual = metrics.getMetrics();
-        assertThat(actual).isEqualTo("1");
+        assertEquals("1", actual);
+
     }
 
     private static class TestPrometheusMetrics implements PrometheusMetrics {

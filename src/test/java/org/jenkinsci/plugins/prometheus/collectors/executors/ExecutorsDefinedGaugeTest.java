@@ -2,7 +2,7 @@ package org.jenkinsci.plugins.prometheus.collectors.executors;
 
 import io.prometheus.client.Collector;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedLoadStatisticSnapshotTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 

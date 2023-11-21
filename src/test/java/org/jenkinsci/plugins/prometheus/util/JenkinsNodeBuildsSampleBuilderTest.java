@@ -1,15 +1,17 @@
 package org.jenkinsci.plugins.prometheus.util;
 
 import io.prometheus.client.Collector;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JenkinsNodeBuildsSampleBuilderTest {
     @Test
     public void master_node_count_format() {
-        Assert.assertEquals(
+        assertEquals(
                 new Collector.MetricFamilySamples.Sample(
                         "jenkins_node_builds_count",
                         Arrays.asList("node", "quantile"),
@@ -19,8 +21,8 @@ public class JenkinsNodeBuildsSampleBuilderTest {
                 new JenkinsNodeBuildsSampleBuilder().createSample(
                         "jenkins.node.builds",
                         "_count",
-                        Arrays.asList("quantile"),
-                        Arrays.asList("0.5"),
+                        List.of("quantile"),
+                        List.of("0.5"),
                         0.091670452
                 )
         );
@@ -28,7 +30,7 @@ public class JenkinsNodeBuildsSampleBuilderTest {
 
     @Test
     public void master_node_histogram_format() {
-        Assert.assertEquals(
+        assertEquals(
                 new Collector.MetricFamilySamples.Sample(
                         "jenkins_node_builds",
                         Arrays.asList("node", "quantile"),
@@ -38,8 +40,8 @@ public class JenkinsNodeBuildsSampleBuilderTest {
                 new JenkinsNodeBuildsSampleBuilder().createSample(
                         "jenkins.node.builds",
                         "",
-                        Arrays.asList("quantile"),
-                        Arrays.asList("0.999"),
+                        List.of("quantile"),
+                        List.of("0.999"),
                         0.091670452
                 )
         );
@@ -47,7 +49,7 @@ public class JenkinsNodeBuildsSampleBuilderTest {
 
     @Test
     public void named_node_count_format() {
-        Assert.assertEquals(
+        assertEquals(
                 new Collector.MetricFamilySamples.Sample(
                         "jenkins_node_builds_count",
                         Arrays.asList("node", "quantile"),
@@ -57,8 +59,8 @@ public class JenkinsNodeBuildsSampleBuilderTest {
                 new JenkinsNodeBuildsSampleBuilder().createSample(
                         "jenkins.node.evil node_name.com.builds",
                         "_count",
-                        Arrays.asList("quantile"),
-                        Arrays.asList("0.5"),
+                        List.of("quantile"),
+                        List.of("0.5"),
                         0.091670452
                 )
         );
@@ -66,7 +68,7 @@ public class JenkinsNodeBuildsSampleBuilderTest {
 
     @Test
     public void named_node_histogram_format() {
-        Assert.assertEquals(
+        assertEquals(
                 new Collector.MetricFamilySamples.Sample(
                         "jenkins_node_builds",
                         Arrays.asList("node", "quantile"),
@@ -76,8 +78,8 @@ public class JenkinsNodeBuildsSampleBuilderTest {
                 new JenkinsNodeBuildsSampleBuilder().createSample(
                         "jenkins.node.evil node_name.com.builds",
                         "",
-                        Arrays.asList("quantile"),
-                        Arrays.asList("0.999"),
+                        List.of("quantile"),
+                        List.of("0.999"),
                         0.091670452
                 )
         );

@@ -1,11 +1,11 @@
 package org.jenkinsci.plugins.prometheus.collectors.testutils;
 
 import jenkins.model.Jenkins;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public abstract class MockedJenkinsTest extends CollectorTest {
 
 

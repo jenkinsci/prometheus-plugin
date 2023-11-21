@@ -3,8 +3,8 @@ package org.jenkinsci.plugins.prometheus.collectors.coverage;
 import edu.hm.hafner.coverage.Metric;
 import io.jenkins.plugins.coverage.metrics.model.Baseline;
 import io.prometheus.client.Collector;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 

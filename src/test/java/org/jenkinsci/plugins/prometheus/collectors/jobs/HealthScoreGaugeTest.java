@@ -2,7 +2,7 @@ package org.jenkinsci.plugins.prometheus.collectors.jobs;
 
 import hudson.model.HealthReport;
 import io.prometheus.client.Collector;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 public class HealthScoreGaugeTest extends JobCollectorTest {
 
-    @Override
+
     @Test
     public void testCollectResult() {
 

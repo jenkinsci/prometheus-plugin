@@ -3,8 +3,8 @@ package org.jenkinsci.plugins.prometheus.collectors.jenkins;
 import io.prometheus.client.Collector;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedJenkinsTest;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -16,7 +16,7 @@ public class JenkinsVersionInfoTest extends MockedJenkinsTest {
     public void testCollectResult() throws Exception {
 
 
-        setFinalStatic(Jenkins.class.getDeclaredField("VERSION"), "123");
+        setFinalStaticTo123(Jenkins.class.getDeclaredField("VERSION"));
 
 
         JenkinsVersionInfo sut = new JenkinsVersionInfo(new String[]{}, getNamespace(), getSubSystem());
@@ -40,12 +40,12 @@ public class JenkinsVersionInfoTest extends MockedJenkinsTest {
 
     }
 
-    static void setFinalStatic(Field field, Object newValue) throws Exception {
+    static void setFinalStaticTo123(Field field) throws Exception {
         field.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, newValue);
+        field.set(null, "123");
     }
 
 }

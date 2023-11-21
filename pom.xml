@@ -130,6 +130,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -140,20 +141,15 @@
       <artifactId>pipeline-rest-api</artifactId>
     </dependency>
 
-    <!-- mockito must precede assertj until assertj supports Java 21 -->
-    <!-- mockito provides a Java 21 capable version of bytebuddy -->
-    <!-- TODO: restore ordering once assertj supports Java 21 -->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- assertj must follow mockito until assertj supports Java 21 -->
-    <!-- assertj does not provide a Java 21 capable version of bytebuddy -->
     <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>${assertj-core.version}</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>5.3.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -166,12 +162,6 @@
       <groupId>com.github.stefanbirkner</groupId>
       <artifactId>system-lambda</artifactId>
       <version>${system-lambda.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.inject.extensions</groupId>
-      <artifactId>guice-testlib</artifactId>
-      <version>7.0.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -1,18 +1,17 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
 import io.prometheus.client.Collector;
-import org.jenkinsci.plugins.prometheus.collectors.builds.BuildDurationSummary;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedRunCollectorTest;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BuildDurationSummaryTestJobTest extends MockedRunCollectorTest {
 
     @Test

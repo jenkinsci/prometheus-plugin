@@ -13,12 +13,11 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.nio.file.FileStore;
@@ -35,7 +34,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DiskUsageCollectorTest {
 
     @Mock
@@ -114,7 +113,7 @@ public class DiskUsageCollectorTest {
         }
     }
 
-    private static final void mockFileStore(DiskItem item, FileStore store) throws IOException {
+    private static void mockFileStore(DiskItem item, FileStore store) throws IOException {
         final Path path = item.getPath().toPath().toRealPath();
         when(path.getFileSystem().provider().getFileStore(path)).thenReturn(store);
     }
@@ -123,7 +122,7 @@ public class DiskUsageCollectorTest {
         requireNonNull(name);
         requireNonNull(samples);
 
-        return new TypeSafeDiagnosingMatcher<MetricFamilySamples>(MetricFamilySamples.class) {
+        return new TypeSafeDiagnosingMatcher<>(MetricFamilySamples.class) {
             @Override
             public void describeTo(Description description) {
                 description.appendText("gauges named ")
@@ -158,7 +157,7 @@ public class DiskUsageCollectorTest {
     private static Matcher<MetricFamilySamples.Sample> sample(Map<String, String> labels, Matcher<Double> value) {
         requireNonNull(labels);
 
-        return new TypeSafeDiagnosingMatcher<MetricFamilySamples.Sample>(MetricFamilySamples.Sample.class) {
+        return new TypeSafeDiagnosingMatcher<>(MetricFamilySamples.Sample.class) {
             @Override
             public void describeTo(Description description) {
                 description.appendText("sample labeled ")

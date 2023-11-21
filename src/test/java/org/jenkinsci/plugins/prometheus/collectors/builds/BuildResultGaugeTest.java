@@ -3,8 +3,8 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 import hudson.model.Result;
 import io.prometheus.client.Collector;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedRunCollectorTest;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.List;

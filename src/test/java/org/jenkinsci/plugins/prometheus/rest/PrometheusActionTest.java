@@ -5,16 +5,17 @@ import jenkins.metrics.api.Metrics;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.service.PrometheusMetrics;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -22,10 +23,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import static java.net.HttpURLConnection.*;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PrometheusActionTest {
 
     @Mock
@@ -35,15 +35,15 @@ public class PrometheusActionTest {
 
     private MockedStatic<Jenkins> jenkinsStatic;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         jenkinsStatic = mockStatic(Jenkins.class);
-        jenkinsStatic.when(() -> Jenkins.get()).thenReturn(jenkins);
+        jenkinsStatic.when(Jenkins::get).thenReturn(jenkins);
         when(jenkins.getDescriptor(PrometheusConfiguration.class)).thenReturn(configuration);
         when(configuration.getAdditionalPath()).thenReturn("prometheus");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         jenkinsStatic.close();
     }
@@ -113,12 +113,14 @@ public class PrometheusActionTest {
         private final HttpResponse httpResponse;
         private final StringWriter stringWriter;
 
+
         private AssertStaplerResponse(HttpResponse httpResponse) throws IOException {
             this.httpResponse = httpResponse;
             this.response = mock(StaplerResponse.class);
             stringWriter = new StringWriter();
             PrintWriter writer = new PrintWriter(stringWriter);
-            when(response.getWriter()).thenReturn(writer);
+
+            lenient().when(response.getWriter()).thenReturn(writer);
         }
 
         static AssertStaplerResponse from(HttpResponse actual) throws IOException {
@@ -141,7 +143,7 @@ public class PrometheusActionTest {
         }
 
         private AssertStaplerResponse assertBody(String payload) {
-            assertThat(stringWriter).hasToString(payload);
+            Assertions.assertEquals(stringWriter.toString(), payload);
             return this;
         }
 

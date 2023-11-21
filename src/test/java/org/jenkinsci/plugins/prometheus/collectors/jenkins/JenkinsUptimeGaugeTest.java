@@ -3,7 +3,7 @@ package org.jenkinsci.plugins.prometheus.collectors.jenkins;
 import hudson.model.Computer;
 import io.prometheus.client.Collector;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedJenkinsTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 

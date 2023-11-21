@@ -4,15 +4,15 @@ import hudson.tasks.test.AbstractTestResultAction;
 import io.prometheus.client.Collector;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedRunCollectorTest;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("rawtypes")
 public class FailedTestsGaugeTest extends MockedRunCollectorTest {
 
     @Test
@@ -50,7 +50,7 @@ public class FailedTestsGaugeTest extends MockedRunCollectorTest {
 
             assertEquals(1, collect.size());
             assertEquals(100.0, collect.get(0).samples.get(0).value, 0.0);
-            Assertions.assertEquals("default_jenkins_builds_build_tests_failing", collect.get(0).samples.get(0).name);
+            assertEquals("default_jenkins_builds_build_tests_failing", collect.get(0).samples.get(0).name);
         }
     }
 }

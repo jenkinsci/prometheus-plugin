@@ -2,7 +2,7 @@ package org.jenkinsci.plugins.prometheus.collectors.jobs;
 
 import hudson.tasks.LogRotator;
 import io.prometheus.client.Collector;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -10,8 +10,9 @@ import static org.mockito.Mockito.when;
 
 public class BuildDiscardGaugeTest extends JobCollectorTest {
 
-    @Override
-    void testCollectResult() {
+
+    @Test
+    public void testCollectResult() {
         when(job.getBuildDiscarder()).thenReturn(null);
 
         BuildDiscardGauge sut = new BuildDiscardGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins");

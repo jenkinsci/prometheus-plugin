@@ -5,8 +5,8 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.SimpleCollector;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedRunCollectorTest;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import static org.mockito.Mockito.*;

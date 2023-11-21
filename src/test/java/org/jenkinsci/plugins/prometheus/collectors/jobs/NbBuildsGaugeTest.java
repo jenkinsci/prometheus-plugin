@@ -3,7 +3,7 @@ package org.jenkinsci.plugins.prometheus.collectors.jobs;
 import hudson.model.RunMap;
 import io.prometheus.client.Collector;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.List;

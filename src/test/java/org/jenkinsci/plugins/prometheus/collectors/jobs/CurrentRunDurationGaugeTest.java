@@ -2,8 +2,8 @@ package org.jenkinsci.plugins.prometheus.collectors.jobs;
 
 import hudson.model.Run;
 import io.prometheus.client.Collector;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -17,9 +17,10 @@ import static org.mockito.Mockito.when;
 public class CurrentRunDurationGaugeTest extends JobCollectorTest {
 
     @Mock
+    @SuppressWarnings("rawtypes")
     Run currentRun;
 
-    @Override
+
     @Test
     public void testCollectResult() {
         when(currentRun.isBuilding()).thenReturn(true);
