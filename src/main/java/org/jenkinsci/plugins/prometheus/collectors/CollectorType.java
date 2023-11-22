@@ -30,6 +30,7 @@ public enum CollectorType {
     EXECUTORS_QUEUE_LENGTH_GAUGE("queue_length"),
 
     DISK_USAGE_BYTES_GAUGE("disk_usage_bytes"),
+    DISK_USAGE_FILE_COUNT_GAUGE("disk_usage_file_count"),
     FILE_STORE_AVAILABLE_GAUGE("file_store_available_bytes"),
     FILE_STORE_CAPACITY_GAUGE("file_store_capacity_bytes"),
     JOB_USAGE_BYTES_GAUGE("job_usage_bytes"),

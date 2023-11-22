@@ -55,6 +55,7 @@ public class DiskUsageCollector extends Collector {
         final Set<FileStore> usedFileStores = new HashSet<>();
         List<MetricCollector<DiskItem, ? extends Collector>> diskItemCollectors = new ArrayList<>();
         diskItemCollectors.add(factory.createDiskItemCollector(CollectorType.DISK_USAGE_BYTES_GAUGE, new String[]{"file_store", "directory"}));
+        diskItemCollectors.add(factory.createDiskItemCollector(CollectorType.DISK_USAGE_FILE_COUNT_GAUGE, new String[]{"file_store", "directory"}));
 
         diskUsagePlugin.getDirectoriesUsages().forEach(i -> {
             final Optional<FileStore> fileStore = getFileStore(i.getPath());

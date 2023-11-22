@@ -92,13 +92,12 @@ public class DiskUsageCollectorTest {
             DiskUsageCollector underTest = new DiskUsageCollector();
             final List<MetricFamilySamples> samples = underTest.collect();
 
-            System.out.println("Size: " + samples.size());
-            for (MetricFamilySamples f :samples) {
-                System.out.println(f);
-            }
             assertThat(samples, containsInAnyOrder(
                 gauges("foo_bar_disk_usage_bytes", containsInAnyOrder(
                     sample(ImmutableMap.of("file_store", "the file store", "directory", "dir"), equalTo(11. * 1024))
+                )),
+                gauges("foo_bar_disk_usage_file_count", containsInAnyOrder(
+                    sample(ImmutableMap.of("file_store", "the file store", "directory", "dir"), equalTo(0.0))
                 )),
                 gauges("foo_bar_job_usage_bytes", containsInAnyOrder(
                     sample(ImmutableMap.of("file_store", "the file store", "jobName", "job name", "url", "/job"), equalTo(7. * 1024))

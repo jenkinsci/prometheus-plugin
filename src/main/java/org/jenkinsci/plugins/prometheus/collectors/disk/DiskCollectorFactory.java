@@ -23,6 +23,9 @@ public class DiskCollectorFactory extends BaseCollectorFactory {
         if (Objects.requireNonNull(type) == DISK_USAGE_BYTES_GAUGE) {
             return saveBuildCollector(new DiskUsageBytesGauge(labelNames, namespace, subsystem));
         }
+        if (Objects.requireNonNull(type) == DISK_USAGE_FILE_COUNT_GAUGE) {
+            return saveBuildCollector(new DiskUsageFileCountGauge(labelNames, namespace, subsystem));
+        }
         return new NoOpMetricCollector<>();
     }
 
