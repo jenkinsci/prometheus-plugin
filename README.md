@@ -1,7 +1,7 @@
 # Jenkins Prometheus Metrics Plugin
 
 ## About
-Jenkins Prometheus Plugin expose an endpoint (default `/prometheus`) with metrics where a Prometheus Server can scrape.
+Jenkins Prometheus Plugin expose an endpoint (default `/prometheus/`) with metrics where a Prometheus Server can scrape.
 
 Documentation can be found [here](https://plugins.jenkins.io/prometheus)
 
@@ -13,6 +13,11 @@ Please note that the documentation is a WIP.
 - Metrics from [Metrics-plugin](https://github.com/jenkinsci/metrics-plugin)
 - Metrics from this plugin. Refer [Prometheus-plugin](docs/metrics/index.md)
 
+## Scraping the endpoint
+The endpoint you've configured or the default endpoint `/prometheus/` in case you didn't configure an endpoint, needs to 
+end with a trailing slash when you configure the endpoint in your scraping tool. If you miss adding the trailing slash
+you'll get a 302 response with a redirection to the endpoint ending with a slash. Some tools cannot handle this well.
+
 ## Configuring the plugin
 You can find some examples in this documentation [Configuring Plugin](docs/configuration/configuration.md)
 
@@ -20,7 +25,7 @@ You can find some examples in this documentation [Configuring Plugin](docs/confi
 
 `PROMETHEUS_NAMESPACE` Prefix of metric (Default: `default`).
 
-`PROMETHEUS_ENDPOINT` REST Endpoint (Default: `prometheus`)
+`PROMETHEUS_ENDPOINT` REST Endpoint (Default: `/prometheus/`)
 
 `COLLECTING_METRICS_PERIOD_IN_SECONDS` Async task period in seconds (Default: `120` seconds)
 
