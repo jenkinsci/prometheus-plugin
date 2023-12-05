@@ -37,17 +37,16 @@ public class BuildResultOrdinalGauge extends BuildsMetricCollector<Run<?, ?>, Ga
             return;
         }
 
+        int ordinal = -1;
         Result result = jenkinsObject.getResult();
-        if (result == null) {
-            return;
+        if (null != result) {
+            ordinal = result.ordinal;
         }
 
         if (labelValues == null) {
-            this.collector.labels().set(result.ordinal);
+            this.collector.labels().set(ordinal);
         } else {
-            this.collector.labels(labelValues).set(result.ordinal);
+            this.collector.labels(labelValues).set(ordinal);
         }
-
-
     }
 }
