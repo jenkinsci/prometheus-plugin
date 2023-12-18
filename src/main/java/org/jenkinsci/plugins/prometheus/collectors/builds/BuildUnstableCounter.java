@@ -8,23 +8,23 @@ import io.prometheus.client.SimpleCollector;
 
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
-public class BuildFailedCounter extends BuildsMetricCollector<Run<?, ?>, Counter>  {
-    protected BuildFailedCounter(String[] labelNames, String namespace, String subsystem) {
+public class BuildUnstableCounter extends BuildsMetricCollector<Run<?, ?>, Counter>  {
+    protected BuildUnstableCounter(String[] labelNames, String namespace, String subsystem) {
         super(labelNames, namespace, subsystem);
     }
 
-    protected BuildFailedCounter(String[] labelNames, String namespace, String subsystem, String prefix) {
+    protected BuildUnstableCounter(String[] labelNames, String namespace, String subsystem, String prefix) {
         super(labelNames, namespace, subsystem, prefix);
     }
 
     @Override
     protected CollectorType getCollectorType() {
-        return CollectorType.BUILD_FAILED_COUNTER;
+        return CollectorType.BUILD_UNSTABLE_COUNTER;
     }
 
     @Override
     protected String getHelpText() {
-        return "Failed build count";
+        return "Unstable build count";
     }
 
     @Override
@@ -34,7 +34,7 @@ public class BuildFailedCounter extends BuildsMetricCollector<Run<?, ?>, Counter
 
     @Override
     public void calculateMetric(Run<?, ?> jenkinsObject, String[] labelValues) {
-        if(jenkinsObject.getResult() == Result.FAILURE){
+        if(jenkinsObject.getResult() == Result.UNSTABLE){
             this.collector.labels(labelValues).inc();
         }
     }

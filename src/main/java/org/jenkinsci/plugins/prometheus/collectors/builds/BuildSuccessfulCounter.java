@@ -4,12 +4,16 @@ import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Counter;
 import io.prometheus.client.SimpleCollector;
+
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
 public class BuildSuccessfulCounter extends BuildsMetricCollector<Run<?, ?>, Counter> {
+    protected BuildSuccessfulCounter(String[] labelNames, String namespace, String subsystem) {
+        super(labelNames, namespace, subsystem);
+    }
 
-    protected BuildSuccessfulCounter(String[] labelNames, String namespace, String subSystem) {
-        super(labelNames, namespace, subSystem);
+    protected BuildSuccessfulCounter(String[] labelNames, String namespace, String subsystem, String prefix) {
+        super(labelNames, namespace, subsystem, prefix);
     }
 
     @Override
@@ -29,11 +33,8 @@ public class BuildSuccessfulCounter extends BuildsMetricCollector<Run<?, ?>, Cou
 
     @Override
     public void calculateMetric(Run<?, ?> jenkinsObject, String[] labelValues) {
-        Result runResult = jenkinsObject.getResult();
-        if (runResult != null && !jenkinsObject.isBuilding()) {
-            if (runResult.equals(Result.SUCCESS) || runResult.equals(Result.UNSTABLE)) {
-                this.collector.labels(labelValues).inc();
-            }
-        }
+        if(jenkinsObject.getResult() == Result.SUCCESS){
+            this.collector.labels(labelValues).inc();
+        } 
     }
 }

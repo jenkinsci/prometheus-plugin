@@ -41,6 +41,12 @@ public class BuildCollectorFactory extends BaseCollectorFactory {
                 return saveBuildCollector(new TotalTestsGauge(labelNames, namespace, subsystem, prefix));
             case BUILD_LIKELY_STUCK_GAUGE:
                 return saveBuildCollector(new BuildLikelyStuckGauge(labelNames, namespace, subsystem, prefix));
+            case BUILD_ABORTED_COUNTER:
+                return saveBuildCollector(new BuildAbortedCounter(labelNames, namespace, subsystem, prefix));
+             case BUILD_UNSTABLE_COUNTER:
+                return saveBuildCollector(new BuildUnstableCounter(labelNames, namespace, subsystem, prefix));
+            case BUILD_TOTAL_COUNTER:
+                return saveBuildCollector(new BuildTotalCounter(labelNames, namespace, subsystem, prefix));
             default:
                 return new NoOpMetricCollector<>();
         }

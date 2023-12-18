@@ -1,30 +1,28 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
-import hudson.model.Job;
-import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Counter;
 import io.prometheus.client.SimpleCollector;
 
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
-public class BuildFailedCounter extends BuildsMetricCollector<Run<?, ?>, Counter>  {
-    protected BuildFailedCounter(String[] labelNames, String namespace, String subsystem) {
+public class BuildTotalCounter extends BuildsMetricCollector<Run<?, ?>, Counter> {
+    protected BuildTotalCounter(String[] labelNames, String namespace, String subsystem) {
         super(labelNames, namespace, subsystem);
     }
 
-    protected BuildFailedCounter(String[] labelNames, String namespace, String subsystem, String prefix) {
+    protected BuildTotalCounter(String[] labelNames, String namespace, String subsystem, String prefix) {
         super(labelNames, namespace, subsystem, prefix);
     }
 
     @Override
     protected CollectorType getCollectorType() {
-        return CollectorType.BUILD_FAILED_COUNTER;
+        return CollectorType.BUILD_TOTAL_COUNTER;
     }
 
     @Override
     protected String getHelpText() {
-        return "Failed build count";
+        return "Total build count";
     }
 
     @Override
@@ -34,8 +32,6 @@ public class BuildFailedCounter extends BuildsMetricCollector<Run<?, ?>, Counter
 
     @Override
     public void calculateMetric(Run<?, ?> jenkinsObject, String[] labelValues) {
-        if(jenkinsObject.getResult() == Result.FAILURE){
-            this.collector.labels(labelValues).inc();
-        }
+        this.collector.labels(labelValues).inc();
     }
 }
