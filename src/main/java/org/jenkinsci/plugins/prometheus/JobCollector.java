@@ -5,6 +5,7 @@ import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Collector;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
@@ -53,7 +54,7 @@ public class JobCollector extends Collector {
             this.buildPrefix = buildPrefix;
         }
 
-        public void initCollectors(String[] labelNameArray, String[] labelStageNameArray) {
+        public void initCollectors(String[] labelNameArray) {
             CollectorFactory factory = new CollectorFactory();
             this.jobBuildResultOrdinal = factory.createRunCollector(CollectorType.BUILD_RESULT_ORDINAL_GAUGE, labelNameArray, buildPrefix);
             this.jobBuildResult = factory.createRunCollector(CollectorType.BUILD_RESULT_GAUGE, labelNameArray, buildPrefix);
@@ -62,7 +63,7 @@ public class JobCollector extends Collector {
             this.jobBuildTestsTotal = factory.createRunCollector(CollectorType.TOTAL_TESTS_GAUGE, labelNameArray, buildPrefix);
             this.jobBuildTestsSkipped = factory.createRunCollector(CollectorType.SKIPPED_TESTS_GAUGE, labelNameArray, buildPrefix);
             this.jobBuildTestsFailing = factory.createRunCollector(CollectorType.FAILED_TESTS_GAUGE, labelNameArray, buildPrefix);
-            this.stageSummary = factory.createRunCollector(CollectorType.STAGE_SUMMARY, labelStageNameArray, buildPrefix);
+            this.stageSummary = factory.createRunCollector(CollectorType.STAGE_SUMMARY, ArrayUtils.add(labelNameArray, "stage"), buildPrefix);
             this.jobBuildLikelyStuck = factory.createRunCollector(CollectorType.BUILD_LIKELY_STUCK_GAUGE, labelNameArray, buildPrefix);
         }
     }
@@ -99,8 +100,6 @@ public class JobCollector extends Collector {
             labelNameArray[labelNameArray.length - 1] = buildParam.trim();
         }
 
-        String[] labelStageNameArray = Arrays.copyOf(labelBaseNameArray, labelBaseNameArray.length + 1);
-        labelStageNameArray[labelBaseNameArray.length] = "stage";
 
         boolean processDisabledJobs = PrometheusConfiguration.get().isProcessingDisabledBuilds();
         boolean ignoreBuildMetrics =
@@ -138,11 +137,11 @@ public class JobCollector extends Collector {
         if (PrometheusConfiguration.get().isPerBuildMetrics()) {
             labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
             labelNameArray[labelNameArray.length - 1] = "number";
-            perBuildMetrics.initCollectors(labelNameArray, labelStageNameArray);
+            perBuildMetrics.initCollectors(labelNameArray);
         }
 
         // The lastBuildMetrics are initialized with the "base" labels
-        lastBuildMetrics.initCollectors(labelBaseNameArray, labelStageNameArray);
+        lastBuildMetrics.initCollectors(labelBaseNameArray);
 
 
         Jobs.forEachJob(job -> {
@@ -284,7 +283,7 @@ public class JobCollector extends Collector {
         buildMetrics.jobBuildStartMillis.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildDuration.calculateMetric(run, buildLabelValueArray);
         // Label values are calculated within stageSummary so we pass null here.
-        buildMetrics.stageSummary.calculateMetric(run, new String[]{});
+        buildMetrics.stageSummary.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsTotal.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsSkipped.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsFailing.calculateMetric(run, buildLabelValueArray);
