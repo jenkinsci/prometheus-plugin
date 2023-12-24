@@ -33,6 +33,7 @@ public class BuildSuccessfulCounter extends BuildsMetricCollector<Run<?, ?>, Cou
 
     @Override
     public void calculateMetric(Run<?, ?> jenkinsObject, String[] labelValues) {
+        // Increment the counter if the result of run was successful.
         if(jenkinsObject.getResult() == Result.SUCCESS){
             this.collector.labels(labelValues).inc();
         } 

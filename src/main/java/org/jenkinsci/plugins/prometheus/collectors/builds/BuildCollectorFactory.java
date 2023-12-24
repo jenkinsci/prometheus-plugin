@@ -7,8 +7,6 @@ import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.collectors.NoOpMetricCollector;
 
-import static org.jenkinsci.plugins.prometheus.collectors.CollectorType.*;
-
 public class BuildCollectorFactory extends BaseCollectorFactory {
 
     public BuildCollectorFactory() {

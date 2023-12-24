@@ -52,6 +52,9 @@ will just return the last build. You can enable per build metrics in the configu
 | default_jenkins_builds_duration_milliseconds_summary                        | Summary of Jenkins build times in milliseconds by Job                                                   | summary         |
 | default_jenkins_builds_success_build_count                                  | Successful build count                                                                                  | counter         |
 | default_jenkins_builds_failed_build_count                                   | Failed build count                                                                                      | counter         |
+| default_jenkins_builds_unstable_build_count                                   | Unstable build count                                                                                      | counter         |
+| default_jenkins_builds_total_build_count                                   | Total build count (excluding not_built statuses)                                                                                      | counter         |
+| default_jenkins_builds_aborted_build_count                                   |  Aborted build count                                                                                      | counter         |
 | default_jenkins_builds_health_score                                         | Health score of a job                                                                                   | gauge           |
 | default_jenkins_builds_<buildname>_last_build_result_ordinal                | Build status of a job (0=SUCCESS,1=UNSTABLE,2=FAILURE,3=NOT_BUILT,4=ABORTED)                            | gauge           |
 | default_jenkins_builds_<buildname>_last_build_result                        | Build status of a job as a boolean value - 0 or 1. Where 0 is: SUCCESS,UNSTABLE and 1: all other States | gauge           |

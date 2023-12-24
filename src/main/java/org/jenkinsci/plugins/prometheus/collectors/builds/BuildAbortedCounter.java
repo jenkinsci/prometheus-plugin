@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
-import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Counter;
@@ -34,6 +33,7 @@ public class BuildAbortedCounter extends BuildsMetricCollector<Run<?, ?>, Counte
 
     @Override
     public void calculateMetric(Run<?, ?> jenkinsObject, String[] labelValues) {
+        // Increment counter if result was unstable.
         if(jenkinsObject.getResult() == Result.ABORTED){
             this.collector.labels(labelValues).inc();
         }

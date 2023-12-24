@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
-import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Counter;
@@ -34,6 +33,7 @@ public class BuildUnstableCounter extends BuildsMetricCollector<Run<?, ?>, Count
 
     @Override
     public void calculateMetric(Run<?, ?> jenkinsObject, String[] labelValues) {
+        // increment counter if the result was unstable.
         if(jenkinsObject.getResult() == Result.UNSTABLE){
             this.collector.labels(labelValues).inc();
         }

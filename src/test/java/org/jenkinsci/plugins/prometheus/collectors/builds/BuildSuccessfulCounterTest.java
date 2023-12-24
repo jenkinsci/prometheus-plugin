@@ -15,13 +15,13 @@ public class BuildSuccessfulCounterTest extends MockedRunCollectorTest {
     @Test
     public void testNothingIsIncreasedOnUnstableBuild() {
         when(mock.getResult()).thenReturn(Result.UNSTABLE);
-        testSingleCalculation();
+        testSingleCalculation(0);
     }
 
     @Test
-    public void testNothingIsIncreasedOnSuccessfulBuild() {
+    public void testIncreasedOnSuccessfulBuild() {
         when(mock.getResult()).thenReturn(Result.SUCCESS);
-        testSingleCalculation();
+        testSingleCalculation(2);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class BuildSuccessfulCounterTest extends MockedRunCollectorTest {
         testNonSuccessStateBuild();
     }
 
-    private void testSingleCalculation() {
+    private void testSingleCalculation(int expectedCount) {
         BuildSuccessfulCounter sut = new BuildSuccessfulCounter(getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
@@ -51,7 +51,7 @@ public class BuildSuccessfulCounterTest extends MockedRunCollectorTest {
 
         Assertions.assertEquals(1, collect.size());
 
-        Assertions.assertEquals(2, collect.get(0).samples.size(), "Would expect one result");
+        Assertions.assertEquals(expectedCount, collect.get(0).samples.size(), "Would expect one result");
 
         for (Collector.MetricFamilySamples.Sample sample : collect.get(0).samples) {
             if (sample.name.equals("default_jenkins_builds_success_build_count_total")) {

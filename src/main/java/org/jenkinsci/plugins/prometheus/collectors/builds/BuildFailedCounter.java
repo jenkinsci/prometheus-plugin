@@ -34,6 +34,7 @@ public class BuildFailedCounter extends BuildsMetricCollector<Run<?, ?>, Counter
 
     @Override
     public void calculateMetric(Run<?, ?> jenkinsObject, String[] labelValues) {
+        // increment counter if the build failed.
         if(jenkinsObject.getResult() == Result.FAILURE){
             this.collector.labels(labelValues).inc();
         }

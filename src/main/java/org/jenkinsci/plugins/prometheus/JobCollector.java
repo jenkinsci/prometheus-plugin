@@ -120,26 +120,33 @@ public class JobCollector extends Collector {
             return samples;
         }
 
-        // Below three metrics use labelNameArray which might include the optional labels
+        // Below metrics use labelNameArray which might include the optional labels
         // of "parameters" or "status"
         summary = factory.createRunCollector(CollectorType.BUILD_DURATION_SUMMARY, labelNameArray, null);
         BuildCompletionListener listener = BuildCompletionListener.getInstance();
-               
-        // This is a try with resources block it ensures close is called
-        // so if an exception occurs we don't reach deadlock.
+        
+        // Counter manager acts as a DB to retrieve any counters that are already in memory instead of reinitializing
+        // them with each iteration of collect.
         var manager = CounterManager.getManager();       
-        jobSuccessCount = manager.getCounter(CollectorType.BUILD_SUCCESSFUL_COUNTER, labelNameArray, null);
-        jobFailedCount = manager.getCounter(CollectorType.BUILD_FAILED_COUNTER, labelNameArray, null);
-        jobTotalCount = manager.getCounter(CollectorType.BUILD_TOTAL_COUNTER, labelNameArray, null);
-        jobAbortedCount = manager.getCounter(CollectorType.BUILD_ABORTED_COUNTER, labelNameArray, null);
-        jobUnstableCount = manager.getCounter(CollectorType.BUILD_UNSTABLE_COUNTER, labelNameArray, null);
+        jobSuccessCount = manager.getCounter(CollectorType.BUILD_SUCCESSFUL_COUNTER, labelBaseNameArray, null);
+        jobFailedCount = manager.getCounter(CollectorType.BUILD_FAILED_COUNTER, labelBaseNameArray, null);
+        jobTotalCount = manager.getCounter(CollectorType.BUILD_TOTAL_COUNTER, labelBaseNameArray, null);
+        jobAbortedCount = manager.getCounter(CollectorType.BUILD_ABORTED_COUNTER, labelBaseNameArray, null);
+        jobUnstableCount = manager.getCounter(CollectorType.BUILD_UNSTABLE_COUNTER, labelBaseNameArray, null);
 
+        // This is a try with resources block it ensures close is called
+        // so if an exception occurs we don't reach deadlock. This is analogous to a using
+        // block where dispose is called after we leave the block.
+        // The closeable iterator synchronizes receiving jobs and reading the iterator
+        // so we don't modify the collection while iterating.
         try (CloseableIterator<Run<?,?>> iterator = listener.iterator()) {
+            // Go through each run received since the last scrape.
             while (iterator.hasNext()) {
                 Run<?,?> run = iterator.next();
                 Job<?,?> job = run.getParent();
 
-                String[] labelValues = getJobLabelVaues(job, run);
+                // Calculate the metrics.
+                String[] labelValues = getBaseLabelValues(job);
                 jobFailedCount.calculateMetric(run, labelValues);
                 jobSuccessCount.calculateMetric(run, labelValues);
                 jobTotalCount.calculateMetric(run, labelValues);

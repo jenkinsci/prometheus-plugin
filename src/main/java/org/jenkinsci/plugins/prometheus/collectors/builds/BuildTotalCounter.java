@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
+import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Counter;
 import io.prometheus.client.SimpleCollector;
@@ -32,6 +33,9 @@ public class BuildTotalCounter extends BuildsMetricCollector<Run<?, ?>, Counter>
 
     @Override
     public void calculateMetric(Run<?, ?> jenkinsObject, String[] labelValues) {
-        this.collector.labels(labelValues).inc();
+        // Increment counter every run that is completed.
+        if(jenkinsObject.getResult() != Result.NOT_BUILT){
+             this.collector.labels(labelValues).inc();
+        }
     }
 }
