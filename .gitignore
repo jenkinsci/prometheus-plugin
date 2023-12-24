@@ -8,3 +8,4 @@ work
 .settings/
 build/
 *.DS_Store
+.vscode/*
