@@ -1,15 +1,14 @@
 package org.jenkinsci.plugins.prometheus;
 
 import hudson.model.Job;
-import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Collector;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCompletionListener;
 import org.jenkinsci.plugins.prometheus.collectors.builds.CounterManager;
+import org.jenkinsci.plugins.prometheus.collectors.builds.JobLabel;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCompletionListener.CloseableIterator;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
@@ -19,9 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class JobCollector extends Collector {
 
@@ -146,7 +143,7 @@ public class JobCollector extends Collector {
                 Job<?,?> job = run.getParent();
 
                 // Calculate the metrics.
-                String[] labelValues = getBaseLabelValues(job);
+                String[] labelValues = JobLabel.getBaseLabelValues(job);
                 jobFailedCount.calculateMetric(run, labelValues);
                 jobSuccessCount.calculateMetric(run, labelValues);
                 jobTotalCount.calculateMetric(run, labelValues);
@@ -237,52 +234,9 @@ public class JobCollector extends Collector {
         addSamples(allSamples, buildMetrics.stageSummary.collect(), "Adding [{}] samples from summary ({})");
     }
 
-    private String[] getBaseLabelValues(Job<?,?> job){
-         // Add this to the repo as well so I can group by Github Repository
-        String repoName = StringUtils.substringBetween(job.getFullName(), "/");
-        if (repoName == null) {
-            repoName = NOT_AVAILABLE;
-        }
-        String[] baseLabelValueArray = {job.getFullName(), repoName, String.valueOf(job.isBuildable())};
-        return baseLabelValueArray;
-    }
-
-    private String[] getJobLabelVaues(Job<?,?> job, Run<?,?> run){
-        boolean isAppendParamLabel = PrometheusConfiguration.get().isAppendParamLabel();
-        boolean isAppendStatusLabel = PrometheusConfiguration.get().isAppendStatusLabel();
-        String[] buildParameterNamesAsArray = PrometheusConfiguration.get().getLabeledBuildParameterNamesAsArray();
-
-        Result runResult = run.getResult();
-        String[] labelValueArray = getBaseLabelValues(job);
-        if (isAppendParamLabel) {
-                    String params = Runs.getBuildParameters(run).entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(";"));
-                    labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
-                    labelValueArray[labelValueArray.length - 1] = params;
-                }
-                if (isAppendStatusLabel) {
-                    String resultString = UNDEFINED;
-                    if (runResult != null) {
-                        resultString = runResult.toString();
-                    }
-                    labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
-                    labelValueArray[labelValueArray.length - 1] = run.isBuilding() ? "RUNNING" : resultString;
-                }
-
-                for (String configBuildParam : buildParameterNamesAsArray) {
-                    labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
-                    String paramValue = UNDEFINED;
-                    Object paramInBuild = Runs.getBuildParameters(run).get(configBuildParam);
-                    if (paramInBuild != null) {
-                        paramValue = String.valueOf(paramInBuild);
-                    }
-                    labelValueArray[labelValueArray.length - 1] = paramValue;
-                }
-                return labelValueArray;
-    }
-
     protected void appendJobMetrics(Job<?, ?> job) {
         boolean isPerBuildMetrics = PrometheusConfiguration.get().isPerBuildMetrics();
-        String[] baseLabelValueArray = getBaseLabelValues(job);
+        String[] baseLabelValueArray = JobLabel.getBaseLabelValues(job);
 
         Run<?, ?> lastBuild = job.getLastBuild();
         // Never built
@@ -304,7 +258,7 @@ public class JobCollector extends Collector {
             logger.debug("getting metrics for run [{}] from job [{}], include per run metrics [{}]", run.getNumber(), job.getName(), isPerBuildMetrics);
             if (Runs.includeBuildInMetrics(run)) {
                 logger.debug("getting build info for run [{}] from job [{}]", run.getNumber(), job.getName());
-                String[] labelValueArray = getJobLabelVaues(job, run);
+                String[] labelValueArray = JobLabel.getJobLabelVaues(job, run);
 
                 summary.calculateMetric(run, labelValueArray);
                 if (isPerBuildMetrics) {
