@@ -10,13 +10,13 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-public class BuildFailedCounterTest extends MockedRunCollectorTest {
+public class BuildUnstableCounterTest extends MockedRunCollectorTest {
 
 
     @Test
-    public void testNothingIsIncreasedOnUnstableBuild() {
+    public void testIncreasedOnUnstableBuild() {
         when(mock.getResult()).thenReturn(Result.UNSTABLE);
-        testNonFailureStateBuild();
+        testSingleCalculation(2);
     }
 
     @Test
@@ -32,19 +32,19 @@ public class BuildFailedCounterTest extends MockedRunCollectorTest {
     }
 
     @Test
-    public void testNothingIsIncreasedOnAbortedBuild() {
+    public void testNoIncreaseOnAbortedBuild() {
         when(mock.getResult()).thenReturn(Result.ABORTED);
         testSingleCalculation(0);
     }
 
     @Test
-    public void testCollectOnBuildResultFailure() {
+    public void testNothingIsIncreasedOnBuildResultFailure() {
         when(mock.getResult()).thenReturn(Result.FAILURE);
-        testSingleCalculation(2);
+        testSingleCalculation(0);
     }
 
     private void testSingleCalculation(int expectedCount) {
-        BuildFailedCounter sut = new BuildFailedCounter(getLabelNames(), getNamespace(), getSubSystem());
+        BuildUnstableCounter sut = new BuildUnstableCounter(getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
 
@@ -64,10 +64,10 @@ public class BuildFailedCounterTest extends MockedRunCollectorTest {
     }
 
     @Test
-    public void testCounterIsIncreasedOnBuildResultFailure() {
+    public void testCounterIsNotChangedResultFailure() {
         when(mock.getResult()).thenReturn(Result.FAILURE);
 
-        BuildFailedCounter sut = new BuildFailedCounter(getLabelNames(), getNamespace(), getSubSystem());
+        BuildUnstableCounter sut = new BuildUnstableCounter(getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
         sut.calculateMetric(mock, getLabelValues());
@@ -75,7 +75,7 @@ public class BuildFailedCounterTest extends MockedRunCollectorTest {
         List<Collector.MetricFamilySamples> collect = sut.collect();
 
         Assertions.assertEquals(1, collect.size());
-        Assertions.assertEquals(2, collect.get(0).samples.size(), "Would expect one result");
+        Assertions.assertEquals(0, collect.get(0).samples.size(), "Would expect one result");
 
         for (Collector.MetricFamilySamples.Sample sample : collect.get(0).samples) {
             if (sample.name.equals("default_jenkins_builds_failed_build_count_total")) {
@@ -88,7 +88,7 @@ public class BuildFailedCounterTest extends MockedRunCollectorTest {
     }
 
     private void testNonFailureStateBuild() {
-        BuildFailedCounter sut = new BuildFailedCounter(getLabelNames(), getNamespace(), getSubSystem());
+        BuildUnstableCounter sut = new BuildUnstableCounter(getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
 

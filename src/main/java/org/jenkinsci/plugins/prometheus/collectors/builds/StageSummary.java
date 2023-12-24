@@ -6,7 +6,7 @@ import hudson.model.Job;
 import hudson.model.Run;
 import io.prometheus.client.SimpleCollector;
 import io.prometheus.client.Summary;
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -54,33 +54,37 @@ public class StageSummary extends BuildsMetricCollector<Run<?, ?>, Summary> {
         var workflowRun = (WorkflowRun) jenkinsObject;
         WorkflowJob job = workflowRun.getParent();
         if (workflowRun.getExecution() != null) {
-            processPipelineRunStages(job, workflowRun, labelValues);
+            processPipelineRunStages(job, jenkinsObject, workflowRun);
         }
 
     }
 
-    private void processPipelineRunStages(Job job, WorkflowRun workflowRun, String[] labelValues) {
+    private void processPipelineRunStages(Job job, Run latestfinishedRun, WorkflowRun workflowRun) {
         List<StageNodeExt> stages = getSortedStageNodes(workflowRun);
         for (StageNodeExt stage : stages) {
             if (stage != null) {
-                observeStage(job, workflowRun, stage, labelValues);
+                observeStage(job, latestfinishedRun, stage);
             }
         }
     }
 
 
-    private void observeStage(Job job, Run run, StageNodeExt stage, String[] labelValues) {
-
+    private void observeStage(Job job, Run run, StageNodeExt stage) {
         LOGGER.debug("Observing stage[{}] in run [{}] from job [{}]", stage.getName(), run.getNumber(), job.getName());
+        // Add this to the repo as well so I can group by Github Repository
+        String repoName = StringUtils.substringBetween(job.getFullName(), "/");
+        if (repoName == null) {
+            repoName = NOT_AVAILABLE;
+        }
+        String jobName = job.getFullName();
         String stageName = stage.getName();
-
-        String[] values = ArrayUtils.add(labelValues, stageName);
+        String[] labelValueArray = {jobName, repoName, String.valueOf(job.isBuildable()), stageName};
 
         if (stage.getStatus() == StatusExt.SUCCESS || stage.getStatus() == StatusExt.UNSTABLE) {
             LOGGER.debug("getting duration for stage[{}] in run [{}] from job [{}]", stage.getName(), run.getNumber(), job.getName());
             long duration = stage.getDurationMillis();
             LOGGER.debug("duration was [{}] for stage[{}] in run [{}] from job [{}]", duration, stage.getName(), run.getNumber(), job.getName());
-            collector.labels(values).observe(duration);
+            collector.labels(labelValueArray).observe(duration);
         } else {
             LOGGER.debug("Stage[{}] in run [{}] from job [{}] was not successful and will be ignored", stage.getName(), run.getNumber(), job.getName());
         }

@@ -5,10 +5,12 @@ import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Collector;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
+import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCompletionListener;
+import org.jenkinsci.plugins.prometheus.collectors.builds.CounterManager;
+import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCompletionListener.CloseableIterator;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.jenkinsci.plugins.prometheus.util.Runs;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +32,9 @@ public class JobCollector extends Collector {
     private MetricCollector<Run<?, ?>, ? extends Collector> summary;
     private MetricCollector<Run<?, ?>, ? extends Collector> jobSuccessCount;
     private MetricCollector<Run<?, ?>, ? extends Collector> jobFailedCount;
+    private MetricCollector<Run<?, ?>, ? extends Collector> jobAbortedCount;
+    private MetricCollector<Run<?, ?>, ? extends Collector> jobUnstableCount;
+    private MetricCollector<Run<?, ?>, ? extends Collector> jobTotalCount;
     private MetricCollector<Job<?, ?>, ? extends Collector> jobHealthScoreGauge;
     private MetricCollector<Job<?, ?>, ? extends Collector> nbBuildsGauge;
     private MetricCollector<Job<?, ?>, ? extends Collector> buildDiscardGauge;
@@ -54,7 +60,7 @@ public class JobCollector extends Collector {
             this.buildPrefix = buildPrefix;
         }
 
-        public void initCollectors(String[] labelNameArray) {
+        public void initCollectors(String[] labelNameArray, String[] labelStageNameArray) {
             CollectorFactory factory = new CollectorFactory();
             this.jobBuildResultOrdinal = factory.createRunCollector(CollectorType.BUILD_RESULT_ORDINAL_GAUGE, labelNameArray, buildPrefix);
             this.jobBuildResult = factory.createRunCollector(CollectorType.BUILD_RESULT_GAUGE, labelNameArray, buildPrefix);
@@ -63,7 +69,7 @@ public class JobCollector extends Collector {
             this.jobBuildTestsTotal = factory.createRunCollector(CollectorType.TOTAL_TESTS_GAUGE, labelNameArray, buildPrefix);
             this.jobBuildTestsSkipped = factory.createRunCollector(CollectorType.SKIPPED_TESTS_GAUGE, labelNameArray, buildPrefix);
             this.jobBuildTestsFailing = factory.createRunCollector(CollectorType.FAILED_TESTS_GAUGE, labelNameArray, buildPrefix);
-            this.stageSummary = factory.createRunCollector(CollectorType.STAGE_SUMMARY, ArrayUtils.add(labelNameArray, "stage"), buildPrefix);
+            this.stageSummary = factory.createRunCollector(CollectorType.STAGE_SUMMARY, labelStageNameArray, buildPrefix);
             this.jobBuildLikelyStuck = factory.createRunCollector(CollectorType.BUILD_LIKELY_STUCK_GAUGE, labelNameArray, buildPrefix);
         }
     }
@@ -71,8 +77,7 @@ public class JobCollector extends Collector {
     private final BuildMetrics lastBuildMetrics = new BuildMetrics("last");
     private final BuildMetrics perBuildMetrics = new BuildMetrics("");
 
-    public JobCollector() {
-    }
+    public JobCollector() {}
 
     @Override
     public List<MetricFamilySamples> collect() {
@@ -100,6 +105,8 @@ public class JobCollector extends Collector {
             labelNameArray[labelNameArray.length - 1] = buildParam.trim();
         }
 
+        String[] labelStageNameArray = Arrays.copyOf(labelBaseNameArray, labelBaseNameArray.length + 1);
+        labelStageNameArray[labelBaseNameArray.length] = "stage";
 
         boolean processDisabledJobs = PrometheusConfiguration.get().isProcessingDisabledBuilds();
         boolean ignoreBuildMetrics =
@@ -113,13 +120,40 @@ public class JobCollector extends Collector {
             return samples;
         }
 
-        // Below three metrics use labelNameArray which might include the optional labels
+        // Below metrics use labelNameArray which might include the optional labels
         // of "parameters" or "status"
         summary = factory.createRunCollector(CollectorType.BUILD_DURATION_SUMMARY, labelNameArray, null);
+        BuildCompletionListener listener = BuildCompletionListener.getInstance();
+        
+        // Counter manager acts as a DB to retrieve any counters that are already in memory instead of reinitializing
+        // them with each iteration of collect.
+        var manager = CounterManager.getManager();       
+        jobSuccessCount = manager.getCounter(CollectorType.BUILD_SUCCESSFUL_COUNTER, labelBaseNameArray, null);
+        jobFailedCount = manager.getCounter(CollectorType.BUILD_FAILED_COUNTER, labelBaseNameArray, null);
+        jobTotalCount = manager.getCounter(CollectorType.BUILD_TOTAL_COUNTER, labelBaseNameArray, null);
+        jobAbortedCount = manager.getCounter(CollectorType.BUILD_ABORTED_COUNTER, labelBaseNameArray, null);
+        jobUnstableCount = manager.getCounter(CollectorType.BUILD_UNSTABLE_COUNTER, labelBaseNameArray, null);
 
-        jobSuccessCount = factory.createRunCollector(CollectorType.BUILD_SUCCESSFUL_COUNTER, labelNameArray, null);
+        // This is a try with resources block it ensures close is called
+        // so if an exception occurs we don't reach deadlock. This is analogous to a using
+        // block where dispose is called after we leave the block.
+        // The closeable iterator synchronizes receiving jobs and reading the iterator
+        // so we don't modify the collection while iterating.
+        try (CloseableIterator<Run<?,?>> iterator = listener.iterator()) {
+            // Go through each run received since the last scrape.
+            while (iterator.hasNext()) {
+                Run<?,?> run = iterator.next();
+                Job<?,?> job = run.getParent();
 
-        jobFailedCount = factory.createRunCollector(CollectorType.BUILD_FAILED_COUNTER, labelNameArray, null);
+                // Calculate the metrics.
+                String[] labelValues = getBaseLabelValues(job);
+                jobFailedCount.calculateMetric(run, labelValues);
+                jobSuccessCount.calculateMetric(run, labelValues);
+                jobTotalCount.calculateMetric(run, labelValues);
+                jobAbortedCount.calculateMetric(run, labelValues);
+                jobUnstableCount.calculateMetric(run,labelValues);
+            }
+        }
 
         // This metric uses "base" labels as it is just the health score reported
         // by the job object and the optional labels params and status don't make much
@@ -137,11 +171,11 @@ public class JobCollector extends Collector {
         if (PrometheusConfiguration.get().isPerBuildMetrics()) {
             labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
             labelNameArray[labelNameArray.length - 1] = "number";
-            perBuildMetrics.initCollectors(labelNameArray);
+            perBuildMetrics.initCollectors(labelNameArray, labelStageNameArray);
         }
 
         // The lastBuildMetrics are initialized with the "base" labels
-        lastBuildMetrics.initCollectors(labelBaseNameArray);
+        lastBuildMetrics.initCollectors(labelBaseNameArray, labelStageNameArray);
 
 
         Jobs.forEachJob(job -> {
@@ -165,6 +199,9 @@ public class JobCollector extends Collector {
         addSamples(samples, summary.collect(), "Adding [{}] samples from summary ({})");
         addSamples(samples, jobSuccessCount.collect(), "Adding [{}] samples from counter ({})");
         addSamples(samples, jobFailedCount.collect(), "Adding [{}] samples from counter ({})");
+        addSamples(samples, jobAbortedCount.collect(), "Adding [{}] samples from counter ({})");
+        addSamples(samples, jobUnstableCount.collect(), "Adding [{}] samples from counter ({})");
+        addSamples(samples, jobTotalCount.collect(), "Adding [{}] samples from counter ({})");
         addSamples(samples, jobHealthScoreGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, nbBuildsGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(samples, buildDiscardGauge.collect(), "Adding [{}] samples from gauge ({})");
@@ -200,44 +237,24 @@ public class JobCollector extends Collector {
         addSamples(allSamples, buildMetrics.stageSummary.collect(), "Adding [{}] samples from summary ({})");
     }
 
-    protected void appendJobMetrics(Job<?, ?> job) {
-        boolean isAppendParamLabel = PrometheusConfiguration.get().isAppendParamLabel();
-        boolean isAppendStatusLabel = PrometheusConfiguration.get().isAppendStatusLabel();
-        boolean isPerBuildMetrics = PrometheusConfiguration.get().isPerBuildMetrics();
-        String[] buildParameterNamesAsArray = PrometheusConfiguration.get().getLabeledBuildParameterNamesAsArray();
-
-        // Add this to the repo as well so I can group by Github Repository
+    private String[] getBaseLabelValues(Job<?,?> job){
+         // Add this to the repo as well so I can group by Github Repository
         String repoName = StringUtils.substringBetween(job.getFullName(), "/");
         if (repoName == null) {
             repoName = NOT_AVAILABLE;
         }
         String[] baseLabelValueArray = {job.getFullName(), repoName, String.valueOf(job.isBuildable())};
+        return baseLabelValueArray;
+    }
 
-        Run<?, ?> lastBuild = job.getLastBuild();
-        // Never built
-        if (null == lastBuild) {
-            logger.debug("job [{}] never built", job.getFullName());
-            return;
-        }
+    private String[] getJobLabelVaues(Job<?,?> job, Run<?,?> run){
+        boolean isAppendParamLabel = PrometheusConfiguration.get().isAppendParamLabel();
+        boolean isAppendStatusLabel = PrometheusConfiguration.get().isAppendStatusLabel();
+        String[] buildParameterNamesAsArray = PrometheusConfiguration.get().getLabeledBuildParameterNamesAsArray();
 
-        nbBuildsGauge.calculateMetric(job, baseLabelValueArray);
-        jobHealthScoreGauge.calculateMetric(job, baseLabelValueArray);
-        buildDiscardGauge.calculateMetric(job, baseLabelValueArray);
-        currentRunDurationGauge.calculateMetric(job, baseLabelValueArray);
-        logUpdatedGauge.calculateMetric(job, baseLabelValueArray);
-
-        processRun(job, lastBuild, baseLabelValueArray, lastBuildMetrics);
-
-        Run<?, ?> run = lastBuild;
-        while (run != null) {
-            logger.debug("getting metrics for run [{}] from job [{}], include per run metrics [{}]", run.getNumber(), job.getName(), isPerBuildMetrics);
-            if (Runs.includeBuildInMetrics(run)) {
-                logger.debug("getting build info for run [{}] from job [{}]", run.getNumber(), job.getName());
-
-                Result runResult = run.getResult();
-                String[] labelValueArray = baseLabelValueArray;
-
-                if (isAppendParamLabel) {
+        Result runResult = run.getResult();
+        String[] labelValueArray = getBaseLabelValues(job);
+        if (isAppendParamLabel) {
                     String params = Runs.getBuildParameters(run).entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(";"));
                     labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
                     labelValueArray[labelValueArray.length - 1] = params;
@@ -260,11 +277,36 @@ public class JobCollector extends Collector {
                     }
                     labelValueArray[labelValueArray.length - 1] = paramValue;
                 }
+                return labelValueArray;
+    }
+
+    protected void appendJobMetrics(Job<?, ?> job) {
+        boolean isPerBuildMetrics = PrometheusConfiguration.get().isPerBuildMetrics();
+        String[] baseLabelValueArray = getBaseLabelValues(job);
+
+        Run<?, ?> lastBuild = job.getLastBuild();
+        // Never built
+        if (null == lastBuild) {
+            logger.debug("job [{}] never built", job.getFullName());
+            return;
+        }
+
+        nbBuildsGauge.calculateMetric(job, baseLabelValueArray);
+        jobHealthScoreGauge.calculateMetric(job, baseLabelValueArray);
+        buildDiscardGauge.calculateMetric(job, baseLabelValueArray);
+        currentRunDurationGauge.calculateMetric(job, baseLabelValueArray);
+        logUpdatedGauge.calculateMetric(job, baseLabelValueArray);
+
+        processRun(job, lastBuild, baseLabelValueArray, lastBuildMetrics);
+
+        Run<?, ?> run = lastBuild;
+        while (run != null) {
+            logger.debug("getting metrics for run [{}] from job [{}], include per run metrics [{}]", run.getNumber(), job.getName(), isPerBuildMetrics);
+            if (Runs.includeBuildInMetrics(run)) {
+                logger.debug("getting build info for run [{}] from job [{}]", run.getNumber(), job.getName());
+                String[] labelValueArray = getJobLabelVaues(job, run);
 
                 summary.calculateMetric(run, labelValueArray);
-                jobFailedCount.calculateMetric(run, labelValueArray);
-                jobSuccessCount.calculateMetric(run, labelValueArray);
-
                 if (isPerBuildMetrics) {
                     labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
                     labelValueArray[labelValueArray.length - 1] = String.valueOf(run.getNumber());
@@ -283,7 +325,7 @@ public class JobCollector extends Collector {
         buildMetrics.jobBuildStartMillis.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildDuration.calculateMetric(run, buildLabelValueArray);
         // Label values are calculated within stageSummary so we pass null here.
-        buildMetrics.stageSummary.calculateMetric(run, buildLabelValueArray);
+        buildMetrics.stageSummary.calculateMetric(run, new String[]{});
         buildMetrics.jobBuildTestsTotal.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsSkipped.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsFailing.calculateMetric(run, buildLabelValueArray);
