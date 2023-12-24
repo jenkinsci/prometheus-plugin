@@ -7,23 +7,23 @@ import io.prometheus.client.SimpleCollector;
 
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
-public class BuildSuccessfulCounter extends BuildsMetricCollector<Run<?, ?>, Counter> {
-    protected BuildSuccessfulCounter(String[] labelNames, String namespace, String subsystem) {
+public class BuildTotalCounter extends BuildsMetricCollector<Run<?, ?>, Counter> {
+    protected BuildTotalCounter(String[] labelNames, String namespace, String subsystem) {
         super(labelNames, namespace, subsystem);
     }
 
-    protected BuildSuccessfulCounter(String[] labelNames, String namespace, String subsystem, String prefix) {
+    protected BuildTotalCounter(String[] labelNames, String namespace, String subsystem, String prefix) {
         super(labelNames, namespace, subsystem, prefix);
     }
 
     @Override
     protected CollectorType getCollectorType() {
-        return CollectorType.BUILD_SUCCESSFUL_COUNTER;
+        return CollectorType.BUILD_TOTAL_COUNTER;
     }
 
     @Override
     protected String getHelpText() {
-        return "Successful build count";
+        return "Total build count";
     }
 
     @Override
@@ -33,9 +33,9 @@ public class BuildSuccessfulCounter extends BuildsMetricCollector<Run<?, ?>, Cou
 
     @Override
     public void calculateMetric(Run<?, ?> jenkinsObject, String[] labelValues) {
-        // Increment the counter if the result of run was successful.
-        if(jenkinsObject.getResult() == Result.SUCCESS){
-            this.collector.labels(labelValues).inc();
-        } 
+        // Increment counter every run that is completed.
+        if(jenkinsObject.getResult() != Result.NOT_BUILT){
+             this.collector.labels(labelValues).inc();
+        }
     }
 }
