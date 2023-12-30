@@ -2,8 +2,8 @@
 <j:jelly xmlns:j="jelly:core">
     <div>
         <p>
-            If prometheus should collect code coverage metrics from code-coverage-api plugin.
-            This option is disabled when code-coverage-api plugin is not installed.
+            If prometheus should collect code coverage metrics from https://plugins.jenkins.io/coverage plugin.
+            This option is disabled when coverage plugin is not installed.
         </p>
     </div>
 </j:jelly>

@@ -27,12 +27,12 @@ public class CodeCoverageCollector extends BaseCollector {
     @Override
     public List<MetricFamilySamples> collect() {
 
-        if (!isCodeCoverageAPIPluginLoaded()) {
+        if (!isCoveragePluginLoaded()) {
             LOGGER.debug("Cannot collect code coverage data because plugin Code Coverage API (shortname: 'code-coverage-api') is not loaded.");
             return Collections.emptyList();
         }
 
-        if (!isCodeCoverageCollectionConfigured()) {
+        if (!isCoverageCollectionConfigured()) {
             return Collections.emptyList();
         }
 
@@ -61,21 +61,23 @@ public class CodeCoverageCollector extends BaseCollector {
         CollectorFactory factory = new CollectorFactory();
         List<MetricCollector<Run<?,?>, ? extends Collector>> collectors = new ArrayList<>();
 
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_CLASS_COVERED, new String[]{"job_name"}));
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_CLASS_MISSED, new String[]{"job_name"}));
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_CLASS_TOTAL, new String[]{"job_name"}));
+        String jobAttributeName = PrometheusConfiguration.get().getJobAttributeName();
 
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_BRANCH_COVERED, new String[]{"job_name"}));
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_BRANCH_MISSED, new String[]{"job_name"}));
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_BRANCH_TOTAL, new String[]{"job_name"}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_CLASS_COVERED, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_CLASS_MISSED, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_CLASS_TOTAL, new String[]{jobAttributeName}));
 
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_INSTRUCTION_COVERED, new String[]{"job_name"}));
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_INSTRUCTION_MISSED, new String[]{"job_name"}));
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_INSTRUCTION_TOTAL, new String[]{"job_name"}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_BRANCH_COVERED, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_BRANCH_MISSED, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_BRANCH_TOTAL, new String[]{jobAttributeName}));
 
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_COVERED, new String[]{"job_name"}));
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_MISSED, new String[]{"job_name"}));
-        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_TOTAL, new String[]{"job_name"}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_INSTRUCTION_COVERED, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_INSTRUCTION_MISSED, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_INSTRUCTION_TOTAL, new String[]{jobAttributeName}));
+
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_COVERED, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_MISSED, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_TOTAL, new String[]{jobAttributeName}));
 
         collectors.forEach(c -> c.calculateMetric(lastBuild, new String[]{job.getName()}));
 
@@ -84,11 +86,11 @@ public class CodeCoverageCollector extends BaseCollector {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
-    private boolean isCodeCoverageAPIPluginLoaded() {
-        return Jenkins.get().getPlugin("code-coverage-api") != null;
+    private boolean isCoveragePluginLoaded() {
+        return Jenkins.get().getPlugin("coverage") != null;
     }
 
-    private boolean isCodeCoverageCollectionConfigured() {
+    private boolean isCoverageCollectionConfigured() {
         return PrometheusConfiguration.get().isCollectCodeCoverage();
     }
 }

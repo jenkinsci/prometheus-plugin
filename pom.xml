@@ -24,17 +24,12 @@
     <slf4j.version>2.0.9</slf4j.version>
 
     <cloudbees-disk-usage-simple.version>187.v6378d330d1d4</cloudbees-disk-usage-simple.version>
-    <code-coverage-api.version>4.99.0</code-coverage-api.version>
+    <coverage.version>1.7.0</coverage.version>
 
     <assertj-core.version>3.24.2</assertj-core.version>
     <JUnitParams.version>1.1.1</JUnitParams.version>
     <system-lambda.version>1.2.1</system-lambda.version>
   </properties>
-
-  <organization>
-    <name>Methodair</name>
-    <url>http://www.methodair.io</url>
-  </organization>
 
   <licenses>
     <license>
@@ -47,12 +42,6 @@
   <developers>
     <developer>
       <id>Waschndolos</id>
-    </developer>
-    <developer>
-      <id>devguy</id>
-      <name>Marky Jackson</name>
-      <organization>Methodair</organization>
-      <organizationUrl>http://www.methodair.io/</organizationUrl>
     </developer>
   </developers>
 
@@ -123,8 +112,8 @@
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
-      <artifactId>code-coverage-api</artifactId>
-      <version>${code-coverage-api.version}</version>
+      <artifactId>coverage</artifactId>
+      <version>${coverage.version}</version>
       <optional>true</optional>
     </dependency>
     <dependency>
