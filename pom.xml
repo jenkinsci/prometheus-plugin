@@ -21,7 +21,7 @@
     <jenkins.version>2.387.3</jenkins.version>
 
     <prometheus.simpleclient.version>0.16.0</prometheus.simpleclient.version>
-    <slf4j.version>2.0.9</slf4j.version>
+    <slf4j.version>2.0.10</slf4j.version>
 
     <cloudbees-disk-usage-simple.version>187.v6378d330d1d4</cloudbees-disk-usage-simple.version>
     <coverage.version>1.7.0</coverage.version>
