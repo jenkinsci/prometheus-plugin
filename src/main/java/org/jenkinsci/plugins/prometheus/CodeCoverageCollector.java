@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CodeCoverageCollector extends BaseCollector {
+public class CodeCoverageCollector extends Collector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CodeCoverageCollector.class);
 
@@ -44,9 +44,6 @@ public class CodeCoverageCollector extends BaseCollector {
     }
 
     private List<MetricFamilySamples> collectCoverageMetricForJob(Job<?,?> job) {
-        if (job == null) {
-            return Collections.emptyList();
-        }
 
         Run<?,?> lastBuild = job.getLastBuild();
         if (lastBuild == null || lastBuild.isBuilding()) {
