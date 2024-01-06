@@ -1,11 +1,21 @@
 package org.jenkinsci.plugins.prometheus.service;
 
+import hudson.Plugin;
+import io.prometheus.client.Collector;
+import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.prometheus.CodeCoverageCollector;
+import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.junit.jupiter.api.Test;
+import org.jvnet.hudson.test.Issue;
+import org.mockito.MockedStatic;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 
 public class PrometheusAsyncWorkerTest {
@@ -24,6 +34,26 @@ public class PrometheusAsyncWorkerTest {
         String actual = metrics.getMetrics();
         assertEquals("1", actual);
 
+    }
+    @Test
+    public void testConvertSecondsToMillis() {
+        try (MockedStatic<PrometheusConfiguration> configurationStatic = mockStatic(PrometheusConfiguration.class)) {
+
+            PrometheusConfiguration config = mock(PrometheusConfiguration.class);
+            configurationStatic.when(PrometheusConfiguration::get).thenReturn(config);
+            when(config.getCollectingMetricsPeriodInSeconds()).thenReturn(12345L);
+            PrometheusAsyncWorker sut = new PrometheusAsyncWorker();
+            long recurrencePeriod = sut.getRecurrencePeriod();
+            assertEquals(12345000L, recurrencePeriod);
+        }
+    }
+
+    @Test
+    @Issue("#157")
+    public void ensureLoggingLevel() {
+        PrometheusAsyncWorker sut = new PrometheusAsyncWorker();
+        Level level = sut.getNormalLoggingLevel();
+        assertEquals(Level.FINE, level);
     }
 
     private static class TestPrometheusMetrics implements PrometheusMetrics {
