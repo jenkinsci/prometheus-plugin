@@ -36,6 +36,7 @@ public class CoverageInstructionCoveredGauge extends CoverageMetricsCollector<Ru
 
         Optional<Coverage> optional = getCoverage(jenkinsObject, Metric.INSTRUCTION, Baseline.PROJECT);
         if (optional.isEmpty()) {
+            collector.labels(labelValues).set(-1);
             return;
         }
 

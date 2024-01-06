@@ -56,6 +56,11 @@ public class CoverageBranchCoveredGaugeTest extends CoverageTest {
         Assertions.assertEquals("Returns the number of branches covered", familySamples.help);
         Assertions.assertEquals("default_jenkins_builds_coverage_branch_covered", familySamples.name);
 
-        Assertions.assertEquals(0, familySamples.samples.size());
+        List<Collector.MetricFamilySamples.Sample> samples = familySamples.samples;
+        Assertions.assertEquals(1, familySamples.samples.size());
+
+        Collector.MetricFamilySamples.Sample sample = samples.get(0);
+        Assertions.assertEquals(-1, sample.value);
+        Assertions.assertEquals("myJob", sample.labelValues.get(0));
     }
 }

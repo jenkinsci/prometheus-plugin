@@ -36,6 +36,7 @@ public class CoverageClassMissedGauge extends CoverageMetricsCollector<Run<?, ?>
 
         Optional<Coverage> optional = getCoverage(jenkinsObject, Metric.CLASS, Baseline.PROJECT);
         if (optional.isEmpty()) {
+            collector.labels(labelValues).set(-1);
             return;
         }
 
