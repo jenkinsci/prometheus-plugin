@@ -79,7 +79,7 @@ public class CodeCoverageCollector extends BaseCollector {
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_MISSED, new String[]{jobAttributeName}));
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_TOTAL, new String[]{jobAttributeName}));
 
-        collectors.forEach(c -> c.calculateMetric(lastBuild, new String[]{job.getName()}));
+        collectors.forEach(c -> c.calculateMetric(lastBuild, new String[]{job.getFullName()}));
 
         return collectors.stream()
                 .map(MetricCollector::collect)
