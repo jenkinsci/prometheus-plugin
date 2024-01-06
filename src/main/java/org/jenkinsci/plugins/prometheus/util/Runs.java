@@ -34,16 +34,6 @@ public class Runs {
         return include;
     }
 
-    public static String getResultText(Run run) {
-        if (run != null) {
-            Result result = run.getResult();
-            if (result != null) {
-                return result.toString();
-            }
-        }
-        return null;
-    }
-
     public static Map<String, Object> getBuildParameters(Run build) {
         List<ParametersAction> actions = build.getActions(ParametersAction.class);
         Map<String, Object> answer = new HashMap<>();
