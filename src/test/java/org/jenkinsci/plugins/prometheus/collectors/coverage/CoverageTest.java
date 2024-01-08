@@ -49,6 +49,19 @@ public abstract class CoverageTest extends MockedRunCollectorTest {
         when(mock.getAction(CoverageBuildAction.class)).thenReturn(mockedCoverageBuildAction);
     }
 
+    protected void setUpSuccessfulMocksForPercent() {
+        CoverageBuildAction mockedCoverageBuildAction = Mockito.mock(CoverageBuildAction.class);
+        Coverage mockedCoverage = Mockito.mock(Coverage.class);
+        when(mockedCoverage.getMetric()).thenReturn(metric);
+        when(mockedCoverage.getTotal()).thenReturn(100);
+        when(mockedCoverage.getCovered()).thenReturn(25);
+        when(mockedCoverageBuildAction.getAllValues(baseline)).thenReturn(List.of(mockedCoverage));
+        when(mock.getAction(CoverageBuildAction.class)).thenReturn(mockedCoverageBuildAction);
+    }
+
+
+
+
 
 
     protected void setUpUnsuccessfulMocks() {

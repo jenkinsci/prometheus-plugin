@@ -27,4 +27,23 @@ public abstract class CoverageMetricsCollector<T, I extends SimpleCollector<?>> 
                 .map(x -> (Coverage)x)
                 .findFirst();
     }
+
+    protected double calculatePercentage(Coverage coverage) {
+        if (coverage == null) {
+            return -1.0;
+        }
+
+        long covered = coverage.getCovered();
+        long total = coverage.getTotal();
+
+        if (covered >= 0 && total >= 0) {
+            if (total != 0) {
+                return (double) (covered * 100) / total;
+            } else {
+                return -1.0;
+            }
+        } else {
+            return -1.0;
+        }
+    }
 }

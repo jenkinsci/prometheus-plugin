@@ -66,18 +66,27 @@ public class CodeCoverageCollector extends BaseCollector {
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_CLASS_COVERED, new String[]{jobAttributeName}));
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_CLASS_MISSED, new String[]{jobAttributeName}));
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_CLASS_TOTAL, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_CLASS_PERCENT, new String[]{jobAttributeName}));
 
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_BRANCH_COVERED, new String[]{jobAttributeName}));
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_BRANCH_MISSED, new String[]{jobAttributeName}));
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_BRANCH_TOTAL, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_BRANCH_PERCENT, new String[]{jobAttributeName}));
 
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_INSTRUCTION_COVERED, new String[]{jobAttributeName}));
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_INSTRUCTION_MISSED, new String[]{jobAttributeName}));
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_INSTRUCTION_TOTAL, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_INSTRUCTION_PERCENT, new String[]{jobAttributeName}));
 
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_COVERED, new String[]{jobAttributeName}));
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_MISSED, new String[]{jobAttributeName}));
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_TOTAL, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_FILE_PERCENT, new String[]{jobAttributeName}));
+
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_LINE_COVERED, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_LINE_MISSED, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_LINE_TOTAL, new String[]{jobAttributeName}));
+        collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_LINE_PERCENT, new String[]{jobAttributeName}));
 
         collectors.forEach(c -> c.calculateMetric(lastBuild, new String[]{job.getFullName()}));
 

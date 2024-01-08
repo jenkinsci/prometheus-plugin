@@ -45,18 +45,27 @@ public enum CollectorType {
     COVERAGE_CLASS_COVERED("coverage_class_covered"),
     COVERAGE_CLASS_MISSED("coverage_class_missed"),
     COVERAGE_CLASS_TOTAL("coverage_class_total"),
+    COVERAGE_CLASS_PERCENT("coverage_class_percent"),
 
     COVERAGE_BRANCH_COVERED("coverage_branch_covered"),
     COVERAGE_BRANCH_MISSED("coverage_branch_missed"),
     COVERAGE_BRANCH_TOTAL("coverage_branch_total"),
+    COVERAGE_BRANCH_PERCENT("coverage_branch_percent"),
 
     COVERAGE_INSTRUCTION_COVERED("coverage_instruction_covered"),
     COVERAGE_INSTRUCTION_MISSED("coverage_instruction_missed"),
     COVERAGE_INSTRUCTION_TOTAL("coverage_instruction_total"),
+    COVERAGE_INSTRUCTION_PERCENT("coverage_instruction_percent"),
 
     COVERAGE_FILE_COVERED("coverage_file_covered"),
     COVERAGE_FILE_MISSED("coverage_file_missed"),
     COVERAGE_FILE_TOTAL("coverage_file_total"),
+    COVERAGE_FILE_PERCENT("coverage_file_percent"),
+
+    COVERAGE_LINE_COVERED("coverage_line_covered"),
+    COVERAGE_LINE_MISSED("coverage_line_missed"),
+    COVERAGE_LINE_TOTAL("coverage_line_total"),
+    COVERAGE_LINE_PERCENT("coverage_line_percent"),
 
     JOB_LOG_UPDATED_GAUGE("job_log_updated");
 
