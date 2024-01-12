@@ -38,6 +38,27 @@ public class CounterManagerTest extends MockedRunCollectorTest {
     }
 
     @Test
+    public void TestNamespaceChangeReturnsNewCounter() {
+        String[] labels = new String[] { "TestLabel" };
+
+        try (MockedStatic<PrometheusConfiguration> configStatic = mockStatic(PrometheusConfiguration.class)) {
+            PrometheusConfiguration config = mock(PrometheusConfiguration.class);
+            
+            // Use default namespace for one counter
+            when(config.getDefaultNamespace()).thenReturn(getNamespace());
+            configStatic.when(PrometheusConfiguration::get).thenReturn(config);
+            var retrievedCounter = manager.getCounter(CollectorType.BUILD_SUCCESSFUL_COUNTER, labels, null);
+
+            // Second counter returns modified namespace
+            when(config.getDefaultNamespace()).thenReturn("modified_namespace");
+            var retrievedCounter2 = manager.getCounter(CollectorType.BUILD_SUCCESSFUL_COUNTER, labels, null);
+
+            // Should be a value reference comparison. They should not be the same metric since the namespace has changed.
+            Assert.assertNotEquals(retrievedCounter, retrievedCounter2);
+        }
+    }
+
+    @Test
     public void TestLabelChangeReturnsNewCounter(){
           String[] label1 = new String[]{"labels"};
           String[] label2 = Arrays.copyOf(label1, 2);

@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
+import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
+import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 
 import hudson.model.Run;
 import io.prometheus.client.Collector;
@@ -80,6 +82,9 @@ public class CounterManager {
         // Prefix of the counter.
         private String prefix;
 
+        // namespace of the counter
+        private String namespace;
+
         /*
          * Creates new counter entry
          */
@@ -87,6 +92,7 @@ public class CounterManager {
             this.labels = labels;
             this.type = type;
             this.prefix = prefix;
+            this.namespace = ConfigurationUtils.getNamespace();
         }
 
         @Override
@@ -98,11 +104,18 @@ public class CounterManager {
 
             CounterEntry entry = (CounterEntry) obj;
 
+            // Compare the prefix
             if(this.prefix != null && !this.prefix.equals(entry.prefix)){
                 return false;
             }
 
+            // Compare the entry Counter type
             if(this.type != entry.type){
+                return false;
+            }
+
+            // Compare namespace values.
+            if(this.namespace != null && !this.namespace.equals(entry.namespace)){
                 return false;
             }
 
@@ -114,7 +127,8 @@ public class CounterManager {
         public int hashCode() {
             int typeHash = type != null ? type.hashCode() : 0;
             int prefixHash = prefix != null ? prefix.hashCode() : 0;
-            int result = 31 * (typeHash + Arrays.hashCode(labels) + prefixHash);
+            int namespaceHash = namespace != null ? namespace.hashCode() : 0;
+            int result = 31 * (typeHash + Arrays.hashCode(labels) + prefixHash + namespaceHash);
             return result;
         }
     }
