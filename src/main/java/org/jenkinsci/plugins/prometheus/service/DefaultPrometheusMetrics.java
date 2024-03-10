@@ -29,7 +29,8 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultPrometheusMetrics.class);
 
-    private volatile boolean initialized = false, initializing = false;
+    private volatile boolean initialized = false;
+    private volatile boolean initializing = false;
     private final CollectorRegistry collectorRegistry;
     private final AtomicReference<String> cachedMetrics;
 
