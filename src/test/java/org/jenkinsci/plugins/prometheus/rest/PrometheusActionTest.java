@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.prometheus.rest;
 
+import hudson.ExtensionList;
 import io.prometheus.client.exporter.common.TextFormat;
 import jenkins.metrics.api.Metrics;
 import jenkins.model.Jenkins;
@@ -91,21 +92,24 @@ public class PrometheusActionTest {
         PrometheusMetrics prometheusMetrics = mock(PrometheusMetrics.class);
         String responseBody = "testMetric";
         when(prometheusMetrics.getMetrics()).thenReturn(responseBody);
-        action.setPrometheusMetrics(prometheusMetrics);
-        StaplerRequest request = mock(StaplerRequest.class);
-        String url = "prometheus";
-        when(request.getRestOfPath()).thenReturn(url);
+        try (MockedStatic<ExtensionList> extensionListMockedStatic = mockStatic(ExtensionList.class)) {
+            extensionListMockedStatic.when(() -> ExtensionList.lookupSingleton(PrometheusMetrics.class)).thenReturn(prometheusMetrics);
+            StaplerRequest request = mock(StaplerRequest.class);
+            String url = "prometheus";
+            when(request.getRestOfPath()).thenReturn(url);
 
-        // when
-        HttpResponse actual = action.doDynamic(request);
+            // when
+            HttpResponse actual = action.doDynamic(request);
 
-        // then
-        AssertStaplerResponse.from(actual)
-            .call()
-            .assertHttpStatus(HTTP_OK)
-            .assertContentType(TextFormat.CONTENT_TYPE_004)
-            .assertHttpHeader("Cache-Control", "must-revalidate,no-cache,no-store")
-            .assertBody(responseBody);
+            // then
+            AssertStaplerResponse.from(actual)
+                    .call()
+                    .assertHttpStatus(HTTP_OK)
+                    .assertContentType(TextFormat.CONTENT_TYPE_004)
+                    .assertHttpHeader("Cache-Control", "must-revalidate,no-cache,no-store")
+                    .assertBody(responseBody);
+        }
+
     }
 
     private static class AssertStaplerResponse {

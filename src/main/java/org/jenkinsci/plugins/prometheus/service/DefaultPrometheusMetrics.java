@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.prometheus.service;
 
+import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.init.InitMilestone;
 import hudson.init.Initializer;
@@ -8,15 +9,8 @@ import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.dropwizard.DropwizardExports;
 import io.prometheus.client.exporter.common.TextFormat;
 import io.prometheus.client.hotspot.DefaultExports;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.concurrent.atomic.AtomicReference;
 import jenkins.metrics.api.Metrics;
-import org.jenkinsci.plugins.prometheus.CodeCoverageCollector;
-import org.jenkinsci.plugins.prometheus.DiskUsageCollector;
-import org.jenkinsci.plugins.prometheus.ExecutorCollector;
-import org.jenkinsci.plugins.prometheus.JenkinsStatusCollector;
-import org.jenkinsci.plugins.prometheus.JobCollector;
+import org.jenkinsci.plugins.prometheus.*;
 import org.jenkinsci.plugins.prometheus.config.disabledmetrics.FilteredMetricEnumeration;
 import org.jenkinsci.plugins.prometheus.util.JenkinsNodeBuildsSampleBuilder;
 import org.kohsuke.accmod.Restricted;
@@ -24,10 +18,15 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.concurrent.atomic.AtomicReference;
+
 @Restricted(NoExternalUse.class)
+@Extension
 public class DefaultPrometheusMetrics implements PrometheusMetrics {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultPrometheusMetrics.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultPrometheusMetrics.class);
 
     private volatile boolean initialized = false;
     private volatile boolean initializing = false;
@@ -40,10 +39,10 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
     }
 
     @Initializer(after = InitMilestone.JOB_LOADED)
-    public void init() {
+    public void registerCollectors() {
         if (!initialized && !initializing) {
             initializing = true;
-            logger.debug("Initializing...");
+            LOGGER.debug("Initializing...");
             collectorRegistry.register(new JobCollector());
             collectorRegistry.register(new JenkinsStatusCollector());
             collectorRegistry.register(
@@ -67,14 +66,14 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
     @Override
     public void collectMetrics() {
         if(!initialized) {
-            logger.debug("Not initialized");
+            LOGGER.debug("Not initialized");
             return;
         }
         try (StringWriter buffer = new StringWriter()) {
             TextFormat.write004(buffer, new FilteredMetricEnumeration(collectorRegistry.metricFamilySamples().asIterator()));
             cachedMetrics.set(buffer.toString());
         } catch (IOException e) {
-            logger.debug("Unable to collect metrics");
+            LOGGER.debug("Unable to collect metrics");
         }
     }
 }

@@ -1,7 +1,7 @@
 package org.jenkinsci.plugins.prometheus.rest;
 
-import com.google.inject.Inject;
 import hudson.Extension;
+import hudson.ExtensionList;
 import hudson.model.UnprotectedRootAction;
 import hudson.util.HttpResponses;
 import io.prometheus.client.exporter.common.TextFormat;
@@ -15,14 +15,7 @@ import org.kohsuke.stapler.StaplerResponse;
 
 @Extension
 public class PrometheusAction implements UnprotectedRootAction {
-
-    private PrometheusMetrics prometheusMetrics;
-
-    @Inject
-    public void setPrometheusMetrics(PrometheusMetrics prometheusMetrics) {
-        this.prometheusMetrics = prometheusMetrics;
-    }
-
+    
     @Override
     public String getIconFileName() {
         return null;
@@ -56,6 +49,7 @@ public class PrometheusAction implements UnprotectedRootAction {
     }
 
     private HttpResponse prometheusResponse() {
+        PrometheusMetrics prometheusMetrics = ExtensionList.lookupSingleton(PrometheusMetrics.class);
         return (request, response, node) -> {
             response.setStatus(StaplerResponse.SC_OK);
             response.setContentType(TextFormat.CONTENT_TYPE_004);

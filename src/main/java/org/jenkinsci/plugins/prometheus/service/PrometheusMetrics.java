@@ -1,6 +1,8 @@
 package org.jenkinsci.plugins.prometheus.service;
 
-public interface PrometheusMetrics {
+import hudson.ExtensionPoint;
+
+public interface PrometheusMetrics extends ExtensionPoint {
 
     String getMetrics();
 

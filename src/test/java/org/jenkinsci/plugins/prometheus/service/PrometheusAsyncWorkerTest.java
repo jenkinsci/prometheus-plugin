@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.prometheus.service;
 
+import hudson.ExtensionList;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
@@ -20,15 +21,15 @@ public class PrometheusAsyncWorkerTest {
         // given
         PrometheusAsyncWorker asyncWorker = new PrometheusAsyncWorker();
         PrometheusMetrics metrics = new TestPrometheusMetrics();
-        asyncWorker.setPrometheusMetrics(metrics);
+        try (MockedStatic<ExtensionList> extensionListMockedStatic = mockStatic(ExtensionList.class)) {
+            extensionListMockedStatic.when(() -> ExtensionList.lookupSingleton(PrometheusMetrics.class)).thenReturn(metrics);
+            // when
+            asyncWorker.execute(null);
 
-        // when
-        asyncWorker.execute(null);
-
-        // then
-        String actual = metrics.getMetrics();
-        assertEquals("1", actual);
-
+            // then
+            String actual = metrics.getMetrics();
+            assertEquals("1", actual);
+        }
     }
     @Test
     public void testConvertSecondsToMillis() {

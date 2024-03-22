@@ -1,7 +1,7 @@
 package org.jenkinsci.plugins.prometheus.service;
 
-import com.google.inject.Inject;
 import hudson.Extension;
+import hudson.ExtensionList;
 import hudson.model.AsyncPeriodicWork;
 import hudson.model.TaskListener;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
@@ -16,16 +16,11 @@ public class PrometheusAsyncWorker extends AsyncPeriodicWork {
 
     private static final Logger logger = LoggerFactory.getLogger(PrometheusAsyncWorker.class);
 
-    private PrometheusMetrics prometheusMetrics;
 
     public PrometheusAsyncWorker() {
         super("prometheus_async_worker");
     }
 
-    @Inject
-    public void setPrometheusMetrics(PrometheusMetrics prometheusMetrics) {
-        this.prometheusMetrics = prometheusMetrics;
-    }
 
     @Override
     public long getRecurrencePeriod() {
@@ -38,6 +33,7 @@ public class PrometheusAsyncWorker extends AsyncPeriodicWork {
     @Override
     public void execute(TaskListener taskListener) {
         logger.debug("Collecting prometheus metrics");
+        PrometheusMetrics prometheusMetrics = ExtensionList.lookupSingleton(PrometheusMetrics.class);
         prometheusMetrics.collectMetrics();
         logger.debug("Prometheus metrics collected successfully");
     }
