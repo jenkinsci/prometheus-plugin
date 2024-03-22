@@ -88,15 +88,17 @@ public class JobCollector extends Collector {
                         !PrometheusConfiguration.get().isCountSuccessfulBuilds() &&
                         !PrometheusConfiguration.get().isCountUnstableBuilds();
 
+        BuildCompletionListener listener = BuildCompletionListener.getInstance();
+
         if (ignoreBuildMetrics) {
+            listener.unregister();
             return samples;
         }
 
         // Below metrics use labelNameArray which might include the optional labels
         // of "parameters" or "status"
         summary = factory.createRunCollector(CollectorType.BUILD_DURATION_SUMMARY, labelNameArray, null);
-        BuildCompletionListener listener = BuildCompletionListener.getInstance();
-        
+
         // Counter manager acts as a DB to retrieve any counters that are already in memory instead of reinitializing
         // them with each iteration of collect.
         var manager = CounterManager.getManager();

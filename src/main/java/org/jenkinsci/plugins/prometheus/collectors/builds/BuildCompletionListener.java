@@ -41,6 +41,12 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
         lock = new ReentrantLock();
     }
 
+    @Override
+    public void unregister() {
+        super.unregister();
+        this.runStack.clear();
+    }
+
     /*
      * Extension tells Jenkins to register this class as a RunListener and to use
      * this method in order to retrieve an instance of the class. It is a singleton,
@@ -110,5 +116,9 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
                 lock.unlock();
             }
         };
+    }
+
+    List<Run<?, ?>> getRunStack() {
+        return runStack;
     }
 }
