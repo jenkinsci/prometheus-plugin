@@ -44,7 +44,12 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
     @Override
     public void unregister() {
         super.unregister();
-        this.runStack.clear();
+        try {
+            lock.lock();
+            this.runStack.clear();
+        } finally {
+            lock.unlock();
+        }
     }
 
     /*
