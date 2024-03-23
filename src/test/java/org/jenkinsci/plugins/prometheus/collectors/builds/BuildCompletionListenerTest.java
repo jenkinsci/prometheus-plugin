@@ -1,19 +1,11 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import hudson.model.BuildListener;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 
-import java.io.PrintStream;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 class BuildCompletionListenerTest {
