@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>prometheus</artifactId>
-  <version>2.5.3-SNAPSHOT</version>
+  <version>${revision}${changelist}</version>
   <packaging>hpi</packaging>
   <name>Prometheus metrics plugin</name>
   <description>Expose Jenkins metrics in prometheus format</description>
@@ -17,6 +17,9 @@
   <inceptionYear>2016</inceptionYear>
 
   <properties>
+    <revision>2.5.3</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <gitHubRepo>jenkinsci/prometheus-plugin</gitHubRepo>
     <!-- when updated the io.jenkins.tools.bom:bom-X.Y.Z must be updated too -->
     <jenkins.version>2.387.3</jenkins.version>
 
@@ -46,10 +49,10 @@
   </developers>
 
   <scm>
-    <connection>scm:git:https://github.com/jenkinsci/prometheus-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/prometheus-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/prometheus-plugin/</url>
-    <tag>prometheus-2.3.2</tag>
+    <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:https@github.com:${gitHubRepo}.git</developerConnection>
+    <url>https://github.com/${gitHubRepo}</url>
+    <tag>${scmTag}</tag>
   </scm>
 
   <repositories>
