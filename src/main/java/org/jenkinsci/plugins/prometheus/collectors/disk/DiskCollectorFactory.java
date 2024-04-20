@@ -15,10 +15,6 @@ import static org.jenkinsci.plugins.prometheus.collectors.CollectorType.*;
 
 public class DiskCollectorFactory extends BaseCollectorFactory {
 
-    public DiskCollectorFactory() {
-        super();
-    }
-
     public MetricCollector<DiskItem, ? extends Collector> createDiskItemCollector(CollectorType type, String[] labelNames) {
         if (Objects.requireNonNull(type) == DISK_USAGE_BYTES_GAUGE) {
             return saveBuildCollector(new DiskUsageBytesGauge(labelNames, namespace, subsystem));

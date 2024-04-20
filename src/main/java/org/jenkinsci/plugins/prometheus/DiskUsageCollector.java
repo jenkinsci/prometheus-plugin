@@ -37,7 +37,7 @@ public class DiskUsageCollector extends Collector {
         } catch (final IOException | RuntimeException e) {
             LOGGER.warn("Failed to get disk usage data due to an unexpected error.", e);
             return Collections.emptyList();
-        } catch (final java.lang.NoClassDefFoundError e) {
+        } catch (final NoClassDefFoundError e) {
             LOGGER.warn("Cannot collect disk usage data because plugin CloudBees Disk Usage Simple is not installed: {}", e.toString());
             LOGGER.info("You can remove this warning if you disable Collect Disk Usage in Prometheus Configuration.");
             return Collections.emptyList();

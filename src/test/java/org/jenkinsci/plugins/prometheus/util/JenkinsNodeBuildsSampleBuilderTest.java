@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JenkinsNodeBuildsSampleBuilderTest {
     @Test
-    public void master_node_count_format() {
+    public void masterNodeCountFormat() {
         assertEquals(
                 new Collector.MetricFamilySamples.Sample(
                         "jenkins_node_builds_count",
@@ -29,7 +29,7 @@ public class JenkinsNodeBuildsSampleBuilderTest {
     }
 
     @Test
-    public void master_node_histogram_format() {
+    public void masterNodeHistogramFormat() {
         assertEquals(
                 new Collector.MetricFamilySamples.Sample(
                         "jenkins_node_builds",
@@ -48,7 +48,7 @@ public class JenkinsNodeBuildsSampleBuilderTest {
     }
 
     @Test
-    public void named_node_count_format() {
+    public void namedNodeCountFormat() {
         assertEquals(
                 new Collector.MetricFamilySamples.Sample(
                         "jenkins_node_builds_count",

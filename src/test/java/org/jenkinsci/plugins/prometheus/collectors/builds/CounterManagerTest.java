@@ -3,8 +3,8 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedRunCollectorTest;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 import static org.mockito.Mockito.*;
 
 public class CounterManagerTest extends MockedRunCollectorTest {
-    private CounterManager manager;
+    private final CounterManager manager;
 
     public CounterManagerTest() {
         manager = CounterManager.getManager();
@@ -31,7 +31,7 @@ public class CounterManagerTest extends MockedRunCollectorTest {
 
             // Should be a value reference comparison. They should be the exact same
             // MetricCollector.
-            Assert.assertEquals(retrievedCounter, retrievedCounter2);
+            Assertions.assertEquals(retrievedCounter, retrievedCounter2);
         }
     }
 
@@ -52,7 +52,7 @@ public class CounterManagerTest extends MockedRunCollectorTest {
             var retrievedCounter2 = manager.getCounter(CollectorType.BUILD_SUCCESSFUL_COUNTER, labels, null);
 
             // Should be a value reference comparison. They should not be the same metric since the namespace has changed.
-            Assert.assertNotEquals(retrievedCounter, retrievedCounter2);
+            Assertions.assertNotEquals(retrievedCounter, retrievedCounter2);
         }
     }
 
@@ -68,7 +68,7 @@ public class CounterManagerTest extends MockedRunCollectorTest {
             var retrievedCounter2 = manager.getCounter(CollectorType.BUILD_SUCCESSFUL_COUNTER, label2, null);
 
             // Should be a value reference comparison. They should be different since labels differ.
-            Assert.assertNotEquals(retrievedCounter, retrievedCounter2);
+             Assertions.assertNotEquals(retrievedCounter, retrievedCounter2);
         }
     }
 
@@ -83,7 +83,7 @@ public class CounterManagerTest extends MockedRunCollectorTest {
             var retrievedCounter2 = manager.getCounter(CollectorType.BUILD_SUCCESSFUL_COUNTER, label1, null);
 
             // Should be a value reference comparison. They should not be the same since prefix changed
-            Assert.assertNotEquals(retrievedCounter, retrievedCounter2);
+             Assertions.assertNotEquals(retrievedCounter, retrievedCounter2);
         }
     }
 
@@ -98,7 +98,7 @@ public class CounterManagerTest extends MockedRunCollectorTest {
             var retrievedCounter2 = manager.getCounter(CollectorType.BUILD_SUCCESSFUL_COUNTER, label1, null);
 
             // Should be a value reference comparison. They should not be the same since the collector type differs.
-            Assert.assertNotEquals(retrievedCounter, retrievedCounter2);
+             Assertions.assertNotEquals(retrievedCounter, retrievedCounter2);
         }
     }
 

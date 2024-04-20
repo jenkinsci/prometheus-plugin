@@ -9,10 +9,6 @@ import org.jenkinsci.plugins.prometheus.collectors.NoOpMetricCollector;
 
 public class JobCollectorFactory extends BaseCollectorFactory {
 
-    public JobCollectorFactory() {
-        super();
-    }
-
     public MetricCollector<Job<?, ?>, ? extends Collector> createCollector(CollectorType type, String[] labelNames) {
         switch (type) {
             case HEALTH_SCORE_GAUGE:

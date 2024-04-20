@@ -9,10 +9,6 @@ import org.jenkinsci.plugins.prometheus.collectors.NoOpMetricCollector;
 
 public class ExecutorCollectorFactory extends BaseCollectorFactory {
 
-    public ExecutorCollectorFactory() {
-        super();
-    }
-
     public MetricCollector<LoadStatistics.LoadStatisticsSnapshot, ? extends Collector> createCollector(CollectorType type, String[] labelNames, String prefix) {
         switch (type) {
             case EXECUTORS_AVAILABLE_GAUGE:

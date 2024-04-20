@@ -25,6 +25,9 @@ public class JobCollector extends Collector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JobCollector.class);
 
+    private final BuildMetrics lastBuildMetrics = new BuildMetrics("last");
+    private final BuildMetrics perBuildMetrics = new BuildMetrics("");
+
     private MetricCollector<Run<?, ?>, ? extends Collector> summary;
     private MetricCollector<Job<?, ?>, ? extends Collector> jobHealthScoreGauge;
     private MetricCollector<Job<?, ?>, ? extends Collector> nbBuildsGauge;
@@ -64,11 +67,6 @@ public class JobCollector extends Collector {
             this.jobBuildLikelyStuck = factory.createRunCollector(CollectorType.BUILD_LIKELY_STUCK_GAUGE, labelNameArray, buildPrefix);
         }
     }
-
-    private final BuildMetrics lastBuildMetrics = new BuildMetrics("last");
-    private final BuildMetrics perBuildMetrics = new BuildMetrics("");
-
-    public JobCollector() {}
 
     @Override
     public List<MetricFamilySamples> collect() {

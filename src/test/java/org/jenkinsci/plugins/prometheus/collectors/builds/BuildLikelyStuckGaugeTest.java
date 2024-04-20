@@ -31,7 +31,7 @@ public class BuildLikelyStuckGaugeTest extends MockedRunCollectorTest {
 
     @Test
     public void testNothingCalculatedWhenJobIsNotBuilding() {
-        Mockito.when(mock.isBuilding()).thenReturn(false);
+        when(mock.isBuilding()).thenReturn(false);
 
         BuildLikelyStuckGauge sut = new BuildLikelyStuckGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
 
@@ -46,8 +46,8 @@ public class BuildLikelyStuckGaugeTest extends MockedRunCollectorTest {
 
     @Test
     public void testNothingCalculatedWhenNoExecutorFound() {
-        Mockito.when(mock.isBuilding()).thenReturn(true);
-        Mockito.when(mock.getExecutor()).thenReturn(null);
+        when(mock.isBuilding()).thenReturn(true);
+        when(mock.getExecutor()).thenReturn(null);
 
         BuildLikelyStuckGauge sut = new BuildLikelyStuckGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
 
@@ -61,10 +61,10 @@ public class BuildLikelyStuckGaugeTest extends MockedRunCollectorTest {
 
     @Test
     public void testBuildIsLikelyStuck() {
-        Mockito.when(mock.isBuilding()).thenReturn(true);
+        when(mock.isBuilding()).thenReturn(true);
         Executor mockedExecutor = mock(Executor.class);
         when(mockedExecutor.isLikelyStuck()).thenReturn(true);
-        Mockito.when(mock.getExecutor()).thenReturn(mockedExecutor);
+        when(mock.getExecutor()).thenReturn(mockedExecutor);
 
         BuildLikelyStuckGauge sut = new BuildLikelyStuckGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
 
@@ -79,10 +79,10 @@ public class BuildLikelyStuckGaugeTest extends MockedRunCollectorTest {
 
     @Test
     public void testBuildIsNotLikelyStuck() {
-        Mockito.when(mock.isBuilding()).thenReturn(true);
+        when(mock.isBuilding()).thenReturn(true);
         Executor mockedExecutor = mock(Executor.class);
         when(mockedExecutor.isLikelyStuck()).thenReturn(false);
-        Mockito.when(mock.getExecutor()).thenReturn(mockedExecutor);
+        when(mock.getExecutor()).thenReturn(mockedExecutor);
 
         BuildLikelyStuckGauge sut = new BuildLikelyStuckGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
 

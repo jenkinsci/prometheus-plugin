@@ -13,10 +13,6 @@ import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
  */
 public class JenkinsCollectorFactory extends BaseCollectorFactory {
 
-    public JenkinsCollectorFactory() {
-        super();
-    }
-
     public MetricCollector<Jenkins, ? extends Collector> createCollector(CollectorType type, String[] labelNames) {
         switch (type) {
             case JENKINS_UP_GAUGE:

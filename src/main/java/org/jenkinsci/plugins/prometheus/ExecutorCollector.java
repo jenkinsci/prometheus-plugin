@@ -19,9 +19,6 @@ public class ExecutorCollector extends Collector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorCollector.class);
 
-    public ExecutorCollector() {
-    }
-
     @Override
     public List<MetricFamilySamples> collect() {
         LOGGER.debug("Collecting executor metrics for prometheus");

@@ -9,10 +9,6 @@ import org.jenkinsci.plugins.prometheus.collectors.NoOpMetricCollector;
 
 public class BuildCollectorFactory extends BaseCollectorFactory {
 
-    public BuildCollectorFactory() {
-        super();
-    }
-
     public MetricCollector<Run<?, ?>, ? extends Collector> createCollector(CollectorType type, String[] labelNames, String prefix) {
         switch (type) {
             case BUILD_DURATION_GAUGE:
