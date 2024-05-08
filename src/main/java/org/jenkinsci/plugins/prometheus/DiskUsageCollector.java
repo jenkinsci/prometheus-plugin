@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.prometheus;
 
 import com.cloudbees.simplediskusage.DiskItem;
 import com.cloudbees.simplediskusage.JobDiskItem;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import io.prometheus.client.Collector;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
@@ -11,7 +12,6 @@ import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileStore;
@@ -25,7 +25,7 @@ public class DiskUsageCollector extends Collector {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiskUsageCollector.class);
 
     @Override
-    @Nonnull
+    @NonNull
     public List<MetricFamilySamples> collect() {
 
         if (!PrometheusConfiguration.get().getCollectDiskUsage()) {
@@ -44,7 +44,7 @@ public class DiskUsageCollector extends Collector {
         }
     }
 
-    @Nonnull
+    @NonNull
     private static List<MetricFamilySamples> collectDiskUsage() throws IOException {
         final com.cloudbees.simplediskusage.QuickDiskUsagePlugin diskUsagePlugin = Jenkins.get()
                 .getPlugin(com.cloudbees.simplediskusage.QuickDiskUsagePlugin.class);
