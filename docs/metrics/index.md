@@ -3,7 +3,7 @@
 Metrics collected by this Plugin are prefixed with "default_jenkins".
 You can change the "default" prefix either via configuration page:
 
-"default" -> default namespace
+"default" -&gt; default namespace
 
 or an environment variable ```PROMETHEUS_NAMESPACE```.
 If the environment variable is defined this value will be taken.
@@ -43,30 +43,31 @@ Required Plugin:
 
 ## JobCollector
 
-Note: Metrics in the table below containing <buildname><build_no:last> need to be enabled via Jenkins Configuration
+Note: Metrics in the table below containing &lt;buildname&gt;&lt;build_no:last&gt; need to be enabled via Jenkins
+Configuration
 page. Per Build Metrics. The default Metrics
 will just return the last build. You can enable per build metrics in the configuration page (Attention: Performance)
 
-| metric                                                                      | description                                                                                                                                                             | Prometheus Type |
-|-----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| default_jenkins_builds_duration_milliseconds_summary                        | Summary of Jenkins build times in milliseconds by Job                                                                                                                   | summary         |
-| default_jenkins_builds_success_build_count                                  | Successful build count                                                                                                                                                  | counter         |
-| default_jenkins_builds_failed_build_count                                   | Failed build count                                                                                                                                                      | counter         |
-| default_jenkins_builds_unstable_build_count                                 | Unstable build count                                                                                                                                                    | counter         |
-| default_jenkins_builds_total_build_count                                    | Total build count (excluding not_built statuses)                                                                                                                        | counter         |
-| default_jenkins_builds_aborted_build_count                                  | Aborted build count                                                                                                                                                     | counter         |
-| default_jenkins_builds_health_score                                         | Health score of a job                                                                                                                                                   | gauge           |
-| default_jenkins_builds_<buildname>_last_build_result_ordinal                | Build status of a job (0=SUCCESS,1=UNSTABLE,2=FAILURE,3=NOT_BUILT,4=ABORTED)                                                                                            | gauge           |
-| default_jenkins_builds_<buildname>_last_build_result                        | Build status of a job as a boolean value (1 or 0). <br/>Where 1 stands for the build status SUCCESS or UNSTABLE and 0 for the build states FAILURE,NOT_BUILT or ABORTED | gauge           |
-| default_jenkins_builds_<buildname>_last_build_duration_milliseconds         | Build times in milliseconds of last build                                                                                                                               | gauge           |
-| default_jenkins_builds_<buildname>_last_build_start_time_milliseconds       | Last build start timestamp in milliseconds                                                                                                                              | gauge           |
-| default_jenkins_builds_<buildname>_last_build_tests_total                   | Number of total tests during the last build                                                                                                                             | gauge           |
-| default_jenkins_builds_<buildname>_last_last_build_tests_skipped            | Number of skipped tests during the last build                                                                                                                           | gauge           |
-| default_jenkins_builds_<buildname>_last_build_tests_failing                 | Number of failing tests during the last build                                                                                                                           | gauge           |
-| default_jenkins_builds_<buildname>_last_stage_duration_milliseconds_summary | Summary of Jenkins build times by Job and Stage in the last build                                                                                                       | summary         |
-| default_jenkins_builds_available_builds_count                               | Gauge which indicates how many builds are available for the given job                                                                                                   | gauge           |
-| default_jenkins_builds_discard_active                                       | Gauge which indicates if the build discard feature is active for the job.                                                                                               | gauge           |
-| default_jenkins_builds_running_build_duration_milliseconds                  | Gauge which indicates the runtime of the current build.                                                                                                                 | gauge           |
+| metric                                                                            | description                                                                                                                                                                   | Prometheus Type |
+|-----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| default_jenkins_builds_duration_milliseconds_summary                              | Summary of Jenkins build times in milliseconds by Job                                                                                                                         | summary         |
+| default_jenkins_builds_success_build_count                                        | Successful build count                                                                                                                                                        | counter         |
+| default_jenkins_builds_failed_build_count                                         | Failed build count                                                                                                                                                            | counter         |
+| default_jenkins_builds_unstable_build_count                                       | Unstable build count                                                                                                                                                          | counter         |
+| default_jenkins_builds_total_build_count                                          | Total build count (excluding not_built statuses)                                                                                                                              | counter         |
+| default_jenkins_builds_aborted_build_count                                        | Aborted build count                                                                                                                                                           | counter         |
+| default_jenkins_builds_health_score                                               | Health score of a job                                                                                                                                                         | gauge           |
+| default_jenkins_builds_&lt;buildname&gt;_last_build_result_ordinal                | Build status of a job (0=SUCCESS,1=UNSTABLE,2=FAILURE,3=NOT_BUILT,4=ABORTED)                                                                                                  | gauge           |
+| default_jenkins_builds_&lt;buildname&gt;_last_build_result                        | Build status of a job as a boolean value (1 or 0). &lt;br/&gt;Where 1 stands for the build status SUCCESS or UNSTABLE and 0 for the build states FAILURE,NOT_BUILT or ABORTED | gauge           |
+| default_jenkins_builds_&lt;buildname&gt;_last_build_duration_milliseconds         | Build times in milliseconds of last build                                                                                                                                     | gauge           |
+| default_jenkins_builds_&lt;buildname&gt;_last_build_start_time_milliseconds       | Last build start timestamp in milliseconds                                                                                                                                    | gauge           |
+| default_jenkins_builds_&lt;buildname&gt;_last_build_tests_total                   | Number of total tests during the last build                                                                                                                                   | gauge           |
+| default_jenkins_builds_&lt;buildname&gt;_last_last_build_tests_skipped            | Number of skipped tests during the last build                                                                                                                                 | gauge           |
+| default_jenkins_builds_&lt;buildname&gt;_last_build_tests_failing                 | Number of failing tests during the last build                                                                                                                                 | gauge           |
+| default_jenkins_builds_&lt;buildname&gt;_last_stage_duration_milliseconds_summary | Summary of Jenkins build times by Job and Stage in the last build                                                                                                             | summary         |
+| default_jenkins_builds_available_builds_count                                     | Gauge which indicates how many builds are available for the given job                                                                                                         | gauge           |
+| default_jenkins_builds_discard_active                                             | Gauge which indicates if the build discard feature is active for the job.                                                                                                     | gauge           |
+| default_jenkins_builds_running_build_duration_milliseconds                        | Gauge which indicates the runtime of the current build.                                                                                                                       | gauge           |
 
 
 
