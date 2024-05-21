@@ -43,7 +43,6 @@ public class BuildDurationSummaryTestJobTest extends MockedRunCollectorTest {
 
         Assertions.assertEquals(1, collect.size());
 
-        System.out.println(collect.get(0).samples);
         Assertions.assertEquals(3, collect.get(0).samples.size(), "Would expect one result");
 
         for (Collector.MetricFamilySamples.Sample sample : collect.get(0).samples) {
