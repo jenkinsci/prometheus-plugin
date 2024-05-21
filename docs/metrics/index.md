@@ -68,6 +68,7 @@ will just return the last build. You can enable per build metrics in the configu
 | default_jenkins_builds_available_builds_count                                     | Gauge which indicates how many builds are available for the given job                                                                                                         | gauge           |
 | default_jenkins_builds_discard_active                                             | Gauge which indicates if the build discard feature is active for the job.                                                                                                     | gauge           |
 | default_jenkins_builds_running_build_duration_milliseconds                        | Gauge which indicates the runtime of the current build.                                                                                                                       | gauge           |
+| default_jenkins_builds_&lt;buildname&gt;_last_logfile_size_bytes                  | Gauge which shows the log file size in bytes.                                                                                                                                 | gauge           |
 
 
 

@@ -45,8 +45,8 @@ public class JobCollector extends Collector {
         public MetricCollector<Run<?, ?>, ? extends Collector> jobBuildTestsTotal;
         public MetricCollector<Run<?, ?>, ? extends Collector> jobBuildTestsSkipped;
         public MetricCollector<Run<?, ?>, ? extends Collector> jobBuildTestsFailing;
-
         public MetricCollector<Run<?,?>, ? extends Collector> jobBuildLikelyStuck;
+        private MetricCollector<Run<?, ?>, ? extends Collector> buildLogFileSizeGauge;
 
         private final String buildPrefix;
 
@@ -65,6 +65,7 @@ public class JobCollector extends Collector {
             this.jobBuildTestsFailing = factory.createRunCollector(CollectorType.FAILED_TESTS_GAUGE, labelNameArray, buildPrefix);
             this.stageSummary = factory.createRunCollector(CollectorType.STAGE_SUMMARY, ArrayUtils.add(labelNameArray, "stage"), buildPrefix);
             this.jobBuildLikelyStuck = factory.createRunCollector(CollectorType.BUILD_LIKELY_STUCK_GAUGE, labelNameArray, buildPrefix);
+            this.buildLogFileSizeGauge = factory.createRunCollector(CollectorType.BUILD_LOGFILE_SIZE_GAUGE, labelNameArray, buildPrefix);
         }
     }
 
@@ -96,6 +97,7 @@ public class JobCollector extends Collector {
         // Below metrics use labelNameArray which might include the optional labels
         // of "parameters" or "status"
         summary = factory.createRunCollector(CollectorType.BUILD_DURATION_SUMMARY, labelNameArray, null);
+
 
         // Counter manager acts as a DB to retrieve any counters that are already in memory instead of reinitializing
         // them with each iteration of collect.
@@ -207,6 +209,7 @@ public class JobCollector extends Collector {
         addSamples(allSamples, buildMetrics.jobBuildTestsFailing.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildLikelyStuck.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.stageSummary.collect(), "Adding [{}] samples from summary ({})");
+        addSamples(allSamples, buildMetrics.buildLogFileSizeGauge.collect(), "Adding [{}] samples from summary ({})");
     }
 
     protected void appendJobMetrics(Job<?, ?> job) {
@@ -236,6 +239,7 @@ public class JobCollector extends Collector {
                 String[] labelValueArray = JobLabel.getJobLabelValues(job, run);
 
                 summary.calculateMetric(run, labelValueArray);
+
                 if (isPerBuildMetrics) {
                     labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
                     labelValueArray[labelValueArray.length - 1] = String.valueOf(run.getNumber());
@@ -259,6 +263,7 @@ public class JobCollector extends Collector {
         buildMetrics.jobBuildTestsSkipped.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsFailing.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildLikelyStuck.calculateMetric(run,buildLabelValueArray);
+        buildMetrics.buildLogFileSizeGauge.calculateMetric(run, buildLabelValueArray);
     }
 
 }

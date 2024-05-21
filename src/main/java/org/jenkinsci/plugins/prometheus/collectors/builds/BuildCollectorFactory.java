@@ -37,10 +37,12 @@ public class BuildCollectorFactory extends BaseCollectorFactory {
                 return saveBuildCollector(new BuildLikelyStuckGauge(labelNames, namespace, subsystem, prefix));
             case BUILD_ABORTED_COUNTER:
                 return saveBuildCollector(new BuildAbortedCounter(labelNames, namespace, subsystem, prefix));
-             case BUILD_UNSTABLE_COUNTER:
+            case BUILD_UNSTABLE_COUNTER:
                 return saveBuildCollector(new BuildUnstableCounter(labelNames, namespace, subsystem, prefix));
             case BUILD_TOTAL_COUNTER:
                 return saveBuildCollector(new BuildTotalCounter(labelNames, namespace, subsystem, prefix));
+            case BUILD_LOGFILE_SIZE_GAUGE:
+                return saveBuildCollector(new BuildLogFileSizeGauge(labelNames, namespace, subsystem, prefix));
             default:
                 return new NoOpMetricCollector<>();
         }

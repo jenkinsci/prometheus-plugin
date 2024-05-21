@@ -7,6 +7,7 @@ public enum CollectorType {
     JENKINS_VERSION_INFO_GAUGE("version"),
     NODES_ONLINE_GAUGE("nodes_online"),
     BUILD_DURATION_GAUGE("build_duration_milliseconds"),
+    BUILD_LOGFILE_SIZE_GAUGE("build_logfile_size_bytes"),
     BUILD_DURATION_SUMMARY("duration_milliseconds_summary"),
     BUILD_RESULT_GAUGE("build_result"),
     BUILD_RESULT_ORDINAL_GAUGE("build_result_ordinal"),
