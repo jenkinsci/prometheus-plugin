@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class BuildLogFileSizeGaugeTest extends MockedRunCollectorTest {
@@ -19,7 +20,7 @@ class BuildLogFileSizeGaugeTest extends MockedRunCollectorTest {
     @Test
     public void testNothingCalculatedWhenRunIsBuilding() {
 
-        Mockito.when(mock.isBuilding()).thenReturn(true);
+        when(mock.isBuilding()).thenReturn(true);
 
         BuildLogFileSizeGauge sut = new BuildLogFileSizeGauge(getLabelNames(), getNamespace(), getSubSystem(), "default");
 
@@ -27,18 +28,18 @@ class BuildLogFileSizeGaugeTest extends MockedRunCollectorTest {
 
         List<Collector.MetricFamilySamples> collect = sut.collect();
 
-        Assertions.assertEquals(1, collect.size());
-        Assertions.assertEquals(0, collect.get(0).samples.size(), "Would expect no sample created when run is running");
+        assertEquals(1, collect.size());
+        assertEquals(0, collect.get(0).samples.size(), "Would expect no sample created when run is running");
     }
 
     @Test
     public void testCollectResult() {
 
-        Mockito.when(mock.isBuilding()).thenReturn(false);
+        when(mock.isBuilding()).thenReturn(false);
         AnnotatedLargeText annotatedLargeText = Mockito.mock(AnnotatedLargeText.class);
-        Mockito.when(annotatedLargeText.length()).thenReturn(3000L);
+        when(annotatedLargeText.length()).thenReturn(3000L);
 
-        Mockito.when(mock.getLogText()).thenReturn(annotatedLargeText);
+        when(mock.getLogText()).thenReturn(annotatedLargeText);
 
         BuildLogFileSizeGauge sut = new BuildLogFileSizeGauge(getLabelNames(), getNamespace(), getSubSystem(), "default");
 
@@ -46,9 +47,8 @@ class BuildLogFileSizeGaugeTest extends MockedRunCollectorTest {
 
         List<Collector.MetricFamilySamples> collect = sut.collect();
 
-        Assertions.assertEquals(1, collect.size());
-
-        Assertions.assertEquals(3000.0, collect.get(0).samples.get(0).value);
+        assertEquals(1, collect.size());
+        assertEquals(3000.0, collect.get(0).samples.get(0).value);
 
     }
 }
