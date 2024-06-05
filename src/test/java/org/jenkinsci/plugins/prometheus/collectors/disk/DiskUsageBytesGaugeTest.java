@@ -10,10 +10,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DiskUsageFileCountGaugeTest extends CollectorTest {
+class DiskUsageBytesGaugeTest extends CollectorTest {
 
     @Mock
     DiskItem mock;
@@ -21,9 +22,9 @@ class DiskUsageFileCountGaugeTest extends CollectorTest {
     @Test
     public void testCollectResult() {
 
-        when(mock.getCount()).thenReturn(10L);
+        when(mock.getUsage()).thenReturn(10L);
 
-        DiskUsageFileCountGauge sut = new DiskUsageFileCountGauge(getLabelNames(), getNamespace(), getSubSystem());
+        DiskUsageBytesGauge sut = new DiskUsageBytesGauge(getLabelNames(), getNamespace(), getSubSystem());
         sut.calculateMetric(mock, getLabelValues());
 
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -32,15 +33,15 @@ class DiskUsageFileCountGaugeTest extends CollectorTest {
 
         Collector.MetricFamilySamples samples = collect.get(0);
 
-        validateNames(samples, new String[]{"default_jenkins_disk_usage_file_count"});
+        validateNames(samples, new String[]{"default_jenkins_disk_usage_bytes"});
         validateMetricFamilySampleSize(samples, 1);
-        validateHelp(samples, "Disk usage file count of the first level folder in JENKINS_HOME");
-        validateValue(samples, 0, 10.0);
+        validateHelp(samples, "Disk usage of first level folder in JENKINS_HOME in bytes");
+        validateValue(samples, 0, 10240.0);
     }
 
     @Test
     public void testDiskItemIsNull() {
-        DiskUsageFileCountGauge sut = new DiskUsageFileCountGauge(getLabelNames(), getNamespace(), getSubSystem());
+        DiskUsageBytesGauge sut = new DiskUsageBytesGauge(getLabelNames(), getNamespace(), getSubSystem());
         sut.calculateMetric(null, getLabelValues());
 
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -50,9 +51,9 @@ class DiskUsageFileCountGaugeTest extends CollectorTest {
     }
 
     @Test
-    public void testDiskItemCountIsNull() {
-        when(mock.getCount()).thenReturn(null);
-        DiskUsageFileCountGauge sut = new DiskUsageFileCountGauge(getLabelNames(), getNamespace(), getSubSystem());
+    public void testDiskItemUsageIsNull() {
+        when(mock.getUsage()).thenReturn(null);
+        DiskUsageBytesGauge sut = new DiskUsageBytesGauge(getLabelNames(), getNamespace(), getSubSystem());
         sut.calculateMetric(mock, getLabelValues());
 
         List<Collector.MetricFamilySamples> collect = sut.collect();

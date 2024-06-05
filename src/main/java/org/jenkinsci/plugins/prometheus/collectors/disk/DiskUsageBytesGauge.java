@@ -32,6 +32,12 @@ public class DiskUsageBytesGauge extends BaseMetricCollector<DiskItem, Gauge> {
         if (jenkinsObject == null) {
             return;
         }
-        this.collector.labels(labelValues).set(jenkinsObject.getUsage() * 1024);
+
+        Long usage = jenkinsObject.getUsage();
+        if (usage == null) {
+            return;
+        }
+
+        this.collector.labels(labelValues).set(usage * 1024);
     }
 }

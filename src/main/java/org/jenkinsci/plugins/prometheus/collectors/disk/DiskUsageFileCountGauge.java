@@ -32,6 +32,10 @@ public class DiskUsageFileCountGauge extends BaseMetricCollector<DiskItem, Gauge
         if (jenkinsObject == null) {
             return;
         }
-        this.collector.labels(labelValues).set(jenkinsObject.getCount());
+        Long count = jenkinsObject.getCount();
+        if (count == null) {
+            return;
+        }
+        this.collector.labels(labelValues).set(count);
     }
 }
