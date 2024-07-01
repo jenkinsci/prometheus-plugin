@@ -26,7 +26,7 @@
     <slf4j.version>2.0.13</slf4j.version>
 
     <cloudbees-disk-usage-simple.version>203.v3f46a_7462b_1a_</cloudbees-disk-usage-simple.version>
-    <coverage.version>1.10.0</coverage.version>
+    <coverage.version>1.16.0</coverage.version>
 
     <assertj-core.version>3.24.2</assertj-core.version>
     <JUnitParams.version>1.1.1</JUnitParams.version>
