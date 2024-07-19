@@ -4,7 +4,7 @@ import io.prometheus.client.exporter.common.TextFormat;
 import jenkins.metrics.api.Metrics;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
-import org.jenkinsci.plugins.prometheus.service.PrometheusMetrics;
+import org.jenkinsci.plugins.prometheus.service.DefaultPrometheusMetrics;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,8 +22,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import static java.net.HttpURLConnection.*;
-import static org.mockito.Mockito.*;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class PrometheusActionTest {
@@ -87,25 +93,27 @@ public class PrometheusActionTest {
     @Test
     public void shouldReturnMetrics() throws IOException, ServletException {
         // given
-        PrometheusAction action = new PrometheusAction();
-        PrometheusMetrics prometheusMetrics = mock(PrometheusMetrics.class);
+        DefaultPrometheusMetrics prometheusMetrics = mock(DefaultPrometheusMetrics.class);
         String responseBody = "testMetric";
         when(prometheusMetrics.getMetrics()).thenReturn(responseBody);
-        action.setPrometheusMetrics(prometheusMetrics);
-        StaplerRequest request = mock(StaplerRequest.class);
-        String url = "prometheus";
-        when(request.getRestOfPath()).thenReturn(url);
+        try (MockedStatic<DefaultPrometheusMetrics> defaultPrometheusMetricsMockedStatic = mockStatic(DefaultPrometheusMetrics.class)) {
+            defaultPrometheusMetricsMockedStatic.when(DefaultPrometheusMetrics::get).thenReturn(prometheusMetrics);
+            PrometheusAction action = new PrometheusAction();
+            StaplerRequest request = mock(StaplerRequest.class);
+            String url = "prometheus";
+            when(request.getRestOfPath()).thenReturn(url);
 
-        // when
-        HttpResponse actual = action.doDynamic(request);
+            // when
+            HttpResponse actual = action.doDynamic(request);
 
-        // then
-        AssertStaplerResponse.from(actual)
-            .call()
-            .assertHttpStatus(HTTP_OK)
-            .assertContentType(TextFormat.CONTENT_TYPE_004)
-            .assertHttpHeader("Cache-Control", "must-revalidate,no-cache,no-store")
-            .assertBody(responseBody);
+            // then
+            AssertStaplerResponse.from(actual)
+                .call()
+                .assertHttpStatus(HTTP_OK)
+                .assertContentType(TextFormat.CONTENT_TYPE_004)
+                .assertHttpHeader("Cache-Control", "must-revalidate,no-cache,no-store")
+                .assertBody(responseBody);
+        }
     }
 
     private static class AssertStaplerResponse {
