@@ -17,6 +17,8 @@ public class JenkinsCollectorFactory extends BaseCollectorFactory {
         switch (type) {
             case JENKINS_UP_GAUGE:
                 return saveBuildCollector(new JenkinsUpGauge(labelNames, namespace, subsystem));
+            case JENKINS_QUIETDOWN_GAUGE:
+                return saveBuildCollector(new JenkinsQuietDownGauge(labelNames, namespace, subsystem));
             case NODES_ONLINE_GAUGE:
                 if (!isNodeOnlineGaugeEnabled()) {
                     return new NoOpMetricCollector<>();

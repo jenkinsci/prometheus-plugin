@@ -23,6 +23,7 @@ public class JenkinsStatusCollector extends Collector {
         collectors.add(factory.createJenkinsCollector(CollectorType.JENKINS_UP_GAUGE, new String[]{}));
         collectors.add(factory.createJenkinsCollector(CollectorType.JENKINS_UPTIME_GAUGE, new String[]{}));
         collectors.add(factory.createJenkinsCollector(CollectorType.NODES_ONLINE_GAUGE, new String[]{"node"}));
+        collectors.add(factory.createJenkinsCollector(CollectorType.JENKINS_QUIETDOWN_GAUGE, new String[]{}));
 
         collectors.forEach(c -> c.calculateMetric(jenkins, new String[]{}));
 

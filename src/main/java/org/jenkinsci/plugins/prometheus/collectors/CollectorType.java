@@ -5,6 +5,7 @@ public enum CollectorType {
     JENKINS_UP_GAUGE("up"),
     JENKINS_UPTIME_GAUGE("uptime"),
     JENKINS_VERSION_INFO_GAUGE("version"),
+    JENKINS_QUIETDOWN_GAUGE("quietdown"),
     NODES_ONLINE_GAUGE("nodes_online"),
     BUILD_DURATION_GAUGE("build_duration_milliseconds"),
     BUILD_LOGFILE_SIZE_GAUGE("build_logfile_size_bytes"),
