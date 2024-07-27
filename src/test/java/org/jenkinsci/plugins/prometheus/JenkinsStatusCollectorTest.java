@@ -22,6 +22,7 @@ public class JenkinsStatusCollectorTest {
 
         PrometheusConfiguration mockedConfig = mock(PrometheusConfiguration.class);
         String namespace = "TestNamespace";
+        int numberOfMetrics = 4;
 
         when(mockedConfig.getDefaultNamespace()).thenReturn(namespace);
         when(mockedConfig.isCollectNodeStatus()).thenReturn(false);
@@ -34,7 +35,7 @@ public class JenkinsStatusCollectorTest {
             JenkinsStatusCollector jenkinsStatusCollector = new JenkinsStatusCollector();
 
             List<MetricFamilySamples> samples = jenkinsStatusCollector.collect();
-            assertEquals(3, samples.size());
+            assertEquals(numberOfMetrics, samples.size());
         }
     }
 }
