@@ -17,7 +17,7 @@ public class MetricStatusChecker {
 
     public static boolean isEnabled(String metricName) {
 
-        List<Entry> entries = getEntries(metricName);
+        List<Entry> entries = getEntries();
 
         for (Entry entry : entries) {
             if (entry instanceof RegexDisabledMetric) {
@@ -40,7 +40,9 @@ public class MetricStatusChecker {
     }
 
     public static boolean isJobEnabled(String jobName) {
-        List<Entry> entries = getEntries(jobName);
+
+        List<Entry> entries = getEntries();
+
         for (Entry entry : entries) {
             if (entry instanceof JobRegexDisabledMetric) {
                 Pattern pattern = Pattern.compile(((JobRegexDisabledMetric) entry).getRegex());
@@ -61,7 +63,7 @@ public class MetricStatusChecker {
         return allMetricNames.stream().filter(MetricStatusChecker::isEnabled).collect(Collectors.toSet());
     }
 
-    private static List<Entry> getEntries(String metricName) {
+    private static List<Entry> getEntries() {
         PrometheusConfiguration configuration = PrometheusConfiguration.get();
         if (configuration == null) {
             LOGGER.warn("Cannot check if job is enabled. No PrometheusConfiguration");
