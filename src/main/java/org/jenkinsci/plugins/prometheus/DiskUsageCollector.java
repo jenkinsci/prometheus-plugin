@@ -9,6 +9,7 @@ import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
+import org.jenkinsci.plugins.prometheus.config.disabledmetrics.MetricStatusChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +69,9 @@ public class DiskUsageCollector extends Collector {
         jobDiskItemCollectors.add(factory.createJobDiskItemCollector(CollectorType.JOB_USAGE_BYTES_GAUGE, new String[]{"file_store", "jobName", "url"}));
 
         diskUsagePlugin.getJobsUsages().forEach(i -> {
+            if (!MetricStatusChecker.isJobEnabled(i.getFullName())) {
+                return;
+            }
             final Optional<FileStore> fileStore = getFileStore(i.getPath());
             fileStore.ifPresent(usedFileStores::add);
             jobDiskItemCollectors.forEach(c -> c.calculateMetric(i, new String[]{toLabelValue(fileStore), i.getFullName(), i.getUrl()}));

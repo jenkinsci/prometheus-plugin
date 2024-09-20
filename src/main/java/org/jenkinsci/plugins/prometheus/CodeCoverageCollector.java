@@ -8,6 +8,7 @@ import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
+import org.jenkinsci.plugins.prometheus.config.disabledmetrics.MetricStatusChecker;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +79,10 @@ public class CodeCoverageCollector extends Collector {
         Jobs.forEachJob(job -> {
             Run<?,?> lastBuild = job.getLastBuild();
             if (lastBuild == null || lastBuild.isBuilding()) {
+                return;
+            }
+            if (!MetricStatusChecker.isJobEnabled(job.getFullName())) {
+                LOGGER.debug("Job '{}' is excluded by configuration", job.getFullName());
                 return;
             }
 

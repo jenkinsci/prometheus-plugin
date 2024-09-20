@@ -12,6 +12,7 @@ import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCompletionListene
 import org.jenkinsci.plugins.prometheus.collectors.builds.CounterManager;
 import org.jenkinsci.plugins.prometheus.collectors.builds.JobLabel;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
+import org.jenkinsci.plugins.prometheus.config.disabledmetrics.MetricStatusChecker;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.jenkinsci.plugins.prometheus.util.Runs;
 import org.slf4j.Logger;
@@ -156,6 +157,10 @@ public class JobCollector extends Collector {
             try {
                 if (!job.isBuildable() && processDisabledJobs) {
                     LOGGER.debug("job [{}] is disabled", job.getFullName());
+                    return;
+                }
+                if (!MetricStatusChecker.isJobEnabled(job.getFullName())) {
+                    LOGGER.debug("Job [{}] is excluded by configuration", job.getFullName());
                     return;
                 }
                 LOGGER.debug("Collecting metrics for job [{}]", job.getFullName());

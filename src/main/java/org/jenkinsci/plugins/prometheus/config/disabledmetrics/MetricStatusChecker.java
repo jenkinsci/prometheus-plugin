@@ -17,23 +17,7 @@ public class MetricStatusChecker {
 
     public static boolean isEnabled(String metricName) {
 
-        PrometheusConfiguration configuration = PrometheusConfiguration.get();
-        if (configuration == null) {
-            LOGGER.warn("Cannot check if metric is enabled. Unable to get PrometheusConfiguration");
-            return true;
-        }
-
-        DisabledMetricConfig disabledMetricConfig = configuration.getDisabledMetricConfig();
-        if (disabledMetricConfig == null) {
-            LOGGER.debug("Cannot check if metric is enabled. No DisabledMetricConfig.");
-            return true;
-        }
-
-        List<Entry> entries = disabledMetricConfig.getEntries();
-        if (entries == null || entries.isEmpty()) {
-            LOGGER.debug("Cannot check if metric is enabled. No entries specified in DisabledMetricConfig.");
-            return true;
-        }
+        List<Entry> entries = getEntries(metricName);
 
         for (Entry entry : entries) {
             if (entry instanceof RegexDisabledMetric) {
@@ -55,10 +39,45 @@ public class MetricStatusChecker {
         return true;
     }
 
+    public static boolean isJobEnabled(String jobName) {
+        List<Entry> entries = getEntries(jobName);
+        for (Entry entry : entries) {
+            if (entry instanceof JobRegexDisabledMetric) {
+                Pattern pattern = Pattern.compile(((JobRegexDisabledMetric) entry).getRegex());
+                Matcher matcher = pattern.matcher(jobName);
+                if (matcher.matches()) {
+                    LOGGER.debug("Job named '{}' is disabled via Jenkins Prometheus Plugin configuration. Reason: JobRegexDisabledMetric", jobName);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public static Set<String> filter(List<String> allMetricNames) {
         if (allMetricNames == null) {
             return new HashSet<>();
         }
         return allMetricNames.stream().filter(MetricStatusChecker::isEnabled).collect(Collectors.toSet());
+    }
+
+    private static List<Entry> getEntries(String metricName) {
+        PrometheusConfiguration configuration = PrometheusConfiguration.get();
+        if (configuration == null) {
+            LOGGER.warn("Cannot check if job is enabled. No PrometheusConfiguration");
+            return List.of();
+        }
+        DisabledMetricConfig disabledMetricConfig = configuration.getDisabledMetricConfig();
+        if (disabledMetricConfig == null) {
+            LOGGER.debug("Cannot check if metric is enabled. No DisabledMetricConfig.");
+            return List.of();
+        }
+
+        List<Entry> entries = disabledMetricConfig.getEntries();
+        if (entries == null || entries.isEmpty()) {
+            LOGGER.debug("Cannot check if metric is enabled. No entries specified in DisabledMetricConfig.");
+            return List.of();
+        }
+        return entries;
     }
 }
