@@ -23,6 +23,7 @@ public enum CollectorType {
     FAILED_TESTS_GAUGE("build_tests_failing"),
     SKIPPED_TESTS_GAUGE("last_build_tests_skipped"),
     STAGE_SUMMARY("stage_duration_milliseconds_summary"),
+    STAGE_BUILDRESULT_ORDINAL("stage_result_ordinal"),
     TOTAL_TESTS_GAUGE("build_tests_total"),
     HEALTH_SCORE_GAUGE("health_score"),
     NB_BUILDS_GAUGE("available_builds_count"),

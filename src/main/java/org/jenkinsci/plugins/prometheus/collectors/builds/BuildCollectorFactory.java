@@ -31,6 +31,8 @@ public class BuildCollectorFactory extends BaseCollectorFactory {
                 return saveBuildCollector(new SkippedTestsGauge(labelNames, namespace, subsystem, prefix));
             case STAGE_SUMMARY:
                 return saveBuildCollector(new StageSummary(labelNames, namespace, subsystem, prefix));
+            case STAGE_BUILDRESULT_ORDINAL:
+                return saveBuildCollector(new StageBuildResultOrdinalGauge(labelNames, namespace, subsystem, prefix));
             case TOTAL_TESTS_GAUGE:
                 return saveBuildCollector(new TotalTestsGauge(labelNames, namespace, subsystem, prefix));
             case BUILD_LIKELY_STUCK_GAUGE:

@@ -43,6 +43,7 @@ public class JobCollector extends Collector {
         public MetricCollector<Run<?, ?>, ? extends Collector> jobBuildStartMillis;
         public MetricCollector<Run<?, ?>, ? extends Collector> jobBuildDuration;
         public MetricCollector<Run<?, ?>, ? extends Collector> stageSummary;
+        public MetricCollector<Run<?, ?>, ? extends Collector> stageBuildResultOrdinal;
         public MetricCollector<Run<?, ?>, ? extends Collector> jobBuildTestsTotal;
         public MetricCollector<Run<?, ?>, ? extends Collector> jobBuildTestsSkipped;
         public MetricCollector<Run<?, ?>, ? extends Collector> jobBuildTestsFailing;
@@ -65,6 +66,7 @@ public class JobCollector extends Collector {
             this.jobBuildTestsSkipped = factory.createRunCollector(CollectorType.SKIPPED_TESTS_GAUGE, labelNameArray, buildPrefix);
             this.jobBuildTestsFailing = factory.createRunCollector(CollectorType.FAILED_TESTS_GAUGE, labelNameArray, buildPrefix);
             this.stageSummary = factory.createRunCollector(CollectorType.STAGE_SUMMARY, ArrayUtils.add(labelNameArray, "stage"), buildPrefix);
+            this.stageBuildResultOrdinal = factory.createRunCollector(CollectorType.STAGE_BUILDRESULT_ORDINAL, ArrayUtils.add(labelNameArray, "stage"), buildPrefix);
             this.jobBuildLikelyStuck = factory.createRunCollector(CollectorType.BUILD_LIKELY_STUCK_GAUGE, labelNameArray, buildPrefix);
             this.buildLogFileSizeGauge = factory.createRunCollector(CollectorType.BUILD_LOGFILE_SIZE_GAUGE, labelNameArray, buildPrefix);
         }
@@ -214,6 +216,7 @@ public class JobCollector extends Collector {
         addSamples(allSamples, buildMetrics.jobBuildTestsFailing.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildLikelyStuck.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.stageSummary.collect(), "Adding [{}] samples from summary ({})");
+        addSamples(allSamples, buildMetrics.stageBuildResultOrdinal.collect(), "Adding [{}] samples from summary ({})");
         addSamples(allSamples, buildMetrics.buildLogFileSizeGauge.collect(), "Adding [{}] samples from summary ({})");
     }
 
@@ -264,6 +267,7 @@ public class JobCollector extends Collector {
         buildMetrics.jobBuildDuration.calculateMetric(run, buildLabelValueArray);
         // Label values are calculated within stageSummary so we pass null here.
         buildMetrics.stageSummary.calculateMetric(run, buildLabelValueArray);
+        buildMetrics.stageBuildResultOrdinal.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsTotal.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsSkipped.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsFailing.calculateMetric(run, buildLabelValueArray);
