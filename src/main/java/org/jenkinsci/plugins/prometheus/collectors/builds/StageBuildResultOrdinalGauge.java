@@ -1,7 +1,6 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
 import com.cloudbees.workflow.rest.external.StageNodeExt;
-import com.cloudbees.workflow.rest.external.StatusExt;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.prometheus.client.Gauge;
@@ -32,7 +31,7 @@ public class StageBuildResultOrdinalGauge extends BuildsMetricCollector<Run<?, ?
 
     @Override
     protected String getHelpText() {
-        return "Build status of a Stage.";
+        return "Build status of a Stage. 0=NOT_EXECUTED,1=ABORTED,2=SUCCESS,3=IN_PROGRESS,4=PAUSED_PENDING_INPUT,5=FAILED,6=UNSTABLE";
     }
 
     @Override
