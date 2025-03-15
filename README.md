@@ -3,7 +3,7 @@
 [![Coverage](https://ci.jenkins.io/job/Plugins/job/prometheus-plugin/job/master/badge/icon?status=${instructionCoverage}&subject=coverage&color=${colorInstructionCoverage})](https://ci.jenkins.io/job/Plugins/job/prometheus-plugin/job/master)
 [![LOC](https://ci.jenkins.io/job/Plugins/job/prometheus-plugin/job/master/badge/icon?job=test&status=${lineOfCode}&subject=line%20of%20code&color=blue)](https://ci.jenkins.io/job/Plugins/job/prometheus-plugin/job/master)
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/prometheus.svg?color=blue)](https://plugins.jenkins.io/prometheus)
-
+[![Join the chat at https://gitter.im/jenkinsci/prometheus-plugin](https://badges.gitter.im/jenkinsci/prometheus.svg)](https://gitter.im/jenkinsci/prometheus-plugin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## About
 Jenkins Prometheus Plugin expose an endpoint (default `/prometheus/`) with metrics where a Prometheus Server can scrape.
