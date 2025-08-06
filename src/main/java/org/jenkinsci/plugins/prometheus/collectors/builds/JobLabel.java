@@ -3,7 +3,7 @@ package org.jenkinsci.plugins.prometheus.collectors.builds;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.util.Runs;
 
