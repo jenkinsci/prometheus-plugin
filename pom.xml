@@ -25,7 +25,7 @@
 
     <prometheus.simpleclient.version>0.16.0</prometheus.simpleclient.version>
 
-    <coverage.version>2.7.0</coverage.version>
+    <coverage.version>2.2941.v08df75b_767f1</coverage.version>
 
     <assertj-core.version>3.24.2</assertj-core.version>
     <JUnitParams.version>1.1.1</JUnitParams.version>
