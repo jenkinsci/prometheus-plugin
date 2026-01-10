@@ -19,6 +19,8 @@
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/prometheus-plugin</gitHubRepo>
+    <hpi.bundledArtifacts>simpleclient,simpleclient_common,simpleclient_dropwizard,simpleclient_hotspot,simpleclient_tracer_common,simpleclient_tracer_otel,simpleclient_tracer_otel_agent</hpi.bundledArtifacts>
+    <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
     <jenkins.baseline>2.479</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
