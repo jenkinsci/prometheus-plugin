@@ -175,6 +175,130 @@ public  class RunsTest {
         }
     }
 
+    @Test
+    void testIncludeRunInPerBuildMetricsMaxBuildsEdgeCases() {
+        // Test edge cases for max builds limit
+        try (MockedStatic<PrometheusConfiguration> prometheusConfigurationStatic = mockStatic(PrometheusConfiguration.class)) {
+            PrometheusConfiguration configuration = mock(PrometheusConfiguration.class);
+            when(configuration.getPerBuildMetricsMaxAgeInHours()).thenReturn(0L);
+            when(configuration.getPerBuildMetricsMaxBuilds()).thenReturn(1);
+            prometheusConfigurationStatic.when(PrometheusConfiguration::get).thenReturn(configuration);
+
+            // Only first build (index 0) should be included when maxBuilds = 1
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, 1));
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, 2));
+        }
+    }
+
+    @Test
+    void testIncludeRunInPerBuildMetricsMaxAgeExactBoundary() {
+        // Test exact boundary for max age (exactly 24 hours ago)
+        try (MockedStatic<PrometheusConfiguration> prometheusConfigurationStatic = mockStatic(PrometheusConfiguration.class)) {
+            PrometheusConfiguration configuration = mock(PrometheusConfiguration.class);
+            when(configuration.getPerBuildMetricsMaxAgeInHours()).thenReturn(24L);
+            when(configuration.getPerBuildMetricsMaxBuilds()).thenReturn(0);
+            prometheusConfigurationStatic.when(PrometheusConfiguration::get).thenReturn(configuration);
+
+            long now = System.currentTimeMillis();
+            long buildDuration = 0L; // instant build
+            when(mockedRun.getDuration()).thenReturn(buildDuration);
+            
+            // Build that ended just under 24 hours ago should be included
+            // Using 23 hours 59 minutes to ensure it's within the limit
+            long justUnder24HoursAgo = now - (23L * 60L * 60L * 1000L) - (59L * 60L * 1000L);
+            when(mockedRun.getTimeInMillis()).thenReturn(justUnder24HoursAgo);
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+            
+            // Build that ended 25 hours ago should be excluded
+            long over24HoursAgo = now - (25L * 60L * 60L * 1000L);
+            when(mockedRun.getTimeInMillis()).thenReturn(over24HoursAgo);
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+        }
+    }
+
+    @Test
+    void testIncludeRunInPerBuildMetricsZeroDuration() {
+        // Test with zero duration builds
+        try (MockedStatic<PrometheusConfiguration> prometheusConfigurationStatic = mockStatic(PrometheusConfiguration.class)) {
+            PrometheusConfiguration configuration = mock(PrometheusConfiguration.class);
+            when(configuration.getPerBuildMetricsMaxAgeInHours()).thenReturn(1L); // 1 hour
+            when(configuration.getPerBuildMetricsMaxBuilds()).thenReturn(0);
+            prometheusConfigurationStatic.when(PrometheusConfiguration::get).thenReturn(configuration);
+
+            long now = System.currentTimeMillis();
+            when(mockedRun.getDuration()).thenReturn(0L); // instant build
+            
+            // Build that started 30 minutes ago with 0 duration (ended 30 minutes ago)
+            when(mockedRun.getTimeInMillis()).thenReturn(now - 1800000L);
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+            
+            // Build that started 2 hours ago with 0 duration (ended 2 hours ago)
+            when(mockedRun.getTimeInMillis()).thenReturn(now - 7200000L);
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+        }
+    }
+
+    @Test
+    void testIncludeRunInPerBuildMetricsSequentialBuildIndices() {
+        // Simulates JobCollector iterating through builds with incrementing indices
+        // This covers the buildIndex++ logic in JobCollector lines 262-277
+        try (MockedStatic<PrometheusConfiguration> prometheusConfigurationStatic = mockStatic(PrometheusConfiguration.class)) {
+            PrometheusConfiguration configuration = mock(PrometheusConfiguration.class);
+            when(configuration.getPerBuildMetricsMaxAgeInHours()).thenReturn(0L);
+            when(configuration.getPerBuildMetricsMaxBuilds()).thenReturn(3);
+            prometheusConfigurationStatic.when(PrometheusConfiguration::get).thenReturn(configuration);
+
+            // Simulate iterating through builds like JobCollector does
+            int buildIndex = 0;
+            
+            // First iteration - index 0
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, buildIndex));
+            buildIndex++;
+            
+            // Second iteration - index 1
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, buildIndex));
+            buildIndex++;
+            
+            // Third iteration - index 2 (last included)
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, buildIndex));
+            buildIndex++;
+            
+            // Fourth iteration - index 3 (should be excluded)
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, buildIndex));
+            buildIndex++;
+            
+            // Fifth iteration - index 4 (should be excluded)
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, buildIndex));
+        }
+    }
+
+    @Test
+    void testIncludeRunInPerBuildMetricsLongRunningBuild() {
+        // Test with a long-running build where start time is old but end time is recent
+        try (MockedStatic<PrometheusConfiguration> prometheusConfigurationStatic = mockStatic(PrometheusConfiguration.class)) {
+            PrometheusConfiguration configuration = mock(PrometheusConfiguration.class);
+            when(configuration.getPerBuildMetricsMaxAgeInHours()).thenReturn(24L);
+            when(configuration.getPerBuildMetricsMaxBuilds()).thenReturn(0);
+            prometheusConfigurationStatic.when(PrometheusConfiguration::get).thenReturn(configuration);
+
+            long now = System.currentTimeMillis();
+            long buildDuration = 48L * 60L * 60L * 1000L; // 48 hours build duration
+            when(mockedRun.getDuration()).thenReturn(buildDuration);
+            
+            // Build started 50 hours ago but ran for 48 hours, so ended 2 hours ago
+            // End time = start time + duration = (now - 50h) + 48h = now - 2h
+            when(mockedRun.getTimeInMillis()).thenReturn(now - (50L * 60L * 60L * 1000L));
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 0), 
+                "Long-running build that ended recently should be included");
+            
+            // Build started 100 hours ago but ran for 48 hours, so ended 52 hours ago
+            when(mockedRun.getTimeInMillis()).thenReturn(now - (100L * 60L * 60L * 1000L));
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, 0),
+                "Long-running build that ended long ago should be excluded");
+        }
+    }
+
 
     private static Stream<Arguments> provideBuildResults() {
         return Stream.of(
