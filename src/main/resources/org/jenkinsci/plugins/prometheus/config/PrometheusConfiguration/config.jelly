@@ -53,9 +53,14 @@
     <f:entry title="${%Collect node status}" field="collectNodeStatus">
       <f:checkbox/>
     </f:entry>
-    <f:entry title="${%Collect metrics for each run per build [Important: read help before enabling this option]}" field="perBuildMetrics">
-      <f:checkbox/>
-    </f:entry>
+    <f:optionalBlock title="${%Collect metrics for each run per build [Important: read help before enabling this option]}" field="perBuildMetrics" inline="true">
+      <f:entry title="${%Per-build metrics max age in hours}" field="perBuildMetricsMaxAgeInHours">
+        <f:number/>
+      </f:entry>
+      <f:entry title="${%Per-build metrics max builds per job}" field="perBuildMetricsMaxBuilds">
+        <f:number/>
+      </f:entry>
+    </f:optionalBlock>
     <f:entry title="${%Collect code coverage}" field="collectCodeCoverage">
       <j:set var="readOnlyMode" value="!${instance.isCodeCoverageApiPluginInstalled()}"/>
       <f:checkbox/>

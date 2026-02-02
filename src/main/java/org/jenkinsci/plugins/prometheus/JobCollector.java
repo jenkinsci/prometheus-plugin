@@ -259,6 +259,7 @@ public class JobCollector extends Collector {
         processRun(job, buildToCheck, baseLabelValueArray, lastBuildMetrics);
 
         Run<?, ?> run = buildToCheck;
+        int buildIndex = 0;
         while (run != null) {
             LOGGER.debug("getting metrics for run [{}] from job [{}], include per run metrics [{}]", run.getNumber(), job.getName(), isPerBuildMetrics);
             if (Runs.includeBuildInMetrics(run)) {
@@ -267,12 +268,13 @@ public class JobCollector extends Collector {
 
                 summary.calculateMetric(run, labelValueArray);
 
-                if (isPerBuildMetrics) {
+                if (isPerBuildMetrics && Runs.includeRunInPerBuildMetrics(run, buildIndex)) {
                     labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
                     labelValueArray[labelValueArray.length - 1] = String.valueOf(run.getNumber());
 
                     processRun(job, run, labelValueArray, perBuildMetrics);
                 }
+                buildIndex++;
             }
             run = run.getPreviousBuild();
         }

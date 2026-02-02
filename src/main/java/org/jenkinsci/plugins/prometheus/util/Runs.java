@@ -9,6 +9,7 @@ import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class Runs {
 
@@ -32,6 +33,38 @@ public class Runs {
             }
         }
         return include;
+    }
+
+    /**
+     * Checks if a run should be included in per-build metrics based on retention settings.
+     * This method checks both time-based (max age) and count-based (max builds) limits.
+     *
+     * @param run the run to check
+     * @param buildIndex the 0-based index of this build (0 = latest build)
+     * @return true if the run should be included in per-build metrics, false otherwise
+     */
+    public static boolean includeRunInPerBuildMetrics(Run<?, ?> run, int buildIndex) {
+        PrometheusConfiguration config = PrometheusConfiguration.get();
+        
+        // Check count-based limit
+        int maxBuilds = config.getPerBuildMetricsMaxBuilds();
+        if (maxBuilds > 0 && buildIndex >= maxBuilds) {
+            return false;
+        }
+        
+        // Check time-based limit (based on build end time)
+        long maxAgeInHours = config.getPerBuildMetricsMaxAgeInHours();
+        if (maxAgeInHours > 0) {
+            long maxAgeInMillis = TimeUnit.HOURS.toMillis(maxAgeInHours);
+            // Calculate build end time: start time + duration
+            long buildEndTime = run.getTimeInMillis() + run.getDuration();
+            long now = System.currentTimeMillis();
+            if ((now - buildEndTime) > maxAgeInMillis) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     public static Map<String, Object> getBuildParameters(Run build) {

@@ -1,0 +1,26 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core">
+  <div>
+    <p>
+      Maximum number of builds per job to include in per-build metrics. Only the latest N builds will be included.
+    </p>
+    <p>
+      Set to <code>0</code> (default) to disable the count limit and include all builds.
+    </p>
+    <p>
+      Example values:
+      <ul>
+        <li><code>5</code> - Only include the 5 most recent builds per job</li>
+        <li><code>10</code> - Only include the 10 most recent builds per job</li>
+        <li><code>50</code> - Only include the 50 most recent builds per job</li>
+      </ul>
+    </p>
+    <p>
+      This setting helps control the number of time series generated when per-build metrics are enabled,
+      preventing unbounded growth and reducing Prometheus storage and query costs.
+    </p>
+    <p>
+      If both max age and max builds are configured, the stricter limit will apply.
+    </p>
+  </div>
+</j:jelly>

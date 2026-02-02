@@ -217,7 +217,61 @@ public class PrometheusConfigurationTest {
         config.accumulate("collectDiskUsage", "true");
         config.accumulate("collectNodeStatus", "true");
         config.accumulate("perBuildMetrics", "false");
+        config.accumulate("perBuildMetricsMaxAgeInHours", "0");
+        config.accumulate("perBuildMetricsMaxBuilds", "0");
         return config;
+    }
+
+    @Test
+    public void shouldSetPerBuildMetricsMaxAgeInHours() {
+        // given
+        Mockito.doCallRealMethod().when(configuration).setPerBuildMetricsMaxAgeInHours(Mockito.anyLong());
+        Mockito.when(configuration.getPerBuildMetricsMaxAgeInHours()).thenCallRealMethod();
+
+        // when
+        configuration.setPerBuildMetricsMaxAgeInHours(24L);
+
+        // then
+        assertEquals(24L, configuration.getPerBuildMetricsMaxAgeInHours());
+    }
+
+    @Test
+    public void shouldSetPerBuildMetricsMaxAgeInHoursToZeroForNegativeValues() {
+        // given
+        Mockito.doCallRealMethod().when(configuration).setPerBuildMetricsMaxAgeInHours(Mockito.anyLong());
+        Mockito.when(configuration.getPerBuildMetricsMaxAgeInHours()).thenCallRealMethod();
+
+        // when
+        configuration.setPerBuildMetricsMaxAgeInHours(-1L);
+
+        // then
+        assertEquals(0L, configuration.getPerBuildMetricsMaxAgeInHours());
+    }
+
+    @Test
+    public void shouldSetPerBuildMetricsMaxBuilds() {
+        // given
+        Mockito.doCallRealMethod().when(configuration).setPerBuildMetricsMaxBuilds(Mockito.anyInt());
+        Mockito.when(configuration.getPerBuildMetricsMaxBuilds()).thenCallRealMethod();
+
+        // when
+        configuration.setPerBuildMetricsMaxBuilds(10);
+
+        // then
+        assertEquals(10, configuration.getPerBuildMetricsMaxBuilds());
+    }
+
+    @Test
+    public void shouldSetPerBuildMetricsMaxBuildsToZeroForNegativeValues() {
+        // given
+        Mockito.doCallRealMethod().when(configuration).setPerBuildMetricsMaxBuilds(Mockito.anyInt());
+        Mockito.when(configuration.getPerBuildMetricsMaxBuilds()).thenCallRealMethod();
+
+        // when
+        configuration.setPerBuildMetricsMaxBuilds(-5);
+
+        // then
+        assertEquals(0, configuration.getPerBuildMetricsMaxBuilds());
     }
 
 }

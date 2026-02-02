@@ -52,6 +52,29 @@ If checked the plugin will collect data of up/down status of your Jenkins agents
 ## Collect metrics for each run per build
 If checked it will cause the plugin to add metrics for every build available. The build number will be added as label. Use with caution!
 
+## Per-build metrics max age (hours)
+Maximum age in hours for per-build metrics. Runs whose end time is older than this value will not be included in per-build metrics.
+Set to `0` (default) to disable the age limit and include all builds.
+
+Example values:
+- `1` - Only include builds that ended within the last hour
+- `24` - Only include builds that ended within the last 24 hours  
+- `168` - Only include builds that ended within the last 7 days (168 hours)
+
+This setting helps control the number of time series generated when per-build metrics are enabled,
+preventing unbounded growth and reducing Prometheus storage and query costs.
+
+## Per-build metrics max builds per job
+Maximum number of builds per job to include in per-build metrics. Only the latest N builds will be included.
+Set to `0` (default) to disable the count limit and include all builds.
+
+Example values:
+- `5` - Only include the 5 most recent builds per job
+- `10` - Only include the 10 most recent builds per job
+- `50` - Only include the 50 most recent builds per job
+
+If both max age and max builds are configured, the stricter limit will apply.
+
 ## Collect Code coverage  (since v2.3.0)
 If checked and you publish your code coverage results with [https://plugins.jenkins.io/coverage](https://plugins.jenkins.io/coverage)
 the plugin will output metrics for: 

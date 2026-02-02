@@ -54,6 +54,8 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     private boolean appendParamLabel = false;
     private boolean appendStatusLabel = false;
     private boolean perBuildMetrics = false;
+    private long perBuildMetricsMaxAgeInHours = 0L; // 0 means no limit
+    private int perBuildMetricsMaxBuilds = 0; // 0 means no limit
 
 
     private transient boolean collectDiskUsageEnvironmentVariableSet = false;
@@ -262,6 +264,36 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     @DataBoundSetter
     public void setPerBuildMetrics(boolean perBuildMetrics) {
         this.perBuildMetrics = perBuildMetrics;
+    }
+
+    /**
+     * Gets the maximum age in hours for per-build metrics.
+     * Runs older than this value will not be included in per-build metrics.
+     * A value of 0 means no age limit.
+     * @return the maximum age in hours, or 0 for no limit
+     */
+    public long getPerBuildMetricsMaxAgeInHours() {
+        return perBuildMetricsMaxAgeInHours;
+    }
+
+    @DataBoundSetter
+    public void setPerBuildMetricsMaxAgeInHours(long perBuildMetricsMaxAgeInHours) {
+        this.perBuildMetricsMaxAgeInHours = Math.max(0, perBuildMetricsMaxAgeInHours);
+    }
+
+    /**
+     * Gets the maximum number of builds to include in per-build metrics per job.
+     * Only the latest N builds will be included.
+     * A value of 0 means no count limit.
+     * @return the maximum number of builds, or 0 for no limit
+     */
+    public int getPerBuildMetricsMaxBuilds() {
+        return perBuildMetricsMaxBuilds;
+    }
+
+    @DataBoundSetter
+    public void setPerBuildMetricsMaxBuilds(int perBuildMetricsMaxBuilds) {
+        this.perBuildMetricsMaxBuilds = Math.max(0, perBuildMetricsMaxBuilds);
     }
 
     public boolean isCollectNodeStatus() {
