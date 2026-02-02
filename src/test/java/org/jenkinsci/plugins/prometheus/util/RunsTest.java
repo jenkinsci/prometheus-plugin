@@ -84,6 +84,96 @@ public  class RunsTest {
         }
     }
 
+    @Test
+    void testIncludeRunInPerBuildMetricsNoLimits() {
+        // When no limits are configured (both 0), all runs should be included
+        try (MockedStatic<PrometheusConfiguration> prometheusConfigurationStatic = mockStatic(PrometheusConfiguration.class)) {
+            PrometheusConfiguration configuration = mock(PrometheusConfiguration.class);
+            when(configuration.getPerBuildMetricsMaxAgeInHours()).thenReturn(0L);
+            when(configuration.getPerBuildMetricsMaxBuilds()).thenReturn(0);
+            prometheusConfigurationStatic.when(PrometheusConfiguration::get).thenReturn(configuration);
+
+            // No need to stub getTimeInMillis since max age is 0 (disabled)
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 100));
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 1000));
+        }
+    }
+
+    @Test
+    void testIncludeRunInPerBuildMetricsMaxBuildsLimit() {
+        // When max builds is set, only runs within the limit should be included
+        try (MockedStatic<PrometheusConfiguration> prometheusConfigurationStatic = mockStatic(PrometheusConfiguration.class)) {
+            PrometheusConfiguration configuration = mock(PrometheusConfiguration.class);
+            when(configuration.getPerBuildMetricsMaxAgeInHours()).thenReturn(0L);
+            when(configuration.getPerBuildMetricsMaxBuilds()).thenReturn(5);
+            prometheusConfigurationStatic.when(PrometheusConfiguration::get).thenReturn(configuration);
+
+            // No need to stub getTimeInMillis since max age is 0 (disabled)
+            // Build indices 0-4 should be included (latest 5 builds)
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 4));
+            
+            // Build index 5+ should be excluded
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, 5));
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, 10));
+        }
+    }
+
+    @Test
+    void testIncludeRunInPerBuildMetricsMaxAgeLimit() {
+        // When max age is set, only recent runs should be included (based on build end time)
+        try (MockedStatic<PrometheusConfiguration> prometheusConfigurationStatic = mockStatic(PrometheusConfiguration.class)) {
+            PrometheusConfiguration configuration = mock(PrometheusConfiguration.class);
+            when(configuration.getPerBuildMetricsMaxAgeInHours()).thenReturn(24L); // 24 hours
+            when(configuration.getPerBuildMetricsMaxBuilds()).thenReturn(0);
+            prometheusConfigurationStatic.when(PrometheusConfiguration::get).thenReturn(configuration);
+
+            long now = System.currentTimeMillis();
+            long buildDuration = 600000L; // 10 minutes build duration
+            when(mockedRun.getDuration()).thenReturn(buildDuration);
+            
+            // Run that ended 1 hour ago should be included
+            // endTime = startTime + duration, so startTime = endTime - duration
+            when(mockedRun.getTimeInMillis()).thenReturn(now - 3600000L - buildDuration);
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+            
+            // Run that ended 23 hours ago should be included
+            when(mockedRun.getTimeInMillis()).thenReturn(now - 82800000L - buildDuration);
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+            
+            // Run that ended 25 hours ago should be excluded
+            when(mockedRun.getTimeInMillis()).thenReturn(now - 90000000L - buildDuration);
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+        }
+    }
+
+    @Test
+    void testIncludeRunInPerBuildMetricsBothLimits() {
+        // When both limits are set, the stricter one should apply
+        try (MockedStatic<PrometheusConfiguration> prometheusConfigurationStatic = mockStatic(PrometheusConfiguration.class)) {
+            PrometheusConfiguration configuration = mock(PrometheusConfiguration.class);
+            when(configuration.getPerBuildMetricsMaxAgeInHours()).thenReturn(24L);
+            when(configuration.getPerBuildMetricsMaxBuilds()).thenReturn(5);
+            prometheusConfigurationStatic.when(PrometheusConfiguration::get).thenReturn(configuration);
+
+            long now = System.currentTimeMillis();
+            long buildDuration = 600000L; // 10 minutes build duration
+            when(mockedRun.getDuration()).thenReturn(buildDuration);
+            
+            // Recent run within build count limit - should be included
+            when(mockedRun.getTimeInMillis()).thenReturn(now - 3600000L - buildDuration);
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+            assertTrue(Runs.includeRunInPerBuildMetrics(mockedRun, 4));
+            
+            // Recent run but exceeds build count limit - should be excluded
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, 5));
+            
+            // Old run within build count limit - should be excluded due to age (ended 25 hours ago)
+            when(mockedRun.getTimeInMillis()).thenReturn(now - 90000000L - buildDuration);
+            assertFalse(Runs.includeRunInPerBuildMetrics(mockedRun, 0));
+        }
+    }
 
 
     private static Stream<Arguments> provideBuildResults() {

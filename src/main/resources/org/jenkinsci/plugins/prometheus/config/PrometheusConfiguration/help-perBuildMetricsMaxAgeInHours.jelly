@@ -1,0 +1,26 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core">
+  <div>
+    <p>
+      Maximum age in hours for per-build metrics. Runs whose end time is older than this value will not be included in per-build metrics.
+    </p>
+    <p>
+      Set to <code>0</code> (default) to disable the age limit and include all builds.
+    </p>
+    <p>
+      Example values:
+      <ul>
+        <li><code>1</code> - Only include builds that ended within the last hour</li>
+        <li><code>24</code> - Only include builds that ended within the last 24 hours</li>
+        <li><code>168</code> - Only include builds that ended within the last 7 days (168 hours)</li>
+      </ul>
+    </p>
+    <p>
+      This setting helps control the number of time series generated when per-build metrics are enabled,
+      preventing unbounded growth and reducing Prometheus storage and query costs.
+    </p>
+    <p>
+      If both max age and max builds are configured, the stricter limit will apply.
+    </p>
+  </div>
+</j:jelly>
