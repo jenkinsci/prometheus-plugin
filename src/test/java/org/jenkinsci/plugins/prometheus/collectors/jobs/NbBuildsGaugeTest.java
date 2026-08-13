@@ -18,9 +18,8 @@ public class NbBuildsGaugeTest extends JobCollectorTest {
 
     @Test
     public void testCollectResult() {
-
-        when(runMap.size()).thenReturn(12);
-        when(job.getBuildsAsMap()).thenReturn(runMap);
+        // getNextBuildNumber() returns 13, so number of builds is 13 - 1 = 12
+        when(job.getNextBuildNumber()).thenReturn(13);
 
         NbBuildsGauge sut = new NbBuildsGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins");
 

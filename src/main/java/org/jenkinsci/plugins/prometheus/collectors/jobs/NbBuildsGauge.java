@@ -34,7 +34,11 @@ public class NbBuildsGauge extends BuildsMetricCollector<Job<?, ?>, Gauge> {
     public void calculateMetric(Job<?, ?> jenkinsObject, String[] labelValues) {
         lock.readLock().lock();
         try  {
-            int nbBuilds = jenkinsObject.getBuildsAsMap().size();
+            // Avoid calling getBuildsAsMap().size() which forces a full lazy-load and causes deadlock
+            // with Jenkins build discarder on core < 2.529. Use getNextBuildNumber() - 1 instead,
+            // which gives us the count without loading the entire build map.
+            // See: https://github.com/jenkinsci/prometheus-plugin/issues/832
+            int nbBuilds = jenkinsObject.getNextBuildNumber() - 1;
             this.collector.labels(labelValues).set(nbBuilds);
         } finally {
             lock.readLock().unlock();
