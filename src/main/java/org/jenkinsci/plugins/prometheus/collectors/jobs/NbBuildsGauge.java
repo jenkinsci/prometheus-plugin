@@ -10,6 +10,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class NbBuildsGauge extends BuildsMetricCollector<Job<?, ?>, Gauge> {
 
+    private static final boolean HAS_LAZY_ENTRY_SET = hasLazyLoadRunMapEntrySet();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     protected NbBuildsGauge(String[] labelNames, String namespace, String subsystem) {
@@ -46,7 +47,7 @@ public class NbBuildsGauge extends BuildsMetricCollector<Job<?, ?>, Gauge> {
     }
 
     boolean usesExactBuildCount() {
-        return !hasLazyLoadRunMapEntrySet();
+        return !HAS_LAZY_ENTRY_SET;
     }
 
     private static boolean hasLazyLoadRunMapEntrySet() {
