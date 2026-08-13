@@ -5,6 +5,7 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.SimpleCollector;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildsMetricCollector;
+
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class NbBuildsGauge extends BuildsMetricCollector<Job<?, ?>, Gauge> {
@@ -22,7 +23,8 @@ public class NbBuildsGauge extends BuildsMetricCollector<Job<?, ?>, Gauge> {
 
     @Override
     protected String getHelpText() {
-        return "Number of builds available for this job";
+        return "Number of builds available for this job. On Jenkins cores with LazyLoadRunMapEntrySet, this falls "
+                + "back to the highest assigned build number to avoid a core deadlock during collection.";
     }
 
     @Override
@@ -33,15 +35,26 @@ public class NbBuildsGauge extends BuildsMetricCollector<Job<?, ?>, Gauge> {
     @Override
     public void calculateMetric(Job<?, ?> jenkinsObject, String[] labelValues) {
         lock.readLock().lock();
-        try  {
-            // Avoid calling getBuildsAsMap().size() which forces a full lazy-load and causes deadlock
-            // with Jenkins build discarder on core < 2.529. Use getNextBuildNumber() - 1 instead,
-            // which gives us the count without loading the entire build map.
-            // See: https://github.com/jenkinsci/prometheus-plugin/issues/832
-            int nbBuilds = jenkinsObject.getNextBuildNumber() - 1;
+        try {
+            int nbBuilds = usesExactBuildCount()
+                    ? jenkinsObject.getBuildsAsMap().size()
+                    : Math.max(0, jenkinsObject.getNextBuildNumber() - 1);
             this.collector.labels(labelValues).set(nbBuilds);
         } finally {
             lock.readLock().unlock();
+        }
+    }
+
+    boolean usesExactBuildCount() {
+        return !hasLazyLoadRunMapEntrySet();
+    }
+
+    private static boolean hasLazyLoadRunMapEntrySet() {
+        try {
+            Class.forName("jenkins.model.lazy.LazyLoadRunMapEntrySet");
+            return true;
+        } catch (ClassNotFoundException ignored) {
+            return false;
         }
     }
 }

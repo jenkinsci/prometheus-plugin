@@ -8,6 +8,8 @@ import org.mockito.Mock;
 
 import java.util.List;
 
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -17,11 +19,15 @@ public class NbBuildsGaugeTest extends JobCollectorTest {
     RunMap<WorkflowRun> runMap;
 
     @Test
-    public void testCollectResult() {
-        // getNextBuildNumber() returns 13, so number of builds is 13 - 1 = 12
+    public void testCollectResultUsesApproximateCountOnLegacyCore() {
         when(job.getNextBuildNumber()).thenReturn(13);
 
-        NbBuildsGauge sut = new NbBuildsGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins");
+        NbBuildsGauge sut = new NbBuildsGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins") {
+            @Override
+            boolean usesExactBuildCount() {
+                return false;
+            }
+        };
 
         sut.calculateMetric(job, new String[]{"job1", "NA"});
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -33,6 +39,33 @@ public class NbBuildsGaugeTest extends JobCollectorTest {
         validateNames(samples, new String[]{"default_jenkins_builds_available_builds_count"});
         validateMetricFamilySampleSize(samples, 1);
         validateValue(samples.samples.get(0), 12.0);
+        verify(job).getNextBuildNumber();
+        verify(job, never()).getBuildsAsMap();
+    }
 
+    @Test
+    public void testCollectResultUsesExactCountOnSafeCore() {
+        when(runMap.size()).thenReturn(12);
+        when(job.getBuildsAsMap()).thenReturn(runMap);
+
+        NbBuildsGauge sut = new NbBuildsGauge(new String[]{"jenkins_job", "repo"}, "default", "jenkins") {
+            @Override
+            boolean usesExactBuildCount() {
+                return true;
+            }
+        };
+
+        sut.calculateMetric(job, new String[]{"job1", "NA"});
+        List<Collector.MetricFamilySamples> collect = sut.collect();
+
+        validateMetricFamilySampleListSize(collect, 1);
+
+        Collector.MetricFamilySamples samples = collect.get(0);
+
+        validateNames(samples, new String[]{"default_jenkins_builds_available_builds_count"});
+        validateMetricFamilySampleSize(samples, 1);
+        validateValue(samples.samples.get(0), 12.0);
+        verify(job).getBuildsAsMap();
+        verify(job, never()).getNextBuildNumber();
     }
 }
