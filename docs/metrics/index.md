@@ -56,7 +56,7 @@ The JobCollector provides metrics about the Job and build specific metrics.
 | default_jenkins_builds_total_build_count                   | Total build count (excluding not_built statuses)                          | counter         |
 | default_jenkins_builds_aborted_build_count                 | Aborted build count                                                       | counter         |
 | default_jenkins_builds_health_score                        | Health score of a job                                                     | gauge           |
-| default_jenkins_builds_available_builds_count              | Gauge which indicates how many builds are available for the given job     | gauge           |
+| default_jenkins_builds_available_builds_count              | Gauge which indicates how many builds are available for the given job. On older Jenkins cores affected by JENKINS-76075, this falls back to the highest assigned build number to avoid deadlocks during collection. | gauge           |
 | default_jenkins_builds_discard_active                      | Gauge which indicates if the build discard feature is active for the job. | gauge           |
 | default_jenkins_builds_running_build_duration_milliseconds | Gauge which indicates the runtime of the current build.                   | gauge           |
 
