@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>5.28</version>
+    <version>6.2211.v27f680c93c53</version>
     <relativePath />
   </parent>
 
@@ -22,7 +22,7 @@
     <hpi.bundledArtifacts>simpleclient,simpleclient_common,simpleclient_dropwizard,simpleclient_hotspot,simpleclient_tracer_common,simpleclient_tracer_otel,simpleclient_tracer_otel_agent</hpi.bundledArtifacts>
     <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
-    <jenkins.baseline>2.479</jenkins.baseline>
+    <jenkins.baseline>2.555</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
 
     <prometheus.simpleclient.version>0.16.0</prometheus.simpleclient.version>
@@ -73,7 +73,7 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-${jenkins.baseline}.x</artifactId>
-        <version>4969.v6ffa_18d90c9f</version>
+        <version>6931.vea_a_b_c6fd017d</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
