@@ -15,6 +15,7 @@ import org.mockito.MockedStatic;
 
 import java.lang.reflect.Field;
 
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -71,6 +72,7 @@ class JobCollectorTraversalTest extends JobCollectorTest {
             when(config.isPerBuildMetrics()).thenReturn(true);
             when(config.getPerBuildMetricsMaxBuilds()).thenReturn(1);
             when(config.isCountSuccessfulBuilds()).thenReturn(true);
+            when(config.isCountFailedBuilds()).thenReturn(false);
             when(config.getLabeledBuildParameterNamesAsArray()).thenReturn(new String[0]);
 
             Run run3 = mock(Run.class);
@@ -78,13 +80,14 @@ class JobCollectorTraversalTest extends JobCollectorTest {
             Run run1 = mock(Run.class);
 
             when(run3.isBuilding()).thenReturn(false);
-            when(run3.getResult()).thenReturn(Result.SUCCESS);
+            when(run3.getResult()).thenReturn(Result.FAILURE);
             when(run3.getNumber()).thenReturn(3);
             when(run3.getPreviousBuild()).thenReturn(run2);
 
             when(run2.isBuilding()).thenReturn(false);
             when(run2.getResult()).thenReturn(Result.SUCCESS);
             when(run2.getNumber()).thenReturn(2);
+            lenient().when(run2.getPreviousBuild()).thenReturn(run1);
 
             when(job.getLastBuild()).thenReturn(run3);
             when(job.getFullName()).thenReturn("folder/job");

@@ -264,34 +264,33 @@ public class JobCollector extends Collector {
             return;
         }
 
+        int maxBuilds = PrometheusConfiguration.get().getPerBuildMetricsMaxBuilds();
         Run<?, ?> run = buildToCheck;
         int buildIndex = 0;
         while (run != null) {
+            if (summaryDisabled && maxBuilds > 0 && buildIndex >= maxBuilds) {
+                break;
+            }
             LOGGER.debug("getting metrics for run [{}] from job [{}], include per run metrics [{}]", run.getNumber(), job.getName(), isPerBuildMetrics);
             if (Runs.includeBuildInMetrics(run)) {
                 boolean includePerBuild = isPerBuildMetrics && Runs.includeRunInPerBuildMetrics(run, buildIndex);
-                if (summaryDisabled && !includePerBuild) {
-                    int maxBuilds = PrometheusConfiguration.get().getPerBuildMetricsMaxBuilds();
-                    if (maxBuilds > 0 && buildIndex >= maxBuilds) {
-                        break;
+                if (!summaryDisabled || includePerBuild) {
+                    LOGGER.debug("getting build info for run [{}] from job [{}]", run.getNumber(), job.getName());
+                    String[] labelValueArray = JobLabel.getJobLabelValues(job, run);
+
+                    summary.calculateMetric(run, labelValueArray);
+
+                    if (includePerBuild) {
+                        labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
+                        labelValueArray[labelValueArray.length - 1] = String.valueOf(run.getNumber());
+
+                        processRun(job, run, labelValueArray, perBuildMetrics);
                     }
-                    buildIndex++;
-                    run = run.getPreviousBuild();
-                    continue;
-                }
-
-                LOGGER.debug("getting build info for run [{}] from job [{}]", run.getNumber(), job.getName());
-                String[] labelValueArray = JobLabel.getJobLabelValues(job, run);
-
-                summary.calculateMetric(run, labelValueArray);
-
-                if (includePerBuild) {
-                    labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
-                    labelValueArray[labelValueArray.length - 1] = String.valueOf(run.getNumber());
-
-                    processRun(job, run, labelValueArray, perBuildMetrics);
                 }
                 buildIndex++;
+                if (summaryDisabled && maxBuilds > 0 && buildIndex >= maxBuilds) {
+                    break;
+                }
             }
             run = run.getPreviousBuild();
         }
