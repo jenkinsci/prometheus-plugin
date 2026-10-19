@@ -7,6 +7,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
+import org.jenkinsci.plugins.prometheus.collectors.NoOpMetricCollector;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCompletionListener;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCompletionListener.CloseableIterator;
 import org.jenkinsci.plugins.prometheus.collectors.builds.CounterManager;
@@ -207,7 +208,7 @@ public class JobCollector extends Collector {
             int sampleCount = metricFamilySample.samples.size();
             if (sampleCount > 0) {
                 LOGGER.debug(logMessage, sampleCount, metricFamilySample.name);
-                allSamples.addAll(newSamples);
+                allSamples.add(metricFamilySample);
             }
         }
     }
@@ -258,23 +259,38 @@ public class JobCollector extends Collector {
 
         processRun(job, buildToCheck, baseLabelValueArray, lastBuildMetrics);
 
+        boolean summaryDisabled = summary instanceof NoOpMetricCollector;
+        if (summaryDisabled && !isPerBuildMetrics) {
+            return;
+        }
+
+        int maxBuilds = PrometheusConfiguration.get().getPerBuildMetricsMaxBuilds();
         Run<?, ?> run = buildToCheck;
         int buildIndex = 0;
         while (run != null) {
+            if (summaryDisabled && maxBuilds > 0 && buildIndex >= maxBuilds) {
+                break;
+            }
             LOGGER.debug("getting metrics for run [{}] from job [{}], include per run metrics [{}]", run.getNumber(), job.getName(), isPerBuildMetrics);
             if (Runs.includeBuildInMetrics(run)) {
-                LOGGER.debug("getting build info for run [{}] from job [{}]", run.getNumber(), job.getName());
-                String[] labelValueArray = JobLabel.getJobLabelValues(job, run);
+                boolean includePerBuild = isPerBuildMetrics && Runs.includeRunInPerBuildMetrics(run, buildIndex);
+                if (!summaryDisabled || includePerBuild) {
+                    LOGGER.debug("getting build info for run [{}] from job [{}]", run.getNumber(), job.getName());
+                    String[] labelValueArray = JobLabel.getJobLabelValues(job, run);
 
-                summary.calculateMetric(run, labelValueArray);
+                    summary.calculateMetric(run, labelValueArray);
 
-                if (isPerBuildMetrics && Runs.includeRunInPerBuildMetrics(run, buildIndex)) {
-                    labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
-                    labelValueArray[labelValueArray.length - 1] = String.valueOf(run.getNumber());
+                    if (includePerBuild) {
+                        labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
+                        labelValueArray[labelValueArray.length - 1] = String.valueOf(run.getNumber());
 
-                    processRun(job, run, labelValueArray, perBuildMetrics);
+                        processRun(job, run, labelValueArray, perBuildMetrics);
+                    }
                 }
                 buildIndex++;
+                if (summaryDisabled && maxBuilds > 0 && buildIndex >= maxBuilds) {
+                    break;
+                }
             }
             run = run.getPreviousBuild();
         }
