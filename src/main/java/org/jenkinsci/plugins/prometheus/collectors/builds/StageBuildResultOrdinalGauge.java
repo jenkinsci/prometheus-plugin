@@ -1,12 +1,12 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
-import com.cloudbees.workflow.rest.external.StageNodeExt;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.SimpleCollector;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.util.Stage;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.slf4j.Logger;
@@ -57,21 +57,21 @@ public class StageBuildResultOrdinalGauge extends BuildsMetricCollector<Run<?, ?
     }
 
     private void processPipelineRunStages(Job job, WorkflowRun workflowRun, String[] labelValues) {
-        List<StageNodeExt> stages = getSortedStageNodes(workflowRun);
-        for (StageNodeExt stage : stages) {
+        List<Stage> stages = getSortedStageNodes(workflowRun);
+        for (Stage stage : stages) {
             if (stage != null) {
                 observeStage(job, workflowRun, stage, labelValues);
             }
         }
     }
 
-    private void observeStage(Job job, Run run, StageNodeExt stage, String[] labelValues) {
+    private void observeStage(Job job, Run run, Stage stage, String[] labelValues) {
 
-        LOGGER.debug("Observing stage[{}] in run [{}] from job [{}]", stage.getName(), run.getNumber(), job.getName());
-        String stageName = stage.getName();
+        LOGGER.debug("Observing stage[{}] in run [{}] from job [{}]", stage.name(), run.getNumber(), job.getName());
+        String stageName = stage.name();
 
         String[] values = ArrayUtils.add(labelValues, stageName);
 
-        collector.labels(values).set(stage.getStatus().ordinal());
+        collector.labels(values).set(stage.status().ordinal());
     }
 }

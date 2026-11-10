@@ -1,13 +1,13 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
-import com.cloudbees.workflow.rest.external.StageNodeExt;
-import com.cloudbees.workflow.rest.external.StatusExt;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.prometheus.client.SimpleCollector;
 import io.prometheus.client.Summary;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.util.Stage;
+import org.jenkinsci.plugins.prometheus.util.StageStatus;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.slf4j.Logger;
@@ -59,8 +59,8 @@ public class StageSummary extends BuildsMetricCollector<Run<?, ?>, Summary> {
     }
 
     private void processPipelineRunStages(Job job, WorkflowRun workflowRun, String[] labelValues) {
-        List<StageNodeExt> stages = getSortedStageNodes(workflowRun);
-        for (StageNodeExt stage : stages) {
+        List<Stage> stages = getSortedStageNodes(workflowRun);
+        for (Stage stage : stages) {
             if (stage != null) {
                 observeStage(job, workflowRun, stage, labelValues);
             }
@@ -68,20 +68,20 @@ public class StageSummary extends BuildsMetricCollector<Run<?, ?>, Summary> {
     }
 
 
-    private void observeStage(Job job, Run run, StageNodeExt stage, String[] labelValues) {
+    private void observeStage(Job job, Run run, Stage stage, String[] labelValues) {
 
-        LOGGER.debug("Observing stage[{}] in run [{}] from job [{}]", stage.getName(), run.getNumber(), job.getName());
-        String stageName = stage.getName();
+        LOGGER.debug("Observing stage[{}] in run [{}] from job [{}]", stage.name(), run.getNumber(), job.getName());
+        String stageName = stage.name();
 
         String[] values = ArrayUtils.add(labelValues, stageName);
 
-        if (stage.getStatus() == StatusExt.SUCCESS || stage.getStatus() == StatusExt.UNSTABLE) {
-            LOGGER.debug("getting duration for stage[{}] in run [{}] from job [{}]", stage.getName(), run.getNumber(), job.getName());
-            long duration = stage.getDurationMillis();
-            LOGGER.debug("duration was [{}] for stage[{}] in run [{}] from job [{}]", duration, stage.getName(), run.getNumber(), job.getName());
+        if (stage.status() == StageStatus.SUCCESS || stage.status() == StageStatus.UNSTABLE) {
+            LOGGER.debug("getting duration for stage[{}] in run [{}] from job [{}]", stage.name(), run.getNumber(), job.getName());
+            long duration = stage.durationMillis();
+            LOGGER.debug("duration was [{}] for stage[{}] in run [{}] from job [{}]", duration, stage.name(), run.getNumber(), job.getName());
             collector.labels(values).observe(duration);
         } else {
-            LOGGER.debug("Stage[{}] in run [{}] from job [{}] was not successful and will be ignored", stage.getName(), run.getNumber(), job.getName());
+            LOGGER.debug("Stage[{}] in run [{}] from job [{}] was not successful and will be ignored", stage.name(), run.getNumber(), job.getName());
         }
     }
 }
