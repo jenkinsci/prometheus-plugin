@@ -6,6 +6,8 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
@@ -79,6 +81,21 @@ class FlowNodesStagesTest {
         WorkflowRun run = run("stage('slow') { timeout(time: 1, unit: 'SECONDS') { sleep 10 } }", Result.ABORTED);
 
         assertEquals(Map.of("slow", StageStatus.ABORTED), statuses(FlowNodes.getSortedStageNodes(run)));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"FAILURE, FAILED", "NOT_BUILT, NOT_EXECUTED", "ABORTED, ABORTED"})
+    void interruptedStageUsesInterruptionResult(String interruptResult, StageStatus expected) throws Exception {
+        WorkflowJob job = j.createProject(WorkflowJob.class);
+        job.setDefinition(new CpsFlowDefinition("stage('blocked') { echo 'started'; sleep 60 }", true));
+        WorkflowRun run = job.scheduleBuild2(0).waitForStart();
+        j.waitForMessage("started", run);
+
+        Result result = Result.fromString(interruptResult);
+        run.getExecutor().interrupt(result);
+        j.assertBuildStatus(result, j.waitForCompletion(run));
+
+        assertEquals(Map.of("blocked", expected), statuses(FlowNodes.getSortedStageNodes(run)));
     }
 
     @Test

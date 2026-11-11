@@ -131,7 +131,8 @@ public class FlowNodes {
 
     private static StageStatus statusOf(Throwable error) {
         if (error instanceof FlowInterruptedException interrupted) {
-            return interrupted.isActualInterruption() ? StageStatus.ABORTED : statusOf(interrupted.getResult());
+            // isActualInterruption() only tells steps like retry whether to rethrow; the result is always getResult()
+            return statusOf(interrupted.getResult());
         }
         return StageStatus.FAILED;
     }
