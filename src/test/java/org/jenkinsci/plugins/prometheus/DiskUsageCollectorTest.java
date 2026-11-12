@@ -119,6 +119,29 @@ public class DiskUsageCollectorTest {
         }
     }
 
+    @Test
+    public void shouldWarnOnlyOnceWhenDiskUsagePluginIsMissing() {
+        PrometheusConfiguration config = mock(PrometheusConfiguration.class);
+        when(config.getCollectDiskUsage()).thenReturn(true);
+        try (MockedStatic<PrometheusConfiguration> configStatic = mockStatic(PrometheusConfiguration.class);
+             MockedStatic<Jenkins> jenkinsStatic = mockStatic(Jenkins.class)) {
+            configStatic.when(PrometheusConfiguration::get).thenReturn(config);
+            jenkinsStatic.when(Jenkins::get).thenReturn(jenkins);
+            when(jenkins.getPlugin(QuickDiskUsagePlugin.class))
+                .thenThrow(new NoClassDefFoundError("com/cloudbees/simplediskusage/QuickDiskUsagePlugin"));
+
+            DiskUsageCollector underTest = new DiskUsageCollector();
+            assertThat(underTest.isMissingPluginWarningLogged(), is(false));
+
+            assertThat(underTest.collect(), is(empty()));
+            assertThat(underTest.isMissingPluginWarningLogged(), is(true));
+
+            // subsequent collections still succeed (empty) and don't reset the state
+            assertThat(underTest.collect(), is(empty()));
+            assertThat(underTest.isMissingPluginWarningLogged(), is(true));
+        }
+    }
+
     private static void mockFileStore(DiskItem item, FileStore store) throws IOException {
         final Path path = item.getPath().toPath().toRealPath();
         when(path.getFileSystem().provider().getFileStore(path)).thenReturn(store);

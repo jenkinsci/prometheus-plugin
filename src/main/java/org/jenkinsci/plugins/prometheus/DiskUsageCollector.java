@@ -24,12 +24,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DiskUsageCollector extends Collector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiskUsageCollector.class);
+
+    private final AtomicBoolean missingPluginWarned = new AtomicBoolean(false);
 
     @Override
     @NonNull
@@ -45,10 +48,19 @@ public class DiskUsageCollector extends Collector {
             LOGGER.warn("Failed to get disk usage data due to an unexpected error.", e);
             return Collections.emptyList();
         } catch (final NoClassDefFoundError e) {
-            LOGGER.warn("Cannot collect disk usage data because plugin CloudBees Disk Usage Simple is not installed: {}", e.toString());
-            LOGGER.info("You can remove this warning if you disable Collect Disk Usage in Prometheus Configuration.");
+            // The class stays unresolvable until restart, so only warn the first time and log at debug afterwards.
+            if (missingPluginWarned.compareAndSet(false, true)) {
+                LOGGER.warn("Cannot collect disk usage data because plugin CloudBees Disk Usage Simple is not installed: {}", e.toString());
+                LOGGER.info("You can remove this warning if you disable Collect Disk Usage in Prometheus Configuration. This message is logged only once.");
+            } else {
+                LOGGER.debug("Cannot collect disk usage data because plugin CloudBees Disk Usage Simple is not installed: {}", e.toString());
+            }
             return Collections.emptyList();
         }
+    }
+
+    boolean isMissingPluginWarningLogged() {
+        return missingPluginWarned.get();
     }
 
     @NonNull
