@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.prometheus.util;
 
-import com.cloudbees.workflow.rest.external.StageNodeExt;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +20,7 @@ class FlowNodesTest {
     @Test
     void returnEmptyListOnPassingNull() {
         when(run.getExecution()).thenReturn(null);
-        List<StageNodeExt> result = FlowNodes.getSortedStageNodes(run);
+        List<Stage> result = FlowNodes.getSortedStageNodes(run);
         assertEquals(0, result.size());
     }
 
